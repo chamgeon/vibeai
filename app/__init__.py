@@ -19,7 +19,8 @@ if os.getenv("FLASK_DEBUG") == "1":
 else:
     app.config["SESSION_COOKIE_SECURE"] = True
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///site.db"
+db_path = os.path.join(app.instance_path, "site.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config['SESSION_TYPE'] = 'filesystem'
