@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create a Playlist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/playlist.css') }}">
+</head>
+
+<body class="background-image">
+  <div class="content">
+    
+    {% if error %}
+      <p class="error">{{ error }}</p>
+      
+    {% elif playlist and vibe_extraction and image_url%}
+
+      <h1 id="playlist-name">{{ playlist.name }}</h1>
+      
+      <div class="playlist-header">
+        <!-- Uploaded image preview -->
+        <img class="playlist-cover" src="{{ image_url }}" alt="Uploaded image">
+        
+        <!-- Vibe extraction info -->
+        <details class="vibe-summary">
+          <summary>
+            <span class="icon">▶</span> VIBE Summary
+          </summary>
+          <div class="vibe-summary-content">
+            <p><span class="head-text">SCENE</span><br>{{ vibe_extraction.imagination }}</p>
+            <ul>
+              {% for vibe in vibe_extraction.vibes %}
+                <li><span class="head-text">{{ vibe.label }}</span><br>{{ vibe.explanation }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="playlist-results">
+        <div class="playlist-header-row">
+          <div class="col drag-placeholder"></div>
+          <div class="col index">#</div>
+          <div class="col title">Title</div>
+          <div class="col vibe">Vibe</div>
+        </div>
+        <ul id="playlist">
+          {% for track in playlist.tracks %}
+            <li class="track-row"
+                data-index="{{ loop.index0 }}"
+                data-song="{{ track.song }}"
+                data-artist="{{ track.artist }}"
+                data-uri="{{ track.uri }}"
+                data-cover-url="{{ track.cover_url }}"
+                data-vibe="{{ track.vibe }}">
+              
+              <div class="drag-handle" title="Drag to reorder">
+                &#8942;&#8942; <!-- Unicode vertical ellipsis (⋮⋮), close to Notion's dots -->
+              </div>
+
+              <div class="col index">{{ loop.index }}</div>
+
+              <div class="col title">
+                <div class="track-cover">
+                  <img src="{{ track.cover_url }}" alt="Cover">
+                </div>
+                <div class="track-info">
+                  <div class="track-title">{{ track.song }}</div>
+                  <div class="track-artist">{{ track.artist }}</div>
+                </div>
+              </div>
+
+              <div class="col vibe vibe-content">{{ track.vibe }}</div>
+
+              <button class="remove-btn" data-index="{{ loop.index0 }}">✕</button>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <button class="save-btn" onclick="saveAndConfirm()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="Spotify" class="spotify-icon">
+        Open in Spotify
+      </button>
+
+      <div id="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Creating your playlist...</p>
+      </div>
+
+    {% else %}
+      <h1>Create a Playlist</h1>
+      <p class="subtitle">Upload an image, and generate a playlist that captures the vibe.</p>
+
+      <form id="playlist-form" action="/playlist" method="POST" enctype="multipart/form-data">
+
+        <!-- Drop zone -->
+        <div id="drop-zone">
+          <div id="drop-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <p>Click or Drag in an Image</p>
+          </div>
+          <img id="image-preview" alt="Image preview">
+          <input type="file" name="image" id="image-input" accept="image/*" required hidden>
+        </div>
+
+        <button type="submit" class="btn">Generate</button>
+      </form>
+
+      <div id="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Generating your playlist...</p>
+      </div>
+    {% endif %}
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/preview.js') }}"></script>
+<script src="{{ url_for('static', filename='js/loading.js') }}"></script>
+<script src="{{ url_for('static', filename='js/playlist_edit.js') }}"></script>
+</body>
+</html>

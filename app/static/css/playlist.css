@@ -1,0 +1,445 @@
+html, body {
+  margin: 3rem;
+  padding: 0;
+  font-size: clamp(14px, 1.2vw, 60px);
+}
+
+.background-image {
+  background-color: rgb(14, 14, 14);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)); /* overlay */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+h1 {
+  font-size: 4rem;
+  margin-bottom: 0rem;
+  font-family: 'Anton', sans-serif;
+  color: #eaa903f1;
+}
+
+h2 {
+  color: rgb(191, 191, 191);
+  font-size: 2rem;
+  font-family: 'Anton', sans-serif;
+}
+
+
+/*------------------ Upload image and generate playlist ---------------------*/
+
+.subtitle {
+  font-size: 1rem;
+  font-family: 'Anton', sans-serif;
+  color: #eaa903f1;
+  margin-top: -0.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.4;
+}
+
+#playlist-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#drop-zone {
+  position: relative;
+  border: 1px solid rgb(191, 191, 191);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  color: rgb(191, 191, 191);
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s;
+  overflow: hidden;
+  min-width: 18rem;
+  min-height: 12rem;
+
+  display: flex;               /* enables flexbox */
+  align-items: center;         /* vertical centering */
+  justify-content: center;     /* horizontal centering */
+  flex-direction: column;      /* stacks text and image vertically */
+}
+
+#drop-zone.dragover {
+  border-color: white;
+  color: white;
+}
+
+#drop-zone img {
+  display: none;
+  max-width: 25rem;
+  max-height: 25rem;
+  border-radius: 12px;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+#drop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Allows clicks to pass through to file input */
+}
+
+#drop-zone.previewing #drop-icon {
+  display: none;
+}
+
+#drop-zone.previewing img {
+  display: block;
+  max-width: 30rem;
+  max-height: 30rem;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.btn {
+  all: unset;
+  background-color: rgba(255, 255, 255, 0.1); /* translucent white */
+  color: rgb(191, 191, 191);
+  padding: 0.75rem 2rem;
+  border-radius: 3rem;
+  font-size: 1.2rem;
+  font-family: 'Anton', serif;
+  line-height: 1.2;
+  text-decoration: none;
+  backdrop-filter: blur(4px); /* Optional: frosted glass effect */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+
+/*-------------------- Loading screen -----------------------------*/
+
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 8px solid rgba(255,255,255,0.2);
+  border-top: 8px solid white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+/*spotify loading*/
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+}
+
+.loading-spinner {
+  border: 4px solid #444;
+  border-top: 4px solid #eaa903f1; /*#1db954; Spotify green */
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #ccc;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/*------------------------ Playlist Generated Page ---------------------------*/
+
+.playlist-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.playlist-cover {
+  width: 20rem;
+  max-width: 90%;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.3);
+  margin-bottom: 1.5rem;
+}
+
+.vibe-summary[open] .icon {
+  transform: rotate(90deg);
+}
+
+.vibe-summary .icon {
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.3s ease;
+  color: #eaa903f1;
+}
+
+.vibe-summary {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  max-width: 40rem;
+  background-color: #181818;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.4);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+}
+
+.vibe-summary summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.75rem 1.2rem;
+  font-size: 1.1rem;
+  background: linear-gradient(to right, #2a2a2a, #1a1a1a);
+  color: whitesmoke;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  font-family: 'Anton', serif;
+}
+
+.vibe-summary summary:hover {
+  background: linear-gradient(to right, #3a3a3a, #222);
+}
+
+.vibe-summary-content {
+  padding: 1.25rem 1.75rem;
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.6;
+  max-width: 80ch;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.vibe-summary-content p {
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.vibe-summary-content .head-text {
+  color: #eaa903f1;
+  font-family: 'Anton', sans-serif;
+}
+
+.vibe-summary-content ul {
+  margin-top: 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.vibe-summary-content li {
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  line-height: 1.5;
+}
+
+ul#playlist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.playlist-header-row {
+  display: flex;
+  padding: 0.75rem 1rem;
+  color: #b3b3b3;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #282828;
+}
+
+.track-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #282828;
+  color: white;
+}
+
+.track-row:hover {
+  background-color: #1a1a1a;
+}
+
+.col {
+  display: flex;
+  align-items: center;
+}
+.drag-handle {
+  cursor: grab;
+  font-size: 1rem;
+  color: #888;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.drag-handle:hover {
+  color: #ccc;
+}
+
+.drag-placeholder {
+  width: 2rem; /* or whatever width you're using for the drag icon */
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+}
+
+.index {
+  width: 24px;
+  justify-content: left;
+  margin-right: 16px;
+  color: #b3b3b3;
+}
+
+.title {
+  flex: 1;
+  gap: 12px;
+}
+
+.playlist-header-row .vibe {
+  width: 250px;
+}
+
+.title img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-title {
+  font-weight: 500;
+  color: white;
+}
+
+.track-artist {
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+
+.vibe-content {
+  width: 250px;
+  color: #b3b3b3;
+  font-style: italic;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  cursor: pointer;
+  margin-left: 16px;
+}
+
+.remove-btn:hover {
+  color: #e74c3c;
+}
+
+.save-btn {
+  all: unset;
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.1); /* translucent white */
+  color: whitesmoke;
+  padding: 0.75rem 1.2rem;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  font-family: 'Anton', serif;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  backdrop-filter: blur(4px); /* Optional: frosted glass effect */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 1.2rem;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.spotify-icon {
+  position: relative;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  fill: whitesmoke; /* match button text color */
+}
+
+.save-btn .icon {
+  display: inline-block;
+  margin-right: 0.5rem;
+  color: #eaa903f1;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}

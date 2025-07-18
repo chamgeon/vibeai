@@ -1,0 +1,88 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: clamp(14px, 1.2vw, 60px);
+}
+
+/* background */
+.background-image {
+  background-image: url("/static/images/background_1_ver3.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .background-image {
+    background-image: url("/static/images/background_1_mobile.png");
+    background-position: center top; /* optional tweak */
+    background-size: cover;          /* still fills screen */
+  }
+}
+
+.overlay {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center;     /* center vertically */
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(-20%);
+}
+
+h1 {
+  font-size: 6.5rem;
+  margin-bottom: -2.5rem;
+  font-family: 'Anton', sans-serif;
+  color: #eaa903f1;
+}
+
+p {
+  color: #eaa903f1;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-family: serif;
+}
+
+.btn {
+  position: relative;
+  display: flex;
+  justify-content: center;  /* center content horizontally */
+  align-items: center;      /* center vertically */
+
+  background-color: rgba(255, 255, 255, 0.1); /* translucent white */
+  color: rgb(191, 191, 191) ;
+  padding: 0.75rem 2rem;
+  border-radius: 3rem;
+  font-size: 1.35rem;
+  font-family: 'Anton', serif;
+  text-decoration: none;
+  backdrop-filter: blur(4px); /* Optional: frosted glass effect */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.spotify-icon {
+  position: absolute;
+  left: 1.2rem;
+  width: 24px;
+  height: 24px;
+  fill: rgb(191, 191, 191); /* match button text color */
+}
+
+.btn-text {
+  z-index: 1;
+  pointer-events: none;
+}
