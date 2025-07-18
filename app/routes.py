@@ -88,7 +88,7 @@ def make_playlist():
             return redirect("/playlist")
         
         except Exception as e:
-            return render_template("playlist.html", error="something went wrong")
+            return render_template("playlist.html", error=str(e))
     
     if request.method == 'GET':
         last = session.get("last_playlist", None)

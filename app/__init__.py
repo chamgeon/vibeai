@@ -10,7 +10,8 @@ if os.getenv("FLASK_DEBUG") == "1":
 base_dir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__,
             template_folder=os.path.join(base_dir, "templates"),
-            static_folder=os.path.join(base_dir, "static"))
+            static_folder=os.path.join(base_dir, "static"),
+            instance_path=os.path.join(base_dir, "instance"))
 
 app.secret_key = os.getenv("SECRET_KEY")
 
@@ -26,6 +27,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config['SESSION_TYPE'] = 'filesystem'
 
 db=SQLAlchemy(app)
+from .models import UserInteraction
 with app.app_context():
     db.create_all()
 
