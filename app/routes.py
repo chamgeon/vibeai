@@ -127,9 +127,9 @@ def finalize_playlist():
     image_url = generate_presigned_url(last["filename"])
     base64_image = download_image(image_url)
     playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
-    session["playlist_url"] = playlist_url
+    session["last_playlist_url"] = playlist_url
 
-    return jsonify({"last_playlist_url": playlist_url})
+    return jsonify({"playlist_url": playlist_url})
 
 
 @routes.route('/logout')
