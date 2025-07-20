@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <title>Create a Playlist</title>
   <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
@@ -39,10 +40,11 @@
 
       <div class="playlist-results">
         <div class="playlist-header-row">
-          <div class="col drag-placeholder"></div>
+          <div class="col drag-placeholder">&nbsp;</div>
           <div class="col index">#</div>
           <div class="col title">Title</div>
           <div class="col vibe">Vibe</div>
+          <div class="col remove-btn-placeholder">&nbsp;</div>
         </div>
         <ul id="playlist">
           {% for track in playlist.tracks %}
@@ -54,8 +56,10 @@
                 data-cover-url="{{ track.cover_url }}"
                 data-vibe="{{ track.vibe }}">
               
-              <div class="drag-handle" title="Drag to reorder">
-                &#8942;&#8942; <!-- Unicode vertical ellipsis (⋮⋮), close to Notion's dots -->
+              <div class="col drag-placeholder">
+                <div class="drag-handle" title="Drag to reorder">
+                  &#8942;&#8942; <!-- Unicode vertical ellipsis (⋮⋮), close to Notion's dots -->
+                </div>
               </div>
 
               <div class="col index">{{ loop.index }}</div>
@@ -70,9 +74,11 @@
                 </div>
               </div>
 
-              <div class="col vibe vibe-content">{{ track.vibe }}</div>
+              <div class="col vibe">
+                <div class="vibe-content">{{ track.vibe }}</div>
+              </div>
 
-              <button class="remove-btn" data-index="{{ loop.index0 }}">✕</button>
+              <div class="col remove-btn-placeholder"><button class="remove-btn" data-index="{{ loop.index0 }}">✕</button></div>
             </li>
           {% endfor %}
         </ul>
