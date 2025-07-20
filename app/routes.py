@@ -110,6 +110,9 @@ def finalize_playlist():
     # 2. Validate session data
     last = session.pop("last_playlist", None)
     if not last:
+        last_playlist_url = session.get("last_playlist_url", None)
+        if last_playlist_url:
+            return jsonify({"playlist_url": last_playlist_url})
         return jsonify({"error": "No playlist in session"}), 400
 
     # 3. Update tracks from frontend
@@ -124,8 +127,9 @@ def finalize_playlist():
     image_url = generate_presigned_url(last["filename"])
     base64_image = download_image(image_url)
     playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
+    session["playlist_url"] = playlist_url
 
-    return jsonify({"playlist_url": playlist_url})
+    return jsonify({"last_playlist_url": playlist_url})
 
 
 @routes.route('/logout')
