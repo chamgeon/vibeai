@@ -1,6 +1,6 @@
 import uuid, os, json
 import boto3
-from PIL import Image
+from PIL import Image, ImageOps
 import io
 import requests
 import base64
@@ -41,6 +41,7 @@ def resize_image_by_longest_side(file_obj, target_longest_side=512):
         BytesIO: A file-like object containing the resized image (JPEG format).
     """
     image = Image.open(file_obj)
+    image = ImageOps.exif_transpose(image)
     original_width, original_height = image.size
     
     # Determine the scale factor
