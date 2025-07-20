@@ -6,7 +6,7 @@ from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest
 from .models import UserInteraction
 from . import db
 import uuid, os, json
-from flask import request, render_template, redirect, session, Blueprint, jsonify
+from flask import request, render_template, redirect, session, Blueprint, jsonify, abort
 from spotipy import Spotify
 
 
@@ -88,7 +88,7 @@ def make_playlist():
             return redirect("/playlist")
         
         except Exception as e:
-            return render_template("playlist.html", error=str(e))
+            return render_template("playlist.html", error="something went wrong")
     
     if request.method == 'GET':
         last = session.get("last_playlist", None)
@@ -126,3 +126,11 @@ def finalize_playlist():
     playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
 
     return jsonify({"playlist_url": playlist_url})
+
+
+@routes.route('/logout')
+def logout():
+    if not app.debug:
+        abort(404)  # or 403 for Forbidden
+    session.clear()  # Clears all session data
+    return redirect('/')
