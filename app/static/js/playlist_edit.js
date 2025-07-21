@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Show loading
     document.getElementById("loading-overlay").style.display = "flex";
 
+    // ✅ Open the new tab immediately
+    const win = window.open("", "_blank");
+
     fetch('/finalize_playlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -48,16 +51,17 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(res => res.json())
     .then(data => {
       if (data.playlist_url) {
-        window.open(data.playlist_url, '_blank');
-        document.getElementById("loading-overlay").style.display = "none"; // Hide overlay
+        win.location.href = data.playlist_url; // ✅ Redirect in the already-opened window
       } else {
         alert("Failed to create playlist.");
-        document.getElementById("loading-overlay").style.display = "none";
+        win.close();
       }
+      document.getElementById("loading-overlay").style.display = "none";
     })
     .catch(err => {
       console.error(err);
       alert("Error finalizing playlist.");
+      win.close();
       document.getElementById("loading-overlay").style.display = "none";
     });
   };
