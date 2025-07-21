@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ✅ Open the new tab immediately
     const win = window.open("", "_blank");
 
-    fetch('/finalize_playlist', {
+    fetch('/finalize-playlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tracks: updatedTracks })
@@ -52,6 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(data => {
       if (data.playlist_url) {
         win.location.href = data.playlist_url; // ✅ Redirect in the already-opened window
+      } else if (data.error === "Spotify login required") {
+        alert("Please login to Spotify");
+        win.close();
+        window.location.href = '/spotify-login';
       } else {
         alert("Failed to create playlist.");
         win.close();
@@ -60,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(err => {
       console.error(err);
-      alert("Error finalizing playlist.");
+      alert(err.message || "Error finalizing playlist.");
       win.close();
       document.getElementById("loading-overlay").style.display = "none";
     });

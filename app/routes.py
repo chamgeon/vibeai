@@ -1,7 +1,7 @@
 from . import app
 from .playlist_gpt import vibe_extraction_schema, playlist_schema, build_playlist_generation_prompt, call_gpt_and_verify
 from .prompts import VIBE_EXTRACTION_PROMPT, PLAYLIST_GENERATION_PROMPT
-from .spotify import create_sp_oauth, fetch_spotify_data, create_spotify_playlist
+from .spotify import create_sp_oauth, create_sp_oauth_clientcredentials, fetch_spotify_data, create_spotify_playlist
 from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image
 from .models import UserInteraction
 from . import db
@@ -19,13 +19,13 @@ def index():
     return render_template("index.html")
 
 
-@routes.route("/login")
-def login():
+@routes.route("/spotify-login")
+def spotify_login():
     sp_oauth = create_sp_oauth(session)
     token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
 
     if token_info is not None:
-        return redirect("/playlist")
+        return redirect("/finalize-playlist")
     else:
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
@@ -35,20 +35,16 @@ def login():
 def callback():
     code = request.args.get('code')
     sp_oauth = create_sp_oauth(session)
-    sp_oauth.get_access_token(code=code)
+    token_info = sp_oauth.get_access_token(code=code)
 
-    return redirect('/playlist')
+    if token_info:
+        session["token_info"] = token_info
+
+    return redirect("/playlist")
 
 
 @routes.route("/playlist", methods=["GET", "POST"])
 def make_playlist():
-
-    # Check Spotify token
-    sp_oauth = create_sp_oauth(session)
-    token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
-    if not token_info:
-        return redirect("/login")
-    session["token_info"] = token_info
     
     if request.method == 'POST':
         file = request.files.get("image")
@@ -67,7 +63,8 @@ def make_playlist():
             playlist_prompt = build_playlist_generation_prompt(vibe_extraction, PLAYLIST_GENERATION_PROMPT)
             playlist_data = call_gpt_and_verify(playlist_prompt, playlist_schema)
             
-            sp = Spotify(auth=token_info["access_token"])
+            auth_manager = create_sp_oauth_clientcredentials()
+            sp = Spotify(auth_manager=auth_manager)
             fetched_tracks = fetch_spotify_data(sp, playlist_data['tracks'])
             playlist_data['tracks'] = fetched_tracks
 
@@ -104,15 +101,34 @@ def make_playlist():
         return render_template("playlist.html")
 
 
-@routes.route("/finalize_playlist", methods=["POST"])
+@routes.route("/finalize-playlist", methods=["POST"])
 def finalize_playlist():
-    # 1. Auth check
+
+    # 1. Validate session data
+    last = session.get("last_playlist", None)
+    if not last:
+        last_playlist_url = session.get("last_playlist_url", None)
+        if last_playlist_url:
+            return jsonify({"playlist_url": last_playlist_url})
+        return jsonify({"error": "No playlist in session"}), 400
+
+    # 2. Update tracks from frontend
+    data = request.get_json()
+    if not data or "tracks" not in data:
+        return jsonify({"error": "Missing tracks"}), 400
+    last["playlist_data"]["tracks"] = data["tracks"]
+    session.modified = True
+    
+    # 3. Spotify authentification
     sp_oauth = create_sp_oauth(session)
     token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
     if not token_info:
-        return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({"error": "Spotify login required"}), 401
     session["token_info"] = token_info
 
+    return _create_playlist(token_info)
+
+    """
     # 2. Validate session data
     last = session.pop("last_playlist", None)
     if not last:
@@ -135,12 +151,30 @@ def finalize_playlist():
     playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
     session["last_playlist_url"] = playlist_url
 
+    return jsonify({"playlist_url": playlist_url})"""
+
+def _create_playlist(token_info):
+    sp = Spotify(auth=token_info["access_token"])
+
+    # Optionally reconstruct other things like image file
+    last = session.pop("last_playlist", None)
+    if not last:
+        return jsonify({"error": "Session expired"}), 400
+
+    image_url = generate_presigned_url(last["filename"])
+    base64_image = download_image(image_url)
+
+    playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
+    session["last_playlist_url"] = playlist_url
+    session.modified = True
+
     return jsonify({"playlist_url": playlist_url})
 
 
 @routes.route('/logout')
 def logout():
-    if not app.debug:
-        abort(404)  # or 403 for Forbidden
-    session.clear()  # Clears all session data
-    return redirect('/')
+    token_info = session.get("token_info")
+    session.clear()
+    if token_info:
+        session["token_info"] = token_info
+    return redirect('/playlist')

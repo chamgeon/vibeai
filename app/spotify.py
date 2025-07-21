@@ -1,5 +1,5 @@
 from spotipy import Spotify
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from spotipy.cache_handler import FlaskSessionCacheHandler
 import os
 
@@ -7,6 +7,9 @@ import os
 def create_sp_oauth(flask_session):
     return SpotifyOAuth(scope="playlist-modify-public ugc-image-upload",
                         cache_handler=FlaskSessionCacheHandler(flask_session))
+
+def create_sp_oauth_clientcredentials():
+    return SpotifyClientCredentials()
 
 def fetch_spotify_data(sp:Spotify, tracks):
     """
