@@ -8,6 +8,8 @@ from . import db
 import uuid, os, json
 from flask import request, render_template, redirect, session, Blueprint, jsonify, abort
 from spotipy import Spotify
+import traceback
+import logging
 
 
 routes = Blueprint('routes', __name__)
@@ -53,6 +55,9 @@ def make_playlist():
         if not file:
             return render_template("playlist.html", error="No image uploaded")
         
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.INFO)  # or DEBUG
+        
         try:
             # vibe extraction
             resized_file = resize_image_by_longest_side(file,512)
@@ -88,6 +93,7 @@ def make_playlist():
             return redirect("/playlist")
         
         except Exception as e:
+            logger.error("Exception during playlist generation: {e}\n" + traceback.format_exc())
             return render_template("playlist.html", error="something went wrong")
     
     if request.method == 'GET':
