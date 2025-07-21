@@ -53,6 +53,10 @@ def resize_image_by_longest_side(file_obj, target_longest_side=512):
     new_size = (int(original_width * scale), int(original_height * scale))
     resized_image = image.resize(new_size, Image.LANCZOS)
 
+    # Convert to RGB if needed
+    if resized_image.mode in ("RGBA", "P"):
+        resized_image = resized_image.convert("RGB")
+
     # Save to BytesIO object
     output = io.BytesIO()
     resized_image.save(output, format='JPEG')
