@@ -138,6 +138,15 @@ def finalize_playlist():
 
     return jsonify({"playlist_url": playlist_url})
 
+@routes.route('/check-login')
+def check_login():
+    sp_oauth = create_sp_oauth(session)
+    token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
+    if not token_info:
+        return jsonify({"logged_in": False})
+    else:
+        return jsonify({"logged_in": True})
+
 
 @routes.route('/logout')
 def logout():

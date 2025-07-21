@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+
   // Update playlsit and confirm
   window.saveAndConfirm = function () {
     const listItems = document.querySelectorAll("#playlist li");
@@ -54,8 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         win.location.href = data.playlist_url; // ✅ Redirect in the already-opened window
       } else if (data.error === "Spotify login required") {
         alert("Please login to Spotify");
-        win.close();
-        window.location.href = '/spotify-login';
+        win.location.href = '/spotify-login';
       } else {
         alert("Failed to create playlist.");
         win.close();
