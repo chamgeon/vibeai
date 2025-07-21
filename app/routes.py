@@ -126,41 +126,9 @@ def finalize_playlist():
         return jsonify({"error": "Spotify login required"}), 401
     session["token_info"] = token_info
 
-    return _create_playlist(token_info)
-
-    """
-    # 2. Validate session data
+    # 4. Create playlist
     last = session.pop("last_playlist", None)
-    if not last:
-        last_playlist_url = session.get("last_playlist_url", None)
-        if last_playlist_url:
-            return jsonify({"playlist_url": last_playlist_url})
-        return jsonify({"error": "No playlist in session"}), 400
-
-    # 3. Update tracks from frontend
-    data = request.get_json()
-    if not data or "tracks" not in data:
-        return jsonify({"error": "Missing tracks"}), 400
-    last["playlist_data"]["tracks"] = data["tracks"]
-    session.modified = True
-
-    # 4. Create Spotify playlist
     sp = Spotify(auth=token_info["access_token"])
-    image_url = generate_presigned_url(last["filename"])
-    base64_image = download_image(image_url)
-    playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
-    session["last_playlist_url"] = playlist_url
-
-    return jsonify({"playlist_url": playlist_url})"""
-
-def _create_playlist(token_info):
-    sp = Spotify(auth=token_info["access_token"])
-
-    # Optionally reconstruct other things like image file
-    last = session.pop("last_playlist", None)
-    if not last:
-        return jsonify({"error": "Session expired"}), 400
-
     image_url = generate_presigned_url(last["filename"])
     base64_image = download_image(image_url)
 
