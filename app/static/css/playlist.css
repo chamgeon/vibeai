@@ -467,6 +467,14 @@ ul#playlist {
   font-weight: bold;
 }
 
+.button-row {
+  display: flex;
+  gap: 1rem; /* space between the buttons */
+  justify-content: center; /* optional: center horizontally */
+  align-items: center;     /* optional: center vertically */
+  margin-top: 1.25rem;        /* optional: spacing from above */
+}
+
 /*mobile*/
 @media (max-width: 600px) {
 

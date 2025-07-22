@@ -13,6 +13,9 @@ import logging
 
 
 routes = Blueprint('routes', __name__)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO) 
+
 
 @routes.route("/")
 def index():
@@ -25,7 +28,7 @@ def spotify_login():
     token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
 
     if token_info is not None:
-        return redirect("/finalize-playlist")
+        return redirect("/spotify-finalize-playlist")
     else:
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
@@ -40,7 +43,7 @@ def callback():
     if token_info:
         session["token_info"] = token_info
 
-    return redirect("/playlist")
+    return redirect("/spotify-finalize-playlist")
 
 
 @routes.route("/playlist", methods=["GET", "POST"])
@@ -50,9 +53,6 @@ def make_playlist():
         file = request.files.get("image")
         if not file:
             return render_template("playlist.html", error="No image uploaded")
-        
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.INFO)  # or DEBUG
         
         try:
             # vibe extraction
@@ -101,51 +101,55 @@ def make_playlist():
         return render_template("playlist.html")
 
 
-@routes.route("/finalize-playlist", methods=["POST"])
-def finalize_playlist():
+@routes.route("/save-tracks", methods = ['POST'])
+def save_tracks():
+    data = request.get_json()
+
+    # 1. Validate session data
+    last = session.get("last_playlist", None)
+    if not last:
+        logger.warning("No playlist in session")
+        return jsonify({"success": False, "error": "No playlist in session"}), 400
+
+    # 2. Update tracks from frontend
+    if not data or "tracks" not in data:
+        logger.warning("Missing tracks")
+        return jsonify({"success": False, "error": "Missing tracks"}), 400
+    last["playlist_data"]["tracks"] = data["tracks"]
+    session.modified = True
+
+    return jsonify({"success": True})
+
+
+@routes.route("/spotify-finalize-playlist", methods=["GET"])
+def spotify_finalize_playlist():
 
     # 1. Validate session data
     last = session.get("last_playlist", None)
     if not last:
         last_playlist_url = session.get("last_playlist_url", None)
-        if last_playlist_url:
-            return jsonify({"playlist_url": last_playlist_url})
-        return jsonify({"error": "No playlist in session"}), 400
+        if not last_playlist_url:
+            return render_template("finalize_sp.html", error = "No playlist in session. Please try again.")
+        return render_template("finalize_sp.html", pl_url = last_playlist_url)
 
-    # 2. Update tracks from frontend
-    data = request.get_json()
-    if not data or "tracks" not in data:
-        return jsonify({"error": "Missing tracks"}), 400
-    last["playlist_data"]["tracks"] = data["tracks"]
-    session.modified = True
-    
-    # 3. Spotify authentification
+    # 2. Spotify authentification
     sp_oauth = create_sp_oauth(session)
     token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
     if not token_info:
-        return jsonify({"error": "Spotify login required"}), 401
+        return redirect("/spotify-login")
     session["token_info"] = token_info
 
-    # 4. Create playlist
+    # 3. Create playlist
     last = session.pop("last_playlist", None)
     sp = Spotify(auth=token_info["access_token"])
     image_url = generate_presigned_url(last["filename"])
     base64_image = download_image(image_url)
-
     playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
+
     session["last_playlist_url"] = playlist_url
     session.modified = True
 
-    return jsonify({"playlist_url": playlist_url})
-
-@routes.route('/check-login')
-def check_login():
-    sp_oauth = create_sp_oauth(session)
-    token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
-    if not token_info:
-        return jsonify({"logged_in": False})
-    else:
-        return jsonify({"logged_in": True})
+    return render_template("finalize_sp.html", pl_url = playlist_url)
 
 
 @routes.route('/logout')

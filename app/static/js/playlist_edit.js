@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-  // Update playlsit and confirm
-  window.saveAndConfirm = function () {
+  // Update playlsit and login to spotify
+  window.saveAndRedirectToLogin = function () {
     const listItems = document.querySelectorAll("#playlist li");
 
     const updatedTracks = Array.from(listItems).map(li => ({
@@ -38,35 +38,22 @@ document.addEventListener('DOMContentLoaded', function () {
       vibe: li.getAttribute("data-vibe")
     }));
 
-    // Show loading
-    document.getElementById("loading-overlay").style.display = "flex";
-
-    // ✅ Open the new tab immediately
-    const win = window.open("", "_blank");
-
-    fetch('/finalize-playlist', {
+    fetch('/save-tracks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tracks: updatedTracks })
     })
     .then(res => res.json())
     .then(data => {
-      if (data.playlist_url) {
-        win.location.href = data.playlist_url; // ✅ Redirect in the already-opened window
-      } else if (data.error === "Spotify login required") {
-        alert("Please login to Spotify");
-        win.location.href = '/spotify-login';
+      if (data.success) {
+        window.location.href = "/spotify-login";
       } else {
         alert("Failed to create playlist.");
-        win.close();
       }
-      document.getElementById("loading-overlay").style.display = "none";
     })
     .catch(err => {
       console.error(err);
       alert(err.message || "Error finalizing playlist.");
-      win.close();
-      document.getElementById("loading-overlay").style.display = "none";
     });
   };
 });
