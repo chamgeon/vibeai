@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
       vibe: li.getAttribute("data-vibe")
     }));
 
+    document.getElementById("loading-overlay").style.display = "flex";
+
     fetch('/save-tracks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -45,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .then(res => res.json())
     .then(data => {
-      if (data.success) {
-        window.location.href = "/spotify-login";
+      if (data.success && data.pl_id) {
+        window.location.href = `/spotify-login?pl_id=${encodeURIComponent(data.pl_id)}`;
       } else {
         alert("Failed to create playlist.");
       }

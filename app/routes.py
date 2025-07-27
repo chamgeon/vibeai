@@ -2,48 +2,37 @@ from . import app
 from .playlist_gpt import vibe_extraction_schema, playlist_schema, build_playlist_generation_prompt, call_gpt_and_verify
 from .prompts import VIBE_EXTRACTION_PROMPT, PLAYLIST_GENERATION_PROMPT
 from .spotify import create_sp_oauth, create_sp_oauth_clientcredentials, fetch_spotify_data, create_spotify_playlist
-from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image
+from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image, youtube_credentials_to_dict
 from .models import UserInteraction
 from . import db
 import uuid, os, json
 from flask import request, render_template, redirect, session, Blueprint, jsonify, abort
 from spotipy import Spotify
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from google.auth.exceptions import RefreshError
 import traceback
 import logging
 
 
 routes = Blueprint('routes', __name__)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO) 
+logger.setLevel(logging.INFO)
+
+# youtube credentials
+youtube_client_config = json.loads(os.getenv("GOOGLE_CLIENT_SECRET_JSON"))
+if os.getenv("FLASK_DEBUG") == "1":
+    youtube_redirect_uri = "http://127.0.0.1:8888/youtube-oauth2-callback"
+else:
+    youtube_redirect_uri = "https://vibeai-poz2.onrender.com/youtube-oauth2-callback"
+youtube_scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
 
 @routes.route("/")
 def index():
     return render_template("index.html")
-
-
-@routes.route("/spotify-login")
-def spotify_login():
-    sp_oauth = create_sp_oauth(session)
-    token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
-
-    if token_info is not None:
-        return redirect("/spotify-finalize-playlist")
-    else:
-        auth_url = sp_oauth.get_authorize_url()
-        return redirect(auth_url)
-
-
-@routes.route("/callback")
-def callback():
-    code = request.args.get('code')
-    sp_oauth = create_sp_oauth(session)
-    token_info = sp_oauth.get_access_token(code=code)
-
-    if token_info:
-        session["token_info"] = token_info
-
-    return redirect("/spotify-finalize-playlist")
 
 
 @routes.route("/playlist", methods=["GET", "POST"])
@@ -71,16 +60,6 @@ def make_playlist():
             # upload to db
             resized_file.seek(0)
             filename = upload_to_s3(resized_file)
-
-            if "user_id" not in session:
-                session["user_id"] = str(uuid.uuid4())
-            log = UserInteraction(
-                session_id = session["user_id"],
-                image_filename = filename,
-                playlist_json = json.dumps(playlist_data)
-            )
-            db.session.add(log)
-            db.session.commit()
             
             session["last_playlist"] = {
                 "vibe_extraction": vibe_extraction,
@@ -118,36 +97,106 @@ def save_tracks():
     last["playlist_data"]["tracks"] = data["tracks"]
     session.modified = True
 
-    return jsonify({"success": True})
+    # 3. upload to db
+    try:
+        if "user_id" not in session:
+            session["user_id"] = str(uuid.uuid4())
+        last["playlist_id"] = str(uuid.uuid4())
+        session.modified = True
+
+        log = UserInteraction(
+            session_id = session["user_id"],
+            playlist_id = last["playlist_id"],
+            image_filename = last.get('filename'),
+            playlist_json = json.dumps(last.get('playlist_data'))
+        )
+        db.session.add(log)
+        db.session.commit()
+    except:
+        logger.warning("Failed to db upload")
+        return jsonify({"success": False, "error": "Failed in db upload"}), 400
+
+    return jsonify({"success": True, "pl_id": last["playlist_id"]})
+
+
+@routes.route("/spotify-login")
+def spotify_login():
+    last = session.pop("last_playlist", None)
+    if not last:
+        pl_id = request.args.get("pl_id")
+        if not pl_id:
+            return "no playlist in session"
+        
+    pl_id = request.args.get("pl_id") or last.get("playlist_id")
+    if not pl_id:
+        return "no playlist id in session"
+    
+    sp_oauth = create_sp_oauth(session)
+    token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
+
+    if token_info is not None:
+        session["token_info"] = token_info
+        interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+        interaction.spotify_token_info = json.dumps(token_info)
+        db.session.commit()
+        return redirect(f"/spotify-finalize-playlist?pl_id={pl_id}")
+    
+    else:
+        spotify_auth_url = sp_oauth.get_authorize_url(state=pl_id)
+        return redirect(spotify_auth_url)
+
+
+@routes.route("/callback")
+def spotify_callback():
+    code = request.args.get('code')
+    pl_id = request.args.get('state')
+
+    sp_oauth = create_sp_oauth(session)
+    token_info = sp_oauth.get_access_token(code=code)
+
+    if token_info:
+        session["token_info"] = token_info
+        interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+        interaction.spotify_token_info = json.dumps(token_info)
+        db.session.commit()
+    
+    else:
+        return "something went wrong during the spotify authentification"
+
+    return redirect(f"/spotify-finalize-playlist?pl_id={pl_id}")
 
 
 @routes.route("/spotify-finalize-playlist", methods=["GET"])
 def spotify_finalize_playlist():
+    pl_id = request.args.get("pl_id")
+    if not pl_id:
+        return render_template("finalize_sp.html", error = "Missing pl_id parameter")
 
-    # 1. Validate session data
-    last = session.get("last_playlist", None)
-    if not last:
-        last_playlist_url = session.get("last_playlist_url", None)
-        if not last_playlist_url:
-            return render_template("finalize_sp.html", error = "No playlist in session. Please try again.")
-        return render_template("finalize_sp.html", pl_url = last_playlist_url)
+    # 1. Get playlist data from db
+    interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+    if not interaction:
+        return render_template("finalize_sp.html", error = "Playlist not found")
+    
+    if interaction.playlist_url is not None:   # refresh or re-visit logic
+        return render_template("finalize_sp.html", pl_url = interaction.playlist_url)
 
     # 2. Spotify authentification
-    sp_oauth = create_sp_oauth(session)
-    token_info = sp_oauth.validate_token(sp_oauth.cache_handler.get_cached_token())
+    sp_oauth = create_sp_oauth()
+    token_info = sp_oauth.validate_token(json.loads(interaction.spotify_token_info))
     if not token_info:
-        return redirect("/spotify-login")
-    session["token_info"] = token_info
+        return render_template("finalize_sp.html", error = "Spotify token not found")
+    interaction.spotify_token_info = json.dumps(token_info)    # in case token refreshed
+    db.session.commit()
 
     # 3. Create playlist
-    last = session.pop("last_playlist", None)
     sp = Spotify(auth=token_info["access_token"])
-    image_url = generate_presigned_url(last["filename"])
+    image_url = generate_presigned_url(interaction.image_filename)
     base64_image = download_image(image_url)
-    playlist_url = create_spotify_playlist(sp, last["playlist_data"], base64_image)
+    playlist_data = json.loads(interaction.playlist_json)
+    playlist_url = create_spotify_playlist(sp, playlist_data, base64_image)
 
-    session["last_playlist_url"] = playlist_url
-    session.modified = True
+    interaction.playlist_url = playlist_url
+    db.session.commit()
 
     return render_template("finalize_sp.html", pl_url = playlist_url)
 
