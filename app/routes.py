@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # youtube credentials
-youtube_client_config = json.loads(os.getenv("GOOGLE_CLIENT_SECRET_JSON"))
+with open("google_client_secret.txt", "r") as f:
+    youtube_client_config = json.load(f)
 if os.getenv("FLASK_DEBUG") == "1":
     youtube_redirect_uri = "http://127.0.0.1:8888/youtube-oauth2-callback"
 else:
