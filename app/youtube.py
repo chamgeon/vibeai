@@ -1,6 +1,8 @@
 from flask import redirect
+import time
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google.auth.exceptions import RefreshError
@@ -56,10 +58,11 @@ def get_video_id(track, creds):
     for item in search_results:
         video_id = item["id"]
         try:
-            video_info = youtube.videos().list(
+            request = youtube.videos().list(
                 part="snippet",
                 id=video_id
-            ).execute()
+            )
+            video_info = execute_with_retry(request)
 
             items = video_info.get("items", [])
             if not items:
@@ -107,7 +110,7 @@ def create_youtube_playlist(creds, playlist_data):
         video_id = get_video_id(track, creds)
 
         if video_id:
-            response_2 = youtube.playlistItems().insert(
+            request = youtube.playlistItems().insert(
                 part="snippet",
                 body={
                     "snippet": {
@@ -118,7 +121,9 @@ def create_youtube_playlist(creds, playlist_data):
                         }
                     }
                 }
-            ).execute()
+            )
+            execute_with_retry(request)
+
         
         else:
             print(f"cannot find youtube video for track: {track['song']}, artist: {track['artist']}")
@@ -126,3 +131,16 @@ def create_youtube_playlist(creds, playlist_data):
     playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
 
     return playlist_url
+
+
+def execute_with_retry(request, max_retries=3):
+    for i in range(max_retries):
+        try:
+            return request.execute()
+        except HttpError as e:
+            if e.resp.status == 409 and "SERVICE_UNAVAILABLE" in str(e):
+                wait = 2 ** i
+                print(f"[WARN] YouTube api execution failed. Retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                raise
