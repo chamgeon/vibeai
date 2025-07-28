@@ -2,17 +2,14 @@ from . import app
 from .playlist_gpt import vibe_extraction_schema, playlist_schema, build_playlist_generation_prompt, call_gpt_and_verify
 from .prompts import VIBE_EXTRACTION_PROMPT, PLAYLIST_GENERATION_PROMPT
 from .spotify import create_sp_oauth, create_sp_oauth_clientcredentials, fetch_spotify_data, create_spotify_playlist
-from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image, youtube_credentials_to_dict
+from .youtube import youtube_credentials_to_dict, load_and_refresh_credentials, create_youtube_playlist
+from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image
 from .models import UserInteraction
 from . import db
 import uuid, os, json
 from flask import request, render_template, redirect, session, Blueprint, jsonify, abort
 from spotipy import Spotify
 from google_auth_oauthlib.flow import Flow
-from googleapiclient.discovery import build
-from google.oauth2.credentials import Credentials
-from google.auth.transport.requests import Request
-from google.auth.exceptions import RefreshError
 import traceback
 import logging
 
@@ -201,6 +198,102 @@ def spotify_finalize_playlist():
     return render_template("finalize_sp.html", pl_url = playlist_url)
 
 
+@routes.route("/youtube-login")
+def youtube_login():
+    last = session.pop("last_playlist", None)
+    if not last:
+        pl_id = request.args.get("pl_id")
+        if not pl_id:
+            return "no playlist in session"
+        
+    pl_id = request.args.get("pl_id") or last.get("playlist_id")
+    if not pl_id:
+        return "no playlist id in session"
+    
+    yt_credentials = session.get("youtube_credentials")
+    if yt_credentials is not None:
+        load_and_refresh_credentials(session, pl_id)
+        interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+        interaction.youtube_credentials = json.dumps(session["youtube_credentials"])
+        db.session.commit()
+        return redirect(f"/youtube-finalize-playlist?pl_id={pl_id}")
+    
+    else:
+        flow = Flow.from_client_config(
+            youtube_client_config,
+            scopes=youtube_scopes,
+            redirect_uri=youtube_redirect_uri,
+            state=pl_id
+        )
+
+        youtube_auth_url, _ = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true',
+            prompt='consent'
+        )
+
+        return redirect(youtube_auth_url)
+
+
+@routes.route("/youtube-oauth2-callback")
+def youtube_callback():
+    pl_id = request.args.get('state')
+
+    flow = Flow.from_client_config(
+        youtube_client_config,
+        scopes=youtube_scopes,
+        state=pl_id,
+        redirect_uri=youtube_redirect_uri
+    )
+
+    flow.fetch_token(authorization_response=request.url)
+    credentials = flow.credentials
+    session["youtube_credentials"] = youtube_credentials_to_dict(credentials)
+    interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+    if interaction is None:
+        return "Internal service error: failed to fetch playlist data"
+    interaction.youtube_credentials = json.dumps(session["youtube_credentials"])
+    db.session.commit()
+    return redirect(f"/youtube-finalize-playlist?pl_id={pl_id}")
+
+
+
+@routes.route("/youtube-finalize-playlist")
+def youtube_finalize_playlist():
+    pl_id = request.args.get("pl_id")
+    if not pl_id:
+        return render_template("finalize_yt.html", error = "Missing pl_id parameter")
+
+    # 1. Get playlist data from db
+    interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+    if not interaction:
+        return render_template("finalize_yt.html", error = "Playlist not found")
+    
+    if interaction.playlist_url is not None:   # refresh or re-visit logic
+        return render_template("finalize_yt.html", pl_url = interaction.playlist_url)
+    
+    # 2. Youtube authentification
+    yt_credentials = session.get("youtube_credentials")
+    if not yt_credentials:
+        try:
+            session["youtube_credentials"] = interaction.youtube_credentials
+        except:
+            render_template("finalize_yt.html", error = "Youtube credentials not found")
+    
+    creds = load_and_refresh_credentials(session, pl_id)
+    interaction.youtube_credentials = json.dumps(session["youtube_credentials"])
+    db.session.commit()
+
+    # 3. Create playlist
+    playlist_data = json.loads(interaction.playlist_json)
+    playlist_url = create_youtube_playlist(creds, playlist_data)
+    interaction.playlist_url = playlist_url
+    db.session.commit()
+    
+    return render_template("finalize_yt.html", pl_url = playlist_url)
+
+
+
 @routes.route('/logout')
 def logout():
     token_info = session.get("token_info")
@@ -208,3 +301,8 @@ def logout():
     if token_info:
         session["token_info"] = token_info
     return redirect('/playlist')
+
+@routes.route('/print-session')
+def print_session():
+    print(session)
+    return "session printed"

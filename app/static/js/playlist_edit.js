@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-  // Update playlsit and login to spotify
-  window.saveAndRedirectToLogin = function () {
+  // Update playlsit and login to platform
+  window.saveAndRedirectToLogin = function (platform) {
     const listItems = document.querySelectorAll("#playlist li");
 
     const updatedTracks = Array.from(listItems).map(li => ({
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(res => res.json())
     .then(data => {
       if (data.success && data.pl_id) {
-        window.location.href = `/spotify-login?pl_id=${encodeURIComponent(data.pl_id)}`;
+        window.location.href = `/${platform}-login?pl_id=${encodeURIComponent(data.pl_id)}`;
       } else {
         alert("Failed to create playlist.");
       }

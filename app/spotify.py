@@ -4,9 +4,12 @@ from spotipy.cache_handler import FlaskSessionCacheHandler
 import os
 
 
-def create_sp_oauth(flask_session):
-    return SpotifyOAuth(scope="playlist-modify-public ugc-image-upload",
+def create_sp_oauth(flask_session = None):
+    if flask_session:
+        return SpotifyOAuth(scope="playlist-modify-public ugc-image-upload",
                         cache_handler=FlaskSessionCacheHandler(flask_session))
+    else:
+        return SpotifyOAuth(scope="playlist-modify-public ugc-image-upload")
 
 def create_sp_oauth_clientcredentials():
     return SpotifyClientCredentials()

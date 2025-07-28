@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Playlist Created</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/playlist.css') }}">
+</head>
+
+<body class="background-image">
+  <div class="content">
+    
+    {% if error %}
+    <p class="error">{{ error }}</p>
+      
+    {% elif pl_url%}
+    <h1>Playlist Created</h1>
+    <div class="button-row">
+        <button class="save-btn" onclick="openInNewTab('{{ pl_url }}')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_(2017).svg" alt="Youtube" class="youtube-icon">
+            Open in Youtube
+        </button>
+        <a href="/playlist" class="save-btn">
+            Try another one
+        </a>
+    </div>
+
+    {% endif %}
+  </div>
+<script src="{{ url_for('static', filename='js/openpl.js') }}"></script>
+</body>
+</html>

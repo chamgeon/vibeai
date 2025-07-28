@@ -454,6 +454,14 @@ ul#playlist {
   fill: whitesmoke; /* match button text color */
 }
 
+.youtube-icon {
+  position: relative;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: whitesmoke; /* match button text color */
+}
+
 .save-btn .icon {
   display: inline-block;
   margin-right: 0.5rem;

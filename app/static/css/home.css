@@ -82,6 +82,14 @@ p {
   fill: rgb(191, 191, 191); /* match button text color */
 }
 
+.youtube-icon {
+  position: absolute;
+  left: 1.2rem;
+  width: 24px;
+  height: 24px;
+  fill: rgb(191, 191, 191); /* match button text color */
+}
+
 .btn-text {
   z-index: 1;
   pointer-events: none;

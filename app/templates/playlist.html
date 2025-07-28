@@ -84,10 +84,17 @@
         </ul>
       </div>
 
-      <button class="save-btn" onclick="saveAndRedirectToLogin()">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="Spotify" class="spotify-icon">
-        Create in Spotify
-      </button>
+      <div class="button-row">
+        <button class="save-btn" onclick="saveAndRedirectToLogin('spotify')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="Spotify" class="spotify-icon">
+          Create in Spotify
+        </button>
+
+        <button class="save-btn" onclick="saveAndRedirectToLogin('youtube')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_(2017).svg" alt="Youtube" class="youtube-icon">
+          Create in Youtube
+        </button>
+      </div>
 
       <div id="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
