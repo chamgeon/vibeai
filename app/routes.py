@@ -303,7 +303,11 @@ def logout():
         session["token_info"] = token_info
     return redirect('/playlist')
 
-@routes.route('/print-session')
-def print_session():
-    print(session)
-    return "session printed"
+
+@routes.route('/privacy-policy')
+def privacy():
+    return render_template("privacy_policy.html")
+
+@routes.route('/terms-of-service')
+def termsofservice():
+    return render_template('terms_of_service.html')
