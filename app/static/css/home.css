@@ -25,8 +25,9 @@ body.main-bg {
 @media (max-width: 600px) {
   .background-image {
     background-image: url("/static/images/background_1_mobile.png");
-    background-position: center top; /* optional tweak */
+    background-position: center; /* optional tweak */
     background-size: cover;          /* still fills screen */
+    position: relative;
   }
 }
 
@@ -66,7 +67,7 @@ p {
   display: flex;
   justify-content: center;  /* center content horizontally */
   align-items: center;      /* center vertically */
-  width: 15rem;
+  width: 6rem;
 
   background-color: rgba(255, 255, 255, 0.1); /* translucent white */
   color: rgb(191, 191, 191) ;
@@ -90,7 +91,7 @@ p {
   flex-wrap: wrap;
   justify-content: space-between;
   background-color: rgba(0, 0, 0, 0.4);
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0.5rem;
   margin-top: 0;
   color: white;
   font-family: sans-serif;
