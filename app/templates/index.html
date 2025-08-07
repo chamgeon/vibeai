@@ -8,19 +8,53 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
-<body class="background-image">
-  <div class="overlay">
-    <div class="content">
-      <h1>VIBE AI</h1>
-      <p>A playlist for the moment</p>
-      <a href="/playlist" class="btn">
-        <span class="btn-text">Create</span>
-      </a>
-      <p style="font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 14px;">
+<body class="main-bg">
+  <div class="background-image">
+    <div class="overlay">
+      <div class="content">
+        <h1>VIBE AI</h1>
+        <p>A playlist for the moment</p>
+        <a href="/playlist" class="btn">
+          <span class="btn-text">Create</span>
+        </a>
+        <p style="font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 14px;">
+        <a href="/privacy-policy" style="color: inherit; text-decoration: underline;">Privacy Policy & </a>
+        <a href="/terms-of-service" style="color: inherit; text-decoration: underline;">Terms of Service</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <h4>Step 1</h4>
+      <p><span class="step-header">Upload your photo</span><br>
+      Share an image that captures your current mood or aesthetic.</p>
+    </div>
+    <div class="step">
+      <h4>Step 2</h4>
+      <p><span class="step-header">We analyze the vibe</span><br>
+      Our AI extracts mood and themes from your image.</p>
+    </div>
+    <div class="step">
+      <h4>Step 3</h4>
+      <p><span class="step-header">Generate a playlist</span><br>
+      Instantly get a curated playlist that matches your vibe.</p>
+    </div>
+    <div class="step">
+      <h4>Step 4</h4>
+      <p><span class="step-header">Export it</span><br>
+      Send it to your Spotify or YouTube account with one click.</p>
+    </div>
+  </div>
+  <div class="data-usage-section">
+    <h2>Data Usage & Permissions</h2>
+    <p>
+      We only use uploaded photo to analyze its mood and generate a playlist.
+      Google and Spotify user data permissions are used solely to create and export playlists on user's behalf.
+      For more information, please refer to 
       <a href="/privacy-policy" style="color: inherit; text-decoration: underline;">Privacy Policy & </a>
       <a href="/terms-of-service" style="color: inherit; text-decoration: underline;">Terms of Service</a>
-      </p>
-    </div>
+    </p>
   </div>
 </body>
 </html>
