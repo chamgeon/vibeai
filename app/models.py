@@ -11,4 +11,5 @@ class UserInteraction(db.Model):
     playlist_url = db.Column(db.String(300), nullable=True)
     spotify_token_info = db.Column(db.Text, nullable=True)
     youtube_credentials = db.Column(db.Text, nullable=True)
+    oauth_state = db.Column(db.String(64), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.now(timezone.utc))

@@ -3,7 +3,6 @@
 VibeAI is a web application that generates music playlists based on the **vibe of a user-uploaded photo**.  
 It uses AI to analyze mood, suggest songs, and export personalized playlists to **YouTube** — with full editing support.
 
----
 
 ## Features
 
@@ -13,7 +12,6 @@ It uses AI to analyze mood, suggest songs, and export personalized playlists to 
 - 🛠️ **Edit Your Playlist** — Add/remove tracks before finalizing.
 - 📤 **Export to YouTube** — Save your playlist directly to your YouTube account.
 
----
 
 ## Tech Stack
 

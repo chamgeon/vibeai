@@ -212,19 +212,23 @@ def youtube_login():
         return "no playlist id in session"
     
     yt_credentials = session.get("youtube_credentials")
+    interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+
     if yt_credentials is not None:
         load_and_refresh_credentials(session, pl_id)
-        interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
         interaction.youtube_credentials = json.dumps(session["youtube_credentials"])
         db.session.commit()
         return redirect(f"/youtube-finalize-playlist?pl_id={pl_id}")
     
     else:
+        oauth_state = str(uuid.uuid4())
+        interaction.oauth_state = oauth_state
+        db.session.commit()
         flow = Flow.from_client_config(
             youtube_client_config,
             scopes=youtube_scopes,
             redirect_uri=youtube_redirect_uri,
-            state=pl_id
+            state=oauth_state
         )
 
         youtube_auth_url, _ = flow.authorization_url(
@@ -238,24 +242,32 @@ def youtube_login():
 
 @routes.route("/youtube-oauth2-callback")
 def youtube_callback():
-    pl_id = request.args.get('state')
-
-    flow = Flow.from_client_config(
-        youtube_client_config,
-        scopes=youtube_scopes,
-        state=pl_id,
-        redirect_uri=youtube_redirect_uri
-    )
-
-    flow.fetch_token(authorization_response=request.url)
-    credentials = flow.credentials
-    session["youtube_credentials"] = youtube_credentials_to_dict(credentials)
-    interaction = UserInteraction.query.filter_by(playlist_id=pl_id).first()
+    oauth_state = request.args.get('state')
+    if not oauth_state:
+        return "Missing state", 400
+    
+    interaction = UserInteraction.query.filter_by(oauth_state=oauth_state).first()
     if interaction is None:
         return "Internal service error: failed to fetch playlist data"
+
+    try:
+        flow = Flow.from_client_config(
+            youtube_client_config,
+            scopes=youtube_scopes,
+            state=oauth_state,
+            redirect_uri=youtube_redirect_uri
+        )
+
+        flow.fetch_token(authorization_response=request.url)
+        credentials = flow.credentials
+
+    except Exception as e:
+        return "Failed to exchange code for tokens", 400
+    
+    session["youtube_credentials"] = youtube_credentials_to_dict(credentials)
     interaction.youtube_credentials = json.dumps(session["youtube_credentials"])
     db.session.commit()
-    return redirect(f"/youtube-finalize-playlist?pl_id={pl_id}")
+    return redirect(f"/youtube-finalize-playlist?pl_id={interaction.playlist_id}")
 
 
 
