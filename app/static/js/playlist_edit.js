@@ -27,35 +27,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Update playlsit and login to platform
-  window.saveAndRedirectToLogin = function (platform) {
-    const listItems = document.querySelectorAll("#playlist li");
+  window.saveAndRedirectToLogin = async function (platform) {
+    const btn = document.querySelector(".save-btn");
+    try {
+      // 1) Check quota first
+      btn?.setAttribute("disabled", "true");
 
-    const updatedTracks = Array.from(listItems).map(li => ({
-      song: li.getAttribute("data-song"),
-      artist: li.getAttribute("data-artist"),
-      uri: li.getAttribute("data-uri"),
-      cover_url: li.getAttribute("data-cover-url"),
-      vibe: li.getAttribute("data-vibe")
-    }));
+      const r = await fetch("/quota-status", { cache: "no-store" });
+      if (!r.ok) throw new Error("Failed to check quota");
+      const { ratio } = await r.json();
 
-    document.getElementById("loading-overlay").style.display = "flex";
+      if (ratio != null && ratio >= 0.9) {
+        alert("We're near today's YouTube quota limit. Please try again after the daily reset (midnight PT).");
+        return; // stop here
+      }
 
-    fetch('/save-tracks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tracks: updatedTracks })
-    })
-    .then(res => res.json())
-    .then(data => {
+      // 2) Proceed with your original logic
+      const listItems = document.querySelectorAll("#playlist li");
+      const updatedTracks = Array.from(listItems).map(li => ({
+        song: li.getAttribute("data-song"),
+        artist: li.getAttribute("data-artist"),
+        uri: li.getAttribute("data-uri"),
+        cover_url: li.getAttribute("data-cover-url"),
+        vibe: li.getAttribute("data-vibe"),
+      }));
+
+      document.getElementById("loading-overlay").style.display = "flex";
+
+      const res = await fetch("/save-tracks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tracks: updatedTracks }),
+      });
+
+      const data = await res.json();
       if (data.success && data.pl_id) {
         window.location.href = `/${platform}-login?pl_id=${encodeURIComponent(data.pl_id)}`;
       } else {
         alert("Failed to create playlist.");
       }
-    })
-    .catch(err => {
+    } catch (err) {
       console.error(err);
       alert(err.message || "Error finalizing playlist.");
-    });
+    } finally {
+      btn?.removeAttribute("disabled");
+      // If you showed the overlay but exited early due to quota, make sure it's hidden:
+      const overlay = document.getElementById("loading-overlay");
+      if (overlay) overlay.style.display = "none";
+    }
   };
 });

@@ -2,7 +2,7 @@ from . import app
 from .playlist_gpt import vibe_extraction_schema, playlist_schema, build_playlist_generation_prompt, call_gpt_and_verify
 from .prompts import VIBE_EXTRACTION_PROMPT, PLAYLIST_GENERATION_PROMPT
 from .spotify import create_sp_oauth, create_sp_oauth_clientcredentials, fetch_spotify_data, create_spotify_playlist
-from .youtube import youtube_credentials_to_dict, load_and_refresh_credentials, create_youtube_playlist
+from .youtube import youtube_credentials_to_dict, load_and_refresh_credentials, create_youtube_playlist, get_daily_limit, get_api_quota_usage
 from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image
 from .models import UserInteraction
 from . import db
@@ -58,7 +58,7 @@ def make_playlist():
             # upload to db
             resized_file.seek(0)
             filename = upload_to_s3(resized_file)
-            
+
             session["last_playlist"] = {
                 "vibe_extraction": vibe_extraction,
                 "playlist_data": playlist_data,
@@ -74,7 +74,13 @@ def make_playlist():
         last = session.get("last_playlist", None)
         if last:
             image_url = generate_presigned_url(last["filename"])
-            return render_template("playlist.html", vibe_extraction = last['vibe_extraction'], playlist=last["playlist_data"], image_url=image_url)
+            return render_template(
+                "playlist.html", 
+                vibe_extraction = last['vibe_extraction'], 
+                playlist=last["playlist_data"], 
+                image_url=image_url
+                )
+        
         return render_template("playlist.html")
 
 
@@ -307,12 +313,33 @@ def youtube_finalize_playlist():
 
 
 
-@routes.route('/logout')
-def logout():
+@routes.route('/quota-status')
+def quota_status():
+    usage = get_api_quota_usage()
+    limit = get_daily_limit()
+    ratio = (usage / limit) if limit > 0 else 0.0
+    return jsonify({
+        "usage": usage,
+        "limit": limit,
+        "ratio": ratio
+    })
+
+
+@routes.route('/clear_playlist')
+def clear_playlist():
     token_info = session.get("token_info")
+    yt_credentials = session.get("youtube_credentials")
     session.clear()
     if token_info:
         session["token_info"] = token_info
+    if yt_credentials:
+        session["youtube_credentials"] = yt_credentials
+    return redirect('/playlist')
+
+
+@routes.route('/logout')
+def logout():
+    session.clear()
     return redirect('/playlist')
 
 

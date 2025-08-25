@@ -100,26 +100,37 @@ def gpt_calling_with_file(file_obj, prompt, temperature=0.9):
     
     return response.choices[0].message.content
 
-def gpt_calling(prompt, temperature=0.9):
+def gpt_calling(prompt, model = "gpt-5", temperature=0.9):
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "user", 
-                "content": [
-                    {
-                        "type": "text",
-                        "text": prompt
-                    }
-                ]
-            }
-        ],
-        temperature=temperature,
-        max_tokens=1000
-    )
-    
-    return response.choices[0].message.content
+    if model == "gpt-5":
+        response = client.responses.create(
+            model=model,
+            input=prompt,
+            reasoning={ "effort": "low"},
+            text = {"verbosity": "medium"}
+        )
+
+        return response.output_text
+
+    else:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user", 
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        }
+                    ]
+                }
+            ],
+            temperature=temperature,
+            max_tokens=1000
+        )
+        
+        return response.choices[0].message.content
 
 
 def verify_response(response, schema):
@@ -200,7 +211,7 @@ def call_gpt_and_verify(prompt, schema, temperature = 0.9, max_try = 3, file_obj
                 file_obj.seek(0)
                 response = gpt_calling_with_file(file_obj, prompt, temperature)
             else:
-                response = gpt_calling(prompt, temperature)
+                response = gpt_calling(prompt = prompt, temperature=temperature)
         except Exception as e:
             if attempt == max_try:
                 raise RuntimeError(f"GPT call failed on attempt {attempt}: {e}")
