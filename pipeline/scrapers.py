@@ -1,11 +1,11 @@
 from yt_dlp import YoutubeDL
-from pathlib import Path
-import json
+from typing import List, Dict, Optional
 from schema import Comment
 
 
 
-def youtube_comment_scrape(song_name, artist_name, max_queries = 5, max_comments = 25):
+def youtube_comment_scrape(song_name: str, artist_name: str, max_queries: int = 5, max_comments: int = 25) -> List[Comment]:
+    
     """
     Get youtube comments of the music (or music video) provided in args.
     args:
