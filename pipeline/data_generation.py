@@ -44,37 +44,18 @@ def call_gpt(prompt, model, temperature = 0.9):
 
         return response.choices[0].message.content
 
-
-def youtube_comment_digest(song, artist, model = "gpt-5", max_comments = 25):
-
-    """
-    Generate vibe summary data from youtube comment.
-    
-    Input:
-        song(str): song name to scrape
-        artist(str): artist name to scrape
-    
-    Output:
-        ChatGPT response that summarizes vibe of the song
-    """
-
-    youtube_comments = youtube_comment_scrape(song_name=song, artist_name=artist, max_comments = max_comments)
-    raw_comments = ""
-    for comment in youtube_comments:
-        raw_comments += f"{comment.text}\n\n-----\n\n"
-    
-    prompt = YOUTUBE_COMMENTS_DIGESTION_PROMPT.replace("[COMMENTS]", raw_comments)
-    vibe_digestion = call_gpt(prompt, model)
-
-    return vibe_digestion
-
-
 def _safe_name(s: str) -> str:
     # simple filesystem-safe slug (keep spaces & dashes readable)
     return "".join(ch for ch in s if ch.isalnum() or ch in " -_().").strip()
 
 def _song_dir(base_dir: str, song: str, artist: str) -> str:
     return os.path.join(base_dir, "songs", f"{_safe_name(artist)} - {_safe_name(song)}")
+
+
+
+#----------------- saving functions ---------------
+
+
 
 def save_youtube_comments_jsonl(
     base_dir: str,
@@ -183,7 +164,12 @@ def _update_meta(base_dir: str, song: str, artist: str, video_ids: List[str], ts
         json.dump(meta, f, ensure_ascii=False, indent=2)
 
 
-def youtube_comment_digest_e(
+
+# ------------- digestion -------------------
+
+
+
+def youtube_comment_digest(
     song: str,
     artist: str,
     model: str = "gpt-5",
@@ -231,8 +217,10 @@ def youtube_comment_digest_e(
     return digestion_md
 
 
+
+
 if __name__ == "__main__":
     base_dir = "C:\Projects\VibeAI\pipeline\music-rag"
-    md = youtube_comment_digest_e("Pink + White", "Frank Ocean", model="gpt-5", max_comments=25,
+    md = youtube_comment_digest("Pink + White", "Frank Ocean", model="gpt-5", max_comments=25,
                                 save_dir=base_dir, save_files=True)
     print(md[:500])
