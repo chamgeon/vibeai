@@ -53,7 +53,7 @@ def _song_dir(base_dir: str, song: str, artist: str) -> str:
 
 
 
-#----------------- saving functions ---------------
+# ----------------- saving functions ---------------- #
 
 
 
@@ -221,6 +221,7 @@ def youtube_comment_digest(
 
 if __name__ == "__main__":
     base_dir = "C:\Projects\VibeAI\pipeline\music-rag"
-    md = youtube_comment_digest("Pink + White", "Frank Ocean", model="gpt-5", max_comments=25,
+    song = "Better left unsaid"
+    artist = "stoop kids"
+    md = youtube_comment_digest(song, artist, model="gpt-5", max_comments=25,
                                 save_dir=base_dir, save_files=True)
-    print(md[:500])

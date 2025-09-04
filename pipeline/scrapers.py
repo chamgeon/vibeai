@@ -1,4 +1,5 @@
 from yt_dlp import YoutubeDL
+from yt_dlp.utils import DownloadError
 from typing import List, Dict, Optional
 from schema import Comment
 
@@ -28,13 +29,16 @@ def youtube_comment_scrape(song_name: str, artist_name: str, max_queries: int = 
     for item in search_results:
         video_id = item['id']
         comments = youtube_get_root_comments(song_name, artist_name, video_id, max_comments)
-        if comments:
-            if len(comments) == max_comments:
-                return comments
-            else:
-                pending_comments.extend(comments)
-                if len(pending_comments) >= max_comments:
-                    return pending_comments[:max_comments]
+
+        if not comments:
+            continue
+
+        if len(comments) >= max_comments:
+            return comments[:max_comments]
+        
+        pending_comments.extend(comments)
+        if len(pending_comments) >= max_comments:
+            return pending_comments[:max_comments]
         
     return pending_comments
 
@@ -76,6 +80,9 @@ def youtube_get_root_comments(song, artist, video_id, max_comments = 25):
         "quiet": True,
         "skip_download": True,
         "getcomments": True,
+        "extract_flat": True,
+        "writesubtitles": False,
+        "writeinfojson": False,
         "extractor_args": {
             "youtube": {
                 "comment_sort": ["top"],
@@ -84,13 +91,23 @@ def youtube_get_root_comments(song, artist, video_id, max_comments = 25):
         }
     }
 
-    with YoutubeDL(comment_opts) as ydl:
-        video_info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+    try:
+        with YoutubeDL(comment_opts) as ydl:
+            video_info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+    except DownloadError as e:
+        # comments off, private, or no valid formats
+        print(f"[warn] Could not fetch comments for {video_id}: {e}")
+        return None
     
-    if video_info.get("comment_count") == 0:
+    if not video_info:
+        return None
+    if video_info.get("comment_count", 0) == 0:
         return None
     
     comments = video_info.get("comments",[])
+    if not comments:
+        return None
+    
     comments_list = []
     for c in comments:
         comment_info = {"song":song, "artist":artist, "video_id":video_id, "text":c["text"]}
