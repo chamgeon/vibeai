@@ -79,10 +79,10 @@ def youtube_get_root_comments(song, artist, video_id, max_comments = 25):
     comment_opts = {
         "quiet": True,
         "skip_download": True,
+        "simulate": True,
+        "check_formats": False,
+        "ignore_no_formats_error": True,
         "getcomments": True,
-        "extract_flat": True,
-        "writesubtitles": False,
-        "writeinfojson": False,
         "extractor_args": {
             "youtube": {
                 "comment_sort": ["top"],

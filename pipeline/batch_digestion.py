@@ -12,7 +12,7 @@ def _song_dir(base_dir: Path, song: str, artist: str) -> Path:
 
 # --- CONFIG ---
 BASE_DIR = Path(r"C:\Projects\VibeAI\pipeline\music-rag")
-INPUT_JSONL = Path(r"C:\Projects\VibeAI\pipeline\music-rag\playlists\betterlevitate.jsonl")  # each line: {"song": "...", "artist": "..."}
+INPUT_JSONL = Path(r"C:\Projects\VibeAI\pipeline\music-rag\playlists\wineanddine.jsonl")  # each line: {"song": "...", "artist": "..."}
 MODEL = "gpt-5"
 MAX_COMMENTS = 25
 SAVE_FILES = True
