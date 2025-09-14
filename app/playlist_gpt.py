@@ -64,11 +64,8 @@ playlist_schema = {
   "additionalProperties": False
 }
 
-client = OpenAI(
-  api_key=os.environ['OPENAI_API_KEY']
-)
 
-def gpt_calling_with_file(file_obj, prompt, temperature=0.9):
+def gpt_calling_with_file(client, file_obj, prompt, temperature=0.9):
     mime_type, _ = mimetypes.guess_type(getattr(file_obj, 'name', 'image.jpg'))
     mime_type = mime_type or "image/jpeg"
 
@@ -100,7 +97,7 @@ def gpt_calling_with_file(file_obj, prompt, temperature=0.9):
     
     return response.choices[0].message.content
 
-def gpt_calling(prompt, model = "gpt-5", temperature=0.9):
+def gpt_calling(client, prompt, model = "gpt-5", temperature=0.9):
 
     if model == "gpt-5":
         response = client.responses.create(
@@ -185,7 +182,49 @@ def build_playlist_generation_prompt(vibe_result, base_prompt_template):
     return base_prompt_template.replace('[INPUT]', input_block)
 
 
-def call_gpt_and_verify(prompt, schema, temperature = 0.9, max_try = 3, file_obj = None):
+def build_playlist_generation_prompt_rag(vibe_result, retrieval, base_prompt_template):
+    """
+    Build the input prompt for playlist generation based on a vibe extraction result.
+
+    Args:
+        vibe_result (dict): Output from the first GPT call, containing 'description', 'imagination', and 'vibes'.
+        retrieval (List[List[dict]]): Retrieval search result, each dict contains 'song_name', 'artist', and 'content' (retrieved text chunk).
+        base_prompt_template (str): A template prompt string that contains '[INPUT]' as a placeholder.
+    
+    Returns:
+        str: The final prompt ready for GPT playlist generation.
+    """
+    description = vibe_result.get("description", "")
+    imagination = vibe_result.get("imagination", "")
+    vibes = vibe_result.get("vibes", [])
+
+    formatted_vibes = "\n".join(
+        f"{v['label']} - {v['explanation']}" 
+        for v in vibes
+        if isinstance(v, dict)
+    )
+
+    flat_hits = [hit for hits in retrieval for hit in hits]
+
+    formatted_retrieval = "\n\n-----\n\n".join(
+        f"Song: {h.get('song_name', '')}\n"
+        f"Artist: {h.get('artist', '')}\n"
+        f"Chunk: {h.get('content', '')}\n"
+        f"Score: {h.get('score', '')}"
+        for h in flat_hits
+    )
+
+    input_block = (
+        f"**image description**\n{description}\n\n"
+        f"**imagined context**\n{imagination}\n\n"
+        f"**vibes**\n{formatted_vibes}\n\n"
+        f"**candidate pool**\n{formatted_retrieval}"
+    )
+
+    return base_prompt_template.replace('[INPUT]', input_block)
+
+
+def call_gpt_and_verify(client, prompt, schema, temperature = 0.9, max_try = 3, file_obj = None):
 
     """
     Call gpt with prompt and verify it. If verification failed, try again and return error if it failed again.
@@ -209,9 +248,9 @@ def call_gpt_and_verify(prompt, schema, temperature = 0.9, max_try = 3, file_obj
         try:
             if file_obj:
                 file_obj.seek(0)
-                response = gpt_calling_with_file(file_obj, prompt, temperature)
+                response = gpt_calling_with_file(client, file_obj, prompt, temperature)
             else:
-                response = gpt_calling(prompt = prompt, temperature=temperature)
+                response = gpt_calling(client, prompt = prompt, temperature=temperature)
         except Exception as e:
             if attempt == max_try:
                 raise RuntimeError(f"GPT call failed on attempt {attempt}: {e}")

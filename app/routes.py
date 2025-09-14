@@ -12,6 +12,8 @@ from spotipy import Spotify
 from google_auth_oauthlib.flow import Flow
 import traceback
 import logging
+from openai import OpenAI
+from qdrant_client import QdrantClient
 
 
 routes = Blueprint('routes', __name__)
@@ -26,6 +28,17 @@ if os.getenv("FLASK_DEBUG") == "1":
 else:
     youtube_redirect_uri = "https://vibeai-poz2.onrender.com/youtube-oauth2-callback"
 youtube_scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
+
+# clients
+QDRANT_URL = os.environ["QDRANT_URL"]
+QDRANT_API_KEY = os.environ["QDRANT_API_KEY"]
+COLLECTION = "music_chunks"
+OPENAI_EMBED_MODEL = "text-embedding-3-small" 
+
+qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY, timeout=30.0)
+openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+spotify_client = Spotify(auth_manager=create_sp_oauth_clientcredentials())
+
 
 
 @routes.route("/")
@@ -44,15 +57,12 @@ def make_playlist():
         try:
             # vibe extraction
             resized_file = resize_image_by_longest_side(file,512)
-            vibe_extraction = call_gpt_and_verify(VIBE_EXTRACTION_PROMPT, vibe_extraction_schema, file_obj=resized_file)
+            vibe_extraction = call_gpt_and_verify(client=openai_client, prompt=VIBE_EXTRACTION_PROMPT, schema=vibe_extraction_schema, file_obj=resized_file)
 
             # playlist generation
             playlist_prompt = build_playlist_generation_prompt(vibe_extraction, PLAYLIST_GENERATION_PROMPT)
-            playlist_data = call_gpt_and_verify(playlist_prompt, playlist_schema)
-            
-            auth_manager = create_sp_oauth_clientcredentials()
-            sp = Spotify(auth_manager=auth_manager)
-            fetched_tracks = fetch_spotify_data(sp, playlist_data['tracks'])
+            playlist_data = call_gpt_and_verify(client=openai_client, prompt=playlist_prompt, schema=playlist_schema)
+            fetched_tracks = fetch_spotify_data(spotify_client, playlist_data['tracks'])
             playlist_data['tracks'] = fetched_tracks
 
             # upload to db
