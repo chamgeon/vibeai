@@ -1,6 +1,7 @@
 from . import app
-from .playlist_gpt import vibe_extraction_schema, playlist_schema, build_playlist_generation_prompt, call_gpt_and_verify
-from .prompts import VIBE_EXTRACTION_PROMPT, PLAYLIST_GENERATION_PROMPT
+from .playlist_gpt import vibe_extraction_schema, playlist_schema, build_playlist_generation_prompt_rag, call_gpt_and_verify
+from .prompts import VIBE_EXTRACTION_PROMPT, PLAYLIST_GENERATION_PROMPT_RAG
+from .rag import retrieval_vibe
 from .spotify import create_sp_oauth, create_sp_oauth_clientcredentials, fetch_spotify_data, create_spotify_playlist
 from .youtube import youtube_credentials_to_dict, load_and_refresh_credentials, create_youtube_playlist, get_daily_limit, get_api_quota_usage
 from .utils import upload_to_s3, generate_presigned_url, resize_image_by_longest_side, download_image
@@ -60,7 +61,8 @@ def make_playlist():
             vibe_extraction = call_gpt_and_verify(client=openai_client, prompt=VIBE_EXTRACTION_PROMPT, schema=vibe_extraction_schema, file_obj=resized_file)
 
             # playlist generation
-            playlist_prompt = build_playlist_generation_prompt(vibe_extraction, PLAYLIST_GENERATION_PROMPT)
+            retrieval = retrieval_vibe(vibe_extraction, openai_client, qdrant_client, COLLECTION, 7)
+            playlist_prompt = build_playlist_generation_prompt_rag(vibe_extraction, retrieval, PLAYLIST_GENERATION_PROMPT_RAG)
             playlist_data = call_gpt_and_verify(client=openai_client, prompt=playlist_prompt, schema=playlist_schema)
             fetched_tracks = fetch_spotify_data(spotify_client, playlist_data['tracks'])
             playlist_data['tracks'] = fetched_tracks
