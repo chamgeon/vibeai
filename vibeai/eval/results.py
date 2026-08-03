@@ -14,7 +14,11 @@ RESULTS_DIR = Path("results")
 class ResultLog:
     records: list[dict[str, Any]] = field(default_factory=list)
 
-    def add(self, *, test_name: str, item: str, score: float, passed: bool, details: dict) -> None:
+    def add(
+        self, *, test_name: str, item: str, score: float | None, passed: bool, details: dict
+    ) -> None:
+        """score is None when the item never produced a result (e.g. it raised
+        an exception) - distinguishes "ran and scored 0" from "never finished"."""
         self.records.append(
             {
                 "test_name": test_name,

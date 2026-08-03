@@ -1,58 +1,68 @@
 """Evaluate the baseline representation + baseline decomposition prompts
 using the decomposition-quality judge (Completeness / Claim Independence /
-Atom Quality)."""
+Atom Quality), across many images concurrently."""
 
-import pytest
-
+from vibeai.eval.concurrency import gather_bounded
 from vibeai.eval.dataset import load_image_paths
 from vibeai.eval.results import result_log
-from vibeai.eval.test_cases import DecompositionTestCase
 from vibeai.metrics.decomposition_quality import DecompositionQualityMetric
-from vibeai.pipeline.decompose import decompose
-from vibeai.pipeline.represent import generate_representation
+from vibeai.pipeline.evaluate import evaluate_image
 
 REPRESENTATION_PROMPT_VERSION = "baseline"
 DECOMPOSITION_PROMPT_VERSION = "baseline"
+CONCURRENCY = 30
 
 IMAGES = load_image_paths(n=5, seed=0)
 
 
-@pytest.fixture(scope="module")
-def metric():
-    return DecompositionQualityMetric()
+async def test_decomposition_quality_batch():
+    metric = DecompositionQualityMetric()
 
+    coros = [
+        evaluate_image(
+            image_path,
+            metric,
+            representation_prompt_version=REPRESENTATION_PROMPT_VERSION,
+            decomposition_prompt_version=DECOMPOSITION_PROMPT_VERSION,
+        )
+        for image_path in IMAGES
+    ]
+    outcomes = await gather_bounded(coros, limit=CONCURRENCY, return_exceptions=True)
 
-@pytest.mark.parametrize("image_path", IMAGES, ids=lambda p: p.stem)
-def test_decomposition_quality(image_path, metric):
-    representation = generate_representation(
-        image_path, prompt_version=REPRESENTATION_PROMPT_VERSION
-    )
-    atoms = decompose(representation, prompt_version=DECOMPOSITION_PROMPT_VERSION)
+    failures = []
+    for image_path, outcome in zip(IMAGES, outcomes):
+        if isinstance(outcome, BaseException):
+            failures.append(f"{image_path.name}: {type(outcome).__name__}: {outcome}")
+            result_log.add(
+                test_name="decomposition_quality",
+                item=image_path.name,
+                score=None,
+                passed=False,
+                details={
+                    "error_type": type(outcome).__name__,
+                    "error_message": str(outcome),
+                },
+            )
+            continue
 
-    test_case = DecompositionTestCase(
-        image_path=image_path,
-        representation=representation,
-        atoms=atoms,
-        representation_prompt_version=REPRESENTATION_PROMPT_VERSION,
-        decomposition_prompt_version=DECOMPOSITION_PROMPT_VERSION,
-    )
-    result = metric.measure(test_case)
-    passed = metric.is_successful(result)
+        test_case, result = outcome
+        passed = metric.is_successful(result)
+        result_log.add(
+            test_name="decomposition_quality",
+            item=test_case.image_path.name,
+            score=result.score,
+            passed=passed,
+            details={
+                "representation": test_case.representation,
+                "atoms": test_case.atoms,
+                **result.details,
+            },
+        )
+        print(
+            f"\n[{test_case.image_path.stem}] score={result.score:.2f} "
+            f"atoms={len(test_case.atoms)}\n  {result.reason}"
+        )
+        if not passed:
+            failures.append(f"{test_case.image_path.name}: score={result.score:.2f}")
 
-    result_log.add(
-        test_name="decomposition_quality",
-        item=image_path.name,
-        score=result.score,
-        passed=passed,
-        details={
-            "representation": representation,
-            "atoms": atoms,
-            **result.details,
-        },
-    )
-
-    print(f"\n[{image_path.stem}] score={result.score:.2f} atoms={len(atoms)}\n  {result.reason}")
-    assert passed, (
-        f"Decomposition quality below threshold for {image_path.name}: "
-        f"score={result.score:.2f}\n{result.reason}"
-    )
+    assert not failures, "Decomposition quality below threshold for:\n" + "\n".join(failures)
