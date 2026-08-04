@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vibe Decomposition Quality — Human Annotation</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <div id="setup">
+    <h1>Decomposition Quality — Human Annotation</h1>
+    <p style="color:var(--muted); font-size:0.85rem;">
+      Rate how well a set of "vibe atoms" decomposes an image's vibe representation,
+      using the same rubric as the LLM judge. You can save and leave at any time —
+      progress resumes automatically.
+    </p>
+    <label for="annotator-input">Your name / ID</label>
+    <input id="annotator-input" placeholder="e.g. mingeon" autocomplete="off" />
+    <label for="run-select">Dataset (run)</label>
+    <select id="run-select"></select>
+    <button class="primary" id="start-btn">Start annotating</button>
+  </div>
+
+  <div id="app">
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <div class="who" id="who-label"></div>
+        <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+        <div id="progress-label"></div>
+        <button id="switch-btn" style="margin-top:10px; width:100%; font-size:0.78rem;">Switch annotator / run</button>
+      </div>
+      <ul id="item-list"></ul>
+    </div>
+
+    <div id="main">
+      <div id="main-inner">
+        <div class="toolbar">
+          <button id="toggle-image-btn">Show image</button>
+          <button id="toggle-rubric-btn">Show evaluation rubric</button>
+          <button id="toggle-llm-btn">Show LLM judgement</button>
+        </div>
+
+        <div class="panel" id="llm-summary-panel" style="display:none;">
+          <h2>LLM vs. you — where you disagree</h2>
+          <div id="llm-summary-body"></div>
+        </div>
+
+        <div class="panel" id="rubric-panel">
+          <h2>Evaluation rubric</h2>
+          <div class="rubric-body" id="rubric-body">
+            <h3>Completeness (1–5)</h3>
+            <p>Does the atom set preserve all <em>affective interpretations</em> (mood/emotion/aesthetic) in the representation? Don't penalize missing plain visual facts that aren't themselves vibe interpretations.</p>
+            <ul>
+              <li>5 — All affective interpretations preserved</li>
+              <li>4 — Nearly all, minor omissions</li>
+              <li>3 — Several missing, overall meaning mostly retained</li>
+              <li>2 — Many important ones omitted</li>
+              <li>1 — Most affective meaning lost</li>
+            </ul>
+            <h3>Claim Independence (1–5)</h3>
+            <p>Does each atom express a distinct, independently evaluable interpretation with no substantial overlap?</p>
+            <ul>
+              <li>5 — Fully independent, no redundancy</li>
+              <li>4 — Minor overlap, largely distinct</li>
+              <li>3 — Noticeable overlap among several atoms</li>
+              <li>2 — Many atoms substantially overlap</li>
+              <li>1 — Highly redundant / not independently evaluable</li>
+            </ul>
+            <h3>Atom Quality (per atom, auto-aggregated)</h3>
+            <p>Rate each atom on 4 criteria. An atom is <strong>Good</strong> only if all 4 hold; otherwise <strong>Bad</strong>. The atom-quality score is (# Good / total) × 5, computed automatically.</p>
+            <ul>
+              <li><strong>Affectiveness</strong> — expresses a perceived mood/atmosphere/aesthetic, not just an objective visual fact.</li>
+              <li><strong>Atomicity</strong> — expresses exactly one affective interpretation (not two combined).</li>
+              <li><strong>Evidence preservation</strong> — if the original ties the vibe to specific visual evidence, that evidence is still attached in the atom.</li>
+              <li><strong>Faithfulness</strong> — doesn't introduce, remove, or alter the meaning of the original representation.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Vibe representation</h2>
+          <div id="representation-text"></div>
+          <div id="image-wrap"><img id="image-el" alt="source image" /></div>
+        </div>
+
+        <div class="panel">
+          <h2>Vibe atoms</h2>
+          <div id="atoms-container"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Completeness &amp; Claim Independence</h2>
+          <div class="rating-row">
+            <div class="rating-label">Completeness</div>
+            <div class="scale" data-field="completeness"></div>
+            <span class="llm-note" id="completeness-llm-note"></span>
+          </div>
+          <div class="rating-row">
+            <div class="rating-label">Claim independence</div>
+            <div class="scale" data-field="claim_independence"></div>
+            <span class="llm-note" id="claim-independence-llm-note"></span>
+          </div>
+        </div>
+
+        <div id="save-bar">
+          <button class="primary" id="save-btn">Save</button>
+          <span id="save-status"></span>
+          <div class="nav-buttons">
+            <button id="prev-btn">← Previous</button>
+            <button id="next-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
