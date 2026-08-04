@@ -30,7 +30,8 @@ vibeai/
     prompt_results.py      aggregates per-image MetricResults into a PromptEvalResult for one prompt version
 
 tests/                    pytest suites (deepeval-style: pipeline output -> metric -> assert)
-                           conftest.py: --n-images CLI option (int, or "all" for the full dataset)
+                           conftest.py: --n-images, --image-dir, --representation-prompt-version,
+                           --decomposition-prompt-version, --concurrency CLI options for batch eval tests
 conftest.py               (empty) makes the vibeai package importable by pytest - do not delete
 ```
 
@@ -56,6 +57,15 @@ uv run pytest tests/test_decomposition_quality.py --n-images=all -s   # every im
 ```
 
 LLM calls are cached under `.cache/llm/`, keyed by `(model, prompt, image)` - re-running the same images/prompt versions is free and doesn't count against the daily token budget. Note that `--n-images=N` for `N < len(dataset)` samples randomly (fixed seed), so raising `N` across separate runs is *mostly* but not guaranteed cache-hit; use `--n-images=all` directly if you want a single run with no resampling.
+
+Other batch eval options, all defaulting to the baseline setup:
+
+```bash
+uv run pytest tests/test_decomposition_quality.py --image-dir=data/holdout_set -s                        # source images (default: data/main_processed/)
+uv run pytest tests/test_decomposition_quality.py --representation-prompt-version=v2 -s                  # representation prompt version (default: baseline)
+uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=v2 -s                   # decomposition prompt version (default: baseline)
+uv run pytest tests/test_decomposition_quality.py --concurrency=10 -s                                    # max concurrent evaluations (default: 30)
+```
 
 ### Results
 

@@ -8,25 +8,22 @@ from vibeai.eval.prompt_results import ImageError, ImageResult, aggregate_prompt
 from vibeai.metrics.decomposition_quality import DecompositionQualityMetric
 from vibeai.pipeline.evaluate import evaluate_image
 
-REPRESENTATION_PROMPT_VERSION = "baseline"
-DECOMPOSITION_PROMPT_VERSION = "baseline"
-CONCURRENCY = 30
-
-
-async def test_decomposition_quality_batch(n_images):
-    IMAGES = load_image_paths(n=n_images, seed=0)
+async def test_decomposition_quality_batch(
+    n_images, image_dir, representation_prompt_version, decomposition_prompt_version, concurrency
+):
+    IMAGES = load_image_paths(n=n_images, seed=0, data_dir=image_dir)
     metric = DecompositionQualityMetric()
 
     coros = [
         evaluate_image(
             image_path,
             metric,
-            representation_prompt_version=REPRESENTATION_PROMPT_VERSION,
-            decomposition_prompt_version=DECOMPOSITION_PROMPT_VERSION,
+            representation_prompt_version=representation_prompt_version,
+            decomposition_prompt_version=decomposition_prompt_version,
         )
         for image_path in IMAGES
     ]
-    outcomes = await gather_bounded(coros, limit=CONCURRENCY, return_exceptions=True)
+    outcomes = await gather_bounded(coros, limit=concurrency, return_exceptions=True)
 
     failures = []
     image_results = []
@@ -56,10 +53,7 @@ async def test_decomposition_quality_batch(n_images):
                 },
             )
         )
-        print(
-            f"\n[{test_case.image_path.stem}] score={result.score:.2f} "
-            f"atoms={len(test_case.atoms)}\n  {result.reason}"
-        )
+        print(f"{test_case.image_path.name}: {result.score:.2f}")
         if not passed:
             failures.append(f"{test_case.image_path.name}: score={result.score:.2f}")
 
@@ -67,8 +61,8 @@ async def test_decomposition_quality_batch(n_images):
         _, summary_path, per_image_path = aggregate_prompt_results(
             metric,
             image_results,
-            representation_prompt_version=REPRESENTATION_PROMPT_VERSION,
-            decomposition_prompt_version=DECOMPOSITION_PROMPT_VERSION,
+            representation_prompt_version=representation_prompt_version,
+            decomposition_prompt_version=decomposition_prompt_version,
             model=metric.model,
             errors=image_errors,
         )
