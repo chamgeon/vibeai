@@ -28,6 +28,10 @@ vibeai/
     parsing.py            JSON extraction from LLM output
     results.py            logs each test run's scores to results/*.json (image-level, run-scoped)
     prompt_results.py      aggregates per-image MetricResults into a PromptEvalResult for one prompt version
+    human_alignment.py     Cohen's kappa between LLM-judge verdicts and human annotations from the webapp
+  webapp/
+    server.py              FastAPI backend for the decomposition-quality human annotation app
+    static/                index.html / app.js / style.css - the annotation UI served by server.py
 
 tests/                    pytest suites (deepeval-style: pipeline output -> metric -> assert)
                            conftest.py: --n-images, --image-dir, --representation-prompt-version,
@@ -75,6 +79,26 @@ uv run pytest tests/test_decomposition_quality.py --concurrency=10 -s           
 - `results/<metric_name>/<run_name>.per_image.jsonl` - one line per image (`image_path`, `score`, `passed`, and `details`: representation, atoms, full judge verdict) - the full detail behind any regression in the summary above.
 
 `vibeai.eval.results.result_log` (a simpler run-scoped image-level logger, saved to `results/<run>.json` at session end) is also available for ad-hoc tests, but isn't used by the batch eval test above.
+
+## Human annotation webapp
+
+`vibeai/webapp` is a small FastAPI + vanilla-JS app that lets a human rate the same (representation, atoms) pairs produced by a `test_decomposition_quality_batch` run, using the same rubric as the LLM judge (completeness, claim independence, per-atom affectiveness/atomicity/evidence-preservation/faithfulness) minus free-text reasons. The human never sees the LLM's verdicts by default, to avoid anchoring bias.
+
+Run it with:
+
+```bash
+uv run uvicorn vibeai.webapp.server:app --reload
+```
+
+Then open `http://localhost:8000`, enter an annotator ID, and pick a run (any `results/decomposition_quality/<run>.per_image.jsonl` produced by the batch eval test shows up as an option). Annotations are saved per annotator to `results/decomposition_quality/human/<run>__<annotator>.json`, keyed by `image_path`; progress is resumable across sessions. The UI also has an opt-in "LLM vs. you" panel to compare against the judge's verdict after annotating an image.
+
+Once one or more annotators have rated a run, compute LLM/human agreement with:
+
+```bash
+uv run python -m vibeai.eval.human_alignment <run> --annotator mingeon --annotator alice
+```
+
+This reports Cohen's kappa (linear-weighted for the 1-5 completeness/claim-independence scores, unweighted for atom Good/Bad verdicts and per-criterion booleans) over the images each annotator actually rated.
 
 ## Adding a prompt version
 
