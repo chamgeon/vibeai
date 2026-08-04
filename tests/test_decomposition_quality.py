@@ -2,7 +2,7 @@
 using the decomposition-quality judge (Completeness / Claim Independence /
 Atom Quality), across many images concurrently."""
 
-from vibeai.eval.concurrency import gather_bounded
+from vibeai.eval.concurrency import gather_bounded_as_completed
 from vibeai.eval.dataset import load_image_paths
 from vibeai.eval.prompt_results import ImageError, ImageResult, aggregate_prompt_results
 from vibeai.metrics.decomposition_quality import DecompositionQualityMetric
@@ -23,12 +23,11 @@ async def test_decomposition_quality_batch(
         )
         for image_path in IMAGES
     ]
-    outcomes = await gather_bounded(coros, limit=concurrency, return_exceptions=True)
-
     failures = []
     image_results = []
     image_errors = []
-    for image_path, outcome in zip(IMAGES, outcomes):
+    async for index, outcome in gather_bounded_as_completed(coros, limit=concurrency):
+        image_path = IMAGES[index]
         if isinstance(outcome, BaseException):
             failures.append(f"{image_path.name}: {type(outcome).__name__}: {outcome}")
             image_errors.append(
