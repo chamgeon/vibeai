@@ -49,3 +49,11 @@ class DecompositionQualityMetric(Metric):
     async def measure_async(self, test_case: DecompositionTestCase) -> MetricResult:
         raw = await call_text_async(_build_prompt(test_case), model=self.model)
         return _parse_result(raw)
+
+    def extract_submetrics(self, result: MetricResult) -> dict[str, float]:
+        fv = result.details["final_verdict"]
+        return {
+            "completeness": fv["completeness"]["verdict"] / 5,
+            "claim_independence": fv["claim_independence"]["verdict"] / 5,
+            "atom_quality": fv["atom_quality"]["verdict"] / 5,
+        }
