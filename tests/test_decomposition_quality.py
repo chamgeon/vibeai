@@ -1,6 +1,6 @@
 """Evaluate the baseline representation + baseline decomposition prompts
-using the decomposition-quality judge (Completeness / Claim Independence /
-Atom Quality), across many images concurrently."""
+using the decomposition-quality judge (Completeness / Atom Quality), across
+many images concurrently."""
 
 from vibeai.eval.concurrency import gather_bounded_as_completed
 from vibeai.eval.dataset import load_image_paths

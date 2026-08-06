@@ -58,22 +58,13 @@
               <li>2 — Many important ones omitted</li>
               <li>1 — Most affective meaning lost</li>
             </ul>
-            <h3>Claim Independence (1–5)</h3>
-            <p>Does each atom express a distinct, independently evaluable interpretation with no substantial overlap?</p>
-            <ul>
-              <li>5 — Fully independent, no redundancy</li>
-              <li>4 — Minor overlap, largely distinct</li>
-              <li>3 — Noticeable overlap among several atoms</li>
-              <li>2 — Many atoms substantially overlap</li>
-              <li>1 — Highly redundant / not independently evaluable</li>
-            </ul>
             <h3>Atom Quality (per atom, auto-aggregated)</h3>
             <p>Rate each atom on 4 criteria. An atom is <strong>Good</strong> only if all 4 hold; otherwise <strong>Bad</strong>. The atom-quality score is (# Good / total) × 5, computed automatically.</p>
             <ul>
               <li><strong>Affectiveness</strong> — expresses a perceived mood/atmosphere/aesthetic, not just an objective visual fact.</li>
-              <li><strong>Atomicity</strong> — expresses exactly one affective interpretation (not two combined).</li>
-              <li><strong>Evidence preservation</strong> — if the original ties the vibe to specific visual evidence, that evidence is still attached in the atom.</li>
-              <li><strong>Faithfulness</strong> — doesn't introduce, remove, or alter the meaning of the original representation.</li>
+              <li><strong>Atomicity</strong> — expresses a single independently evaluable affective interpretation (closely related/synonymous vibes may be grouped).</li>
+              <li><strong>Fidelity</strong> — faithfully decomposes the original; doesn't paraphrase, add new reasoning, or introduce information not explicitly expressed in the original.</li>
+              <li><strong>Evidence preservation</strong> — if the original ties the vibe to specific visual evidence, that evidence is still attached in the atom. Automatically Bad if Fidelity is Bad.</li>
             </ul>
           </div>
         </div>
@@ -90,16 +81,11 @@
         </div>
 
         <div class="panel">
-          <h2>Completeness &amp; Claim Independence</h2>
+          <h2>Completeness</h2>
           <div class="rating-row">
             <div class="rating-label">Completeness</div>
             <div class="scale" data-field="completeness"></div>
             <span class="llm-note" id="completeness-llm-note"></span>
-          </div>
-          <div class="rating-row">
-            <div class="rating-label">Claim independence</div>
-            <div class="scale" data-field="claim_independence"></div>
-            <span class="llm-note" id="claim-independence-llm-note"></span>
           </div>
         </div>
 

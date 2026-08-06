@@ -1,5 +1,5 @@
-"""Decomposition-quality metric: scores Completeness, Claim Independence,
-and Atom Quality for a (representation, atoms) pair via LLM-as-a-judge."""
+"""Decomposition-quality metric: scores Completeness and Atom Quality for a
+(representation, atoms) pair via LLM-as-a-judge."""
 
 from vibeai.eval.parsing import extract_json
 from vibeai.eval.test_cases import DecompositionTestCase
@@ -21,13 +21,11 @@ def _parse_result(raw: str) -> MetricResult:
 
     fv = judgement["final_verdict"]
     completeness = fv["completeness"]["verdict"]
-    claim_independence = fv["claim_independence"]["verdict"]
     atom_quality = fv["atom_quality"]["verdict"]
 
-    overall_0_5 = (completeness + claim_independence + atom_quality) / 3
+    overall_0_5 = (completeness + atom_quality) / 2
     reason = (
         f"completeness={completeness} ({fv['completeness']['reason']}); "
-        f"claim_independence={claim_independence} ({fv['claim_independence']['reason']}); "
         f"atom_quality={atom_quality} ({fv['atom_quality']['reason']})"
     )
     return MetricResult(score=overall_0_5 / 5, reason=reason, details=judgement)
@@ -54,6 +52,5 @@ class DecompositionQualityMetric(Metric):
         fv = result.details["final_verdict"]
         return {
             "completeness": fv["completeness"]["verdict"] / 5,
-            "claim_independence": fv["claim_independence"]["verdict"] / 5,
             "atom_quality": fv["atom_quality"]["verdict"] / 5,
         }

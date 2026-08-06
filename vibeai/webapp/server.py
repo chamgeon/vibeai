@@ -2,8 +2,8 @@
 
 Serves the same (representation, atoms) pairs that were fed to the
 LLM-as-a-judge decomposition-quality metric, lets a human rate them with the
-same rubric (completeness, claim independence, per-atom criteria) minus free
--text reasons, and stores results keyed by ``image_path`` + run so they can
+same rubric (completeness, per-atom criteria) minus free-text reasons, and
+stores results keyed by ``image_path`` + run so they can
 be paired 1:1 with ``results/decomposition_quality/<run>.per_image.jsonl``
 for Cohen's kappa alignment analysis. The human never sees the LLM's
 verdicts, to avoid anchoring bias.
@@ -108,8 +108,8 @@ def _save_human(run: str, annotator: str, data: dict[str, dict]) -> None:
 class AtomEvaluation(BaseModel):
     affectiveness: bool
     atomicity: bool
+    fidelity: bool
     evidence_preservation: bool
-    faithfulness: bool
 
 
 class AtomJudgement(BaseModel):
@@ -123,7 +123,6 @@ class AnnotationIn(BaseModel):
     image_path: str
     atomic_judgement: list[AtomJudgement]
     completeness: Literal[1, 2, 3, 4, 5]
-    claim_independence: Literal[1, 2, 3, 4, 5]
 
 
 # --- API routes ----------------------------------------------------------
@@ -168,8 +167,8 @@ def save_annotation(body: AnnotationIn):
             [
                 aj.evaluation.affectiveness,
                 aj.evaluation.atomicity,
+                aj.evaluation.fidelity,
                 aj.evaluation.evidence_preservation,
-                aj.evaluation.faithfulness,
             ]
         )
     )
@@ -190,8 +189,8 @@ def save_annotation(body: AnnotationIn):
                     [
                         aj.evaluation.affectiveness,
                         aj.evaluation.atomicity,
+                        aj.evaluation.fidelity,
                         aj.evaluation.evidence_preservation,
-                        aj.evaluation.faithfulness,
                     ]
                 )
                 else "Bad",
@@ -200,16 +199,13 @@ def save_annotation(body: AnnotationIn):
         ],
         "final_verdict": {
             "completeness": {"verdict": body.completeness},
-            "claim_independence": {"verdict": body.claim_independence},
             "atom_quality": {
                 "good_atom_count": good_count,
                 "total_atom_count": total,
                 "verdict": round(atom_quality, 2),
             },
         },
-        "score": round(
-            (body.completeness + body.claim_independence + atom_quality) / 3 / 5, 4
-        ),
+        "score": round((body.completeness + atom_quality) / 2 / 5, 4),
     }
 
     data = _load_human(body.run, body.annotator)

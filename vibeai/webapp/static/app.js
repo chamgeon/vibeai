@@ -24,14 +24,13 @@ function isDirty() {
 function blankDraft(item) {
   return {
     completeness: null,
-    claim_independence: null,
     atoms: item.atoms.map((atom) => ({
       atom,
       evaluation: {
         affectiveness: false,
         atomicity: false,
+        fidelity: false,
         evidence_preservation: false,
-        faithfulness: false,
       },
     })),
   };
@@ -41,7 +40,6 @@ function draftFromAnnotation(item, annotation) {
   if (!annotation) return blankDraft(item);
   return {
     completeness: annotation.final_verdict.completeness.verdict,
-    claim_independence: annotation.final_verdict.claim_independence.verdict,
     atoms: annotation.atomic_judgement.map((aj) => ({
       atom: aj.atom,
       evaluation: { ...aj.evaluation },
@@ -159,7 +157,6 @@ function loadItem(i) {
   $("#toggle-llm-btn").textContent = "Show LLM judgement";
 
   renderScale("completeness");
-  renderScale("claim_independence");
   renderAtoms();
   applyLLMOverlay();
   setSaveStatus(existing ? `Saved (last updated ${new Date(existing.updated_at).toLocaleString()})` : "Not yet saved");
@@ -191,8 +188,8 @@ function renderScale(field) {
 const CRITERIA = [
   ["affectiveness", "Affective"],
   ["atomicity", "Atomic"],
+  ["fidelity", "Fidelity"],
   ["evidence_preservation", "Evidence preserved"],
-  ["faithfulness", "Faithful"],
 ];
 
 function atomVerdict(evaluation) {
@@ -263,7 +260,7 @@ async function ensureLLMLoaded(item) {
 
 function clearLLMOverlay() {
   $("#llm-summary-panel").style.display = "none";
-  for (const id of ["completeness-llm-note", "claim-independence-llm-note"]) {
+  for (const id of ["completeness-llm-note"]) {
     const el = document.getElementById(id);
     el.textContent = "";
     el.classList.remove("diff");
@@ -284,20 +281,12 @@ function applyLLMOverlay() {
 
   const fv = llm.final_verdict;
   const humanCompleteness = state.draft.completeness;
-  const humanIndependence = state.draft.claim_independence;
 
   const compNote = $("#completeness-llm-note");
   compNote.textContent = `LLM: ${fv.completeness.verdict} — ${fv.completeness.reason}`;
   compNote.classList.toggle(
     "diff",
     humanCompleteness !== null && humanCompleteness !== fv.completeness.verdict
-  );
-
-  const indepNote = $("#claim-independence-llm-note");
-  indepNote.textContent = `LLM: ${fv.claim_independence.verdict} — ${fv.claim_independence.reason}`;
-  indepNote.classList.toggle(
-    "diff",
-    humanIndependence !== null && humanIndependence !== fv.claim_independence.verdict
   );
 
   const llmAtoms = llm.atomic_judgement || [];
@@ -340,19 +329,12 @@ function applyLLMOverlay() {
 
   const completenessDiff =
     humanCompleteness !== null ? Math.abs(humanCompleteness - fv.completeness.verdict) : null;
-  const independenceDiff =
-    humanIndependence !== null
-      ? Math.abs(humanIndependence - fv.claim_independence.verdict)
-      : null;
   const atomQualityVerdict = fv.atom_quality.verdict;
 
   $("#llm-summary-panel").style.display = "block";
   $("#llm-summary-body").innerHTML = `
     <div class="${completenessDiff === null ? "" : completenessDiff === 0 ? "agree" : "disagree"}">
       Completeness: you=${humanCompleteness ?? "–"} vs LLM=${fv.completeness.verdict}${completenessDiff ? ` (Δ${completenessDiff})` : ""}
-    </div>
-    <div class="${independenceDiff === null ? "" : independenceDiff === 0 ? "agree" : "disagree"}">
-      Claim independence: you=${humanIndependence ?? "–"} vs LLM=${fv.claim_independence.verdict}${independenceDiff ? ` (Δ${independenceDiff})` : ""}
     </div>
     <div class="${disagreeCount === 0 ? "agree" : "disagree"}">
       Atom verdicts: ${comparedCount - disagreeCount}/${comparedCount} agree${disagreeCount ? `, ${disagreeCount} disagreement(s) — highlighted below` : ""}
@@ -363,8 +345,8 @@ function applyLLMOverlay() {
 
 async function saveCurrent() {
   const item = state.items[state.index];
-  if (state.draft.completeness === null || state.draft.claim_independence === null) {
-    alert("Please rate both Completeness and Claim Independence before saving.");
+  if (state.draft.completeness === null) {
+    alert("Please rate Completeness before saving.");
     return false;
   }
   const body = {
@@ -376,7 +358,6 @@ async function saveCurrent() {
       evaluation: a.evaluation,
     })),
     completeness: state.draft.completeness,
-    claim_independence: state.draft.claim_independence,
   };
   const res = await fetch("/api/annotations", {
     method: "POST",

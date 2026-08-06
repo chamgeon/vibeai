@@ -88,9 +88,8 @@ def align_and_report(run: str, annotators: list[str]) -> None:
             continue
 
         completeness_llm, completeness_human = [], []
-        independence_llm, independence_human = [], []
         atom_verdict_llm, atom_verdict_human = [], []
-        criteria_llm = {k: [] for k in ["affectiveness", "atomicity", "evidence_preservation", "faithfulness"]}
+        criteria_llm = {k: [] for k in ["affectiveness", "atomicity", "fidelity", "evidence_preservation"]}
         criteria_human = {k: [] for k in criteria_llm}
         atom_quality_diffs = []
 
@@ -98,8 +97,6 @@ def align_and_report(run: str, annotators: list[str]) -> None:
             l, h = llm[image_path], human[image_path]
             completeness_llm.append(l["final_verdict"]["completeness"]["verdict"])
             completeness_human.append(h["final_verdict"]["completeness"]["verdict"])
-            independence_llm.append(l["final_verdict"]["claim_independence"]["verdict"])
-            independence_human.append(h["final_verdict"]["claim_independence"]["verdict"])
             atom_quality_diffs.append(
                 abs(
                     l["final_verdict"]["atom_quality"]["verdict"]
@@ -122,8 +119,6 @@ def align_and_report(run: str, annotators: list[str]) -> None:
         labels_1_5 = [1, 2, 3, 4, 5]
         print(f"  Completeness        (linear-weighted kappa, n={len(shared)}): "
               f"{cohen_kappa(completeness_llm, completeness_human, labels_1_5, 'linear'):.3f}")
-        print(f"  Claim independence  (linear-weighted kappa, n={len(shared)}): "
-              f"{cohen_kappa(independence_llm, independence_human, labels_1_5, 'linear'):.3f}")
         print(f"  Atom quality        (mean |Δ| on 0-5 scale, n={len(shared)}): "
               f"{sum(atom_quality_diffs) / len(atom_quality_diffs):.3f}")
 

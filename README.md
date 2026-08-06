@@ -20,7 +20,7 @@ vibeai/
     evaluate.py            image -> representation -> decomposition -> judged MetricResult, in one call
   metrics/
     base.py               Metric base class (measure() -> score + reason; optional extract_submetrics() for prompt-level rollups)
-    decomposition_quality.py  LLM-judge metric: Completeness, Claim Independence, Atom Quality
+    decomposition_quality.py  LLM-judge metric: Completeness, Atom Quality
   eval/
     test_cases.py         dataclasses passed between pipeline and metrics
     dataset.py            loads images from data/main_processed/
@@ -82,7 +82,7 @@ uv run pytest tests/test_decomposition_quality.py --concurrency=10 -s           
 
 ## Human annotation webapp
 
-`vibeai/webapp` is a small FastAPI + vanilla-JS app that lets a human rate the same (representation, atoms) pairs produced by a `test_decomposition_quality_batch` run, using the same rubric as the LLM judge (completeness, claim independence, per-atom affectiveness/atomicity/evidence-preservation/faithfulness) minus free-text reasons. The human never sees the LLM's verdicts by default, to avoid anchoring bias.
+`vibeai/webapp` is a small FastAPI + vanilla-JS app that lets a human rate the same (representation, atoms) pairs produced by a `test_decomposition_quality_batch` run, using the same rubric as the LLM judge (completeness, per-atom affectiveness/atomicity/fidelity/evidence-preservation) minus free-text reasons. The human never sees the LLM's verdicts by default, to avoid anchoring bias.
 
 Run it with:
 
@@ -106,4 +106,4 @@ Add an entry to the relevant dict in `vibeai/prompts/` (e.g. `representation.py`
 
 ## Adding a metric
 
-Subclass `vibeai.metrics.base.Metric`, implement `measure(test_case) -> MetricResult`. See `metrics/decomposition_quality.py` for an example backed by an LLM-as-judge prompt. Optionally override `extract_submetrics(result) -> dict[str, float]` (0-1 normalized) to expose named sub-scores in prompt-level aggregation - see `DecompositionQualityMetric.extract_submetrics` for its Completeness/Claim Independence/Atom Quality breakdown.
+Subclass `vibeai.metrics.base.Metric`, implement `measure(test_case) -> MetricResult`. See `metrics/decomposition_quality.py` for an example backed by an LLM-as-judge prompt. Optionally override `extract_submetrics(result) -> dict[str, float]` (0-1 normalized) to expose named sub-scores in prompt-level aggregation - see `DecompositionQualityMetric.extract_submetrics` for its Completeness/Atom Quality breakdown.
