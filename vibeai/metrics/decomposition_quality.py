@@ -41,11 +41,13 @@ class DecompositionQualityMetric(Metric):
             self.threshold = threshold
 
     def measure(self, test_case: DecompositionTestCase) -> MetricResult:
-        raw = call_text(_build_prompt(test_case), model=self.model)
+        raw = call_text(_build_prompt(test_case), model=self.model, call_type="judge")
         return _parse_result(raw)
 
     async def measure_async(self, test_case: DecompositionTestCase) -> MetricResult:
-        raw = await call_text_async(_build_prompt(test_case), model=self.model)
+        raw = await call_text_async(
+            _build_prompt(test_case), model=self.model, call_type="judge"
+        )
         return _parse_result(raw)
 
     def extract_submetrics(self, result: MetricResult) -> dict[str, float]:

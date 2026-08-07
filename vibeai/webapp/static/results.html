@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vibe Decomposition — Results Viewer</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <div id="setup">
+    <h1>Decomposition Results Viewer</h1>
+    <p style="color:var(--muted); font-size:0.85rem;">
+      Browse a run's original images, vibe representations, decompositions, and the
+      LLM judge's verdicts + reasoning. Read-only — no annotation happens here.
+    </p>
+    <label for="run-select">Dataset (run)</label>
+    <select id="run-select"></select>
+    <button class="primary" id="start-btn">View results</button>
+    <a class="setup-link" href="/">← Go to annotation app</a>
+  </div>
+
+  <div id="app">
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <div class="who" id="who-label"></div>
+        <button id="switch-btn" style="margin-top:10px; width:100%; font-size:0.78rem;">Switch run</button>
+      </div>
+      <ul id="item-list"></ul>
+    </div>
+
+    <div id="main">
+      <div id="main-inner">
+        <div class="toolbar">
+          <button id="toggle-image-btn">Show image</button>
+        </div>
+
+        <div class="panel">
+          <h2>Vibe representation</h2>
+          <div id="representation-text"></div>
+          <div id="image-wrap"><img id="image-el" alt="source image" /></div>
+        </div>
+
+        <div class="panel">
+          <h2>Vibe atoms &amp; LLM judgement</h2>
+          <div id="atoms-container"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Final verdict</h2>
+          <div id="final-verdict"></div>
+        </div>
+
+        <div id="save-bar">
+          <span id="save-status"></span>
+          <div class="nav-buttons">
+            <button id="prev-btn">← Previous</button>
+            <button id="next-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/results.js"></script>
+</body>
+</html>

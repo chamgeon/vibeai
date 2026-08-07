@@ -11,7 +11,7 @@ def decompose(
     model: str = DEFAULT_MODEL,
 ) -> list[str]:
     prompt = PROMPTS[prompt_version].format(representation=representation)
-    raw = call_text(prompt, model=model)
+    raw = call_text(prompt, model=model, call_type="decompose")
     atoms = extract_json(raw)
     if not isinstance(atoms, list):
         raise ValueError(f"Expected a JSON array of atoms, got: {raw!r}")
@@ -24,7 +24,7 @@ async def decompose_async(
     model: str = DEFAULT_MODEL,
 ) -> list[str]:
     prompt = PROMPTS[prompt_version].format(representation=representation)
-    raw = await call_text_async(prompt, model=model)
+    raw = await call_text_async(prompt, model=model, call_type="decompose")
     atoms = extract_json(raw)
     if not isinstance(atoms, list):
         raise ValueError(f"Expected a JSON array of atoms, got: {raw!r}")

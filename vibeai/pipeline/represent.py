@@ -22,7 +22,9 @@ def generate_representation(
     prompt = PROMPTS[prompt_version]
     mime_type = _MIME_TYPES.get(image_path.suffix.lower(), "image/jpeg")
     image_bytes = image_path.read_bytes()
-    return call_with_image(prompt, image_bytes, mime_type=mime_type, model=model)
+    return call_with_image(
+        prompt, image_bytes, mime_type=mime_type, model=model, call_type="represent"
+    )
 
 
 async def generate_representation_async(
@@ -34,4 +36,6 @@ async def generate_representation_async(
     prompt = PROMPTS[prompt_version]
     mime_type = _MIME_TYPES.get(image_path.suffix.lower(), "image/jpeg")
     image_bytes = image_path.read_bytes()
-    return await call_with_image_async(prompt, image_bytes, mime_type=mime_type, model=model)
+    return await call_with_image_async(
+        prompt, image_bytes, mime_type=mime_type, model=model, call_type="represent"
+    )

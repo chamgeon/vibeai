@@ -19,6 +19,7 @@ from openai import APIConnectionError, APIStatusError, AsyncOpenAI, OpenAI
 
 from vibeai.llm.budget import get_budget
 from vibeai.llm.errors import InsufficientQuotaError
+from vibeai.llm.usage_log import log_call
 
 load_dotenv()
 
@@ -113,13 +114,16 @@ def _write_cache(path: Path, output: str) -> None:
     path.write_text(json.dumps({"output": output}))
 
 
-def _record_usage(response) -> None:
+def _record_usage(response, model: str, call_type: str) -> None:
     usage = getattr(response, "usage", None)
     if usage is not None:
         get_budget().record(usage.total_tokens)
+        log_call(model, call_type, usage)
 
 
-def call_text(prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True) -> str:
+def call_text(
+    prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True, call_type: str = "text"
+) -> str:
     path = _cache_path(model, prompt, None)
     if use_cache:
         cached = _read_cache(path)
@@ -133,7 +137,7 @@ def call_text(prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True) -
             input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
         )
     )
-    _record_usage(response)
+    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
@@ -141,7 +145,9 @@ def call_text(prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True) -
     return output
 
 
-async def call_text_async(prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True) -> str:
+async def call_text_async(
+    prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True, call_type: str = "text"
+) -> str:
     path = _cache_path(model, prompt, None)
     if use_cache:
         cached = _read_cache(path)
@@ -155,7 +161,7 @@ async def call_text_async(prompt: str, model: str = DEFAULT_MODEL, use_cache: bo
             input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
         )
     )
-    _record_usage(response)
+    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
@@ -169,6 +175,7 @@ def call_with_image(
     mime_type: str = "image/jpeg",
     model: str = DEFAULT_MODEL,
     use_cache: bool = True,
+    call_type: str = "image",
 ) -> str:
     path = _cache_path(model, prompt, image_bytes)
     if use_cache:
@@ -195,7 +202,7 @@ def call_with_image(
             ],
         )
     )
-    _record_usage(response)
+    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
@@ -209,6 +216,7 @@ async def call_with_image_async(
     mime_type: str = "image/jpeg",
     model: str = DEFAULT_MODEL,
     use_cache: bool = True,
+    call_type: str = "image",
 ) -> str:
     path = _cache_path(model, prompt, image_bytes)
     if use_cache:
@@ -235,7 +243,7 @@ async def call_with_image_async(
             ],
         )
     )
-    _record_usage(response)
+    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:

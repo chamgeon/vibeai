@@ -7,6 +7,10 @@ stores results keyed by ``image_path`` + run so they can
 be paired 1:1 with ``results/decomposition_quality/<run>.per_image.jsonl``
 for Cohen's kappa alignment analysis. The human never sees the LLM's
 verdicts, to avoid anchoring bias.
+
+Also serves a separate read-only results viewer (static/results.html +
+results.js) for browsing a run's images, representations, decompositions,
+and the LLM judge's verdicts/reasoning directly — no annotation involved.
 """
 
 import json
@@ -73,7 +77,11 @@ def _load_llm_details(run: str) -> dict[str, dict]:
             if not line:
                 continue
             rec = json.loads(line)
-            out[rec["image_path"]] = rec.get("details", {})
+            out[rec["image_path"]] = {
+                **rec.get("details", {}),
+                "score": rec.get("score"),
+                "passed": rec.get("passed"),
+            }
     return out
 
 
