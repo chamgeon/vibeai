@@ -8,15 +8,14 @@ re-assembling it.
 from pathlib import Path
 
 from vibeai.eval.test_cases import DecompositionTestCase
-from vibeai.metrics.base import MetricResult
-from vibeai.metrics.decomposition_quality import DecompositionQualityMetric
+from vibeai.metrics.base import Metric, MetricResult
 from vibeai.pipeline.decompose import decompose_async
 from vibeai.pipeline.represent import generate_representation_async
 
 
 async def evaluate_image(
     image_path: Path,
-    metric: DecompositionQualityMetric,
+    metric: Metric,
     representation_prompt_version: str = "baseline",
     decomposition_prompt_version: str = "baseline",
 ) -> tuple[DecompositionTestCase, MetricResult]:
