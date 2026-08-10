@@ -29,11 +29,41 @@ def _load_image(test_case: DecompositionTestCase) -> tuple[bytes, str]:
     return test_case.image_path.read_bytes(), mime_type
 
 
-def _parse_result(raw: str) -> MetricResult:
+_REQUIRED_ATOM_KEYS = {
+    "atom",
+    "type",
+    "stated_evidence",
+    "stated_vibe",
+    "evidence_presence_check",
+    "direct_check",
+    "mapping_check",
+    "score",
+}
+
+
+def _validate_atom(atom: dict, index: int) -> None:
+    missing = _REQUIRED_ATOM_KEYS - atom.keys()
+    if missing:
+        raise ValueError(f"Judge atom {index} missing key(s) {sorted(missing)}: {atom!r}")
+    if not isinstance(atom["stated_vibe"], str) or not atom["stated_vibe"].strip():
+        raise ValueError(f"Judge atom {index} has empty/invalid stated_vibe: {atom!r}")
+
+
+def _extract_and_validate_atoms(raw: str) -> list[dict]:
+    """Parse + validate the judge's JSON. Raises ValueError on any failure
+    (malformed JSON, missing required key, empty stated_vibe, ...) - used
+    both as call_with_image's retry-triggering ``validate`` callback and to
+    build the final MetricResult once a call has passed validation."""
     atoms = extract_json(raw)
     if not atoms:
         raise ValueError(f"Judge returned no atom verdicts: {raw!r}")
+    for i, atom in enumerate(atoms):
+        _validate_atom(atom, i)
+    return atoms
 
+
+def _parse_result(raw: str) -> MetricResult:
+    atoms = _extract_and_validate_atoms(raw)
     earned = sum(atom["score"] for atom in atoms)
     total = _MAX_ATOM_SCORE * len(atoms)
 
@@ -58,6 +88,7 @@ class PlausibilityMetric(Metric):
             mime_type=mime_type,
             model=self.model,
             call_type="judge",
+            validate=_extract_and_validate_atoms,
         )
         return _parse_result(raw)
 
@@ -69,6 +100,7 @@ class PlausibilityMetric(Metric):
             mime_type=mime_type,
             model=self.model,
             call_type="judge",
+            validate=_extract_and_validate_atoms,
         )
         return _parse_result(raw)
 

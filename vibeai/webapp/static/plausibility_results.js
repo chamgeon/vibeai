@@ -10,9 +10,9 @@ const $ = (sel) => document.querySelector(sel);
 // --- setup screen --------------------------------------------------------
 
 async function initSetup() {
-  const savedRun = localStorage.getItem("results_run") || "";
+  const savedRun = localStorage.getItem("plaus_results_run") || "";
 
-  const res = await fetch("/api/decomposition_quality/runs");
+  const res = await fetch("/api/plausibility/runs");
   const { runs } = await res.json();
   const sel = $("#run-select");
   sel.innerHTML = "";
@@ -30,7 +30,7 @@ async function initSetup() {
       alert("Please pick a dataset.");
       return;
     }
-    localStorage.setItem("results_run", run);
+    localStorage.setItem("plaus_results_run", run);
     await startApp(run);
   });
 }
@@ -40,7 +40,7 @@ async function initSetup() {
 async function startApp(run) {
   state.run = run;
 
-  const res = await fetch(`/api/decomposition_quality/dataset?run=${encodeURIComponent(run)}`);
+  const res = await fetch(`/api/plausibility/dataset?run=${encodeURIComponent(run)}`);
   const dataset = await res.json();
   state.items = dataset.items;
   state.llmCache = {};
@@ -90,7 +90,7 @@ async function loadItem(i) {
   $("#final-verdict").innerHTML = "";
 
   const llm = await ensureLLMLoaded(item);
-  renderAtoms(item, llm);
+  renderAtoms(llm);
   renderFinalVerdict(llm);
   setSaveStatus(llm ? "" : "No LLM judgement recorded for this image.");
 
@@ -104,83 +104,80 @@ async function loadItem(i) {
 async function ensureLLMLoaded(item) {
   if (item.image_path in state.llmCache) return state.llmCache[item.image_path];
   const res = await fetch(
-    `/api/decomposition_quality/llm_judgement?run=${encodeURIComponent(state.run)}&image_path=${encodeURIComponent(item.image_path)}`
+    `/api/plausibility/llm_judgement?run=${encodeURIComponent(state.run)}&image_path=${encodeURIComponent(item.image_path)}`
   );
   const data = res.ok ? await res.json() : null;
   state.llmCache[item.image_path] = data;
   return data;
 }
 
-function renderAtoms(item, llm) {
+function renderCheck(title, check) {
+  if (!check) return "";
+  const badge = `<span class="verdict-badge ${check.verdict ? "good" : "bad"}">${check.verdict ? "Pass" : "Fail"}</span>`;
+  let extra = "";
+  if ("supporting_evidence" in check) {
+    if (check.supporting_evidence?.length) {
+      extra += `<ul>${check.supporting_evidence.map((e) => `<li>+ ${escapeHtml(e)}</li>`).join("")}</ul>`;
+    }
+    if (check.contradicting_evidence?.length) {
+      extra += `<ul>${check.contradicting_evidence.map((e) => `<li>− ${escapeHtml(e)}</li>`).join("")}</ul>`;
+    }
+  }
+  return `
+    <div class="check-block">
+      <div class="check-title">${title}${badge}</div>
+      <div style="color:var(--muted);">${escapeHtml(check.reasoning || "")}</div>
+      ${extra}
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+function renderAtoms(llm) {
   const container = $("#atoms-container");
   container.innerHTML = "";
-  const llmAtoms = llm?.atomic_judgement || [];
+  const llmAtoms = llm?.atoms || [];
 
-  item.atoms.forEach((atom, idx) => {
+  llmAtoms.forEach((a, idx) => {
     const card = document.createElement("div");
     card.className = "atom-card";
 
-    const text = document.createElement("div");
-    text.className = "atom-text";
-    text.textContent = `${idx + 1}. ${atom}`;
-    card.appendChild(text);
-
-    const llmEntry = llmAtoms[idx];
-    if (llmEntry) {
-      const badge = document.createElement("span");
-      badge.className = `verdict-badge ${llmEntry.verdict.toLowerCase()}`;
-      badge.textContent = `LLM: ${llmEntry.verdict}`;
-      card.appendChild(badge);
-
-      const block = document.createElement("div");
-      block.className = "llm-atom-block";
-      block.textContent = llmEntry.reason || "";
-      card.appendChild(block);
-    }
+    const maxScore = a.type === "vibe_only" ? 1 : 2;
+    card.innerHTML = `
+      <div class="atom-type-badge">${a.type.replace("_", " ")}</div>
+      <div class="atom-text">${idx + 1}. ${escapeHtml(a.atom)}</div>
+      <div class="atom-meta">
+        Stated vibe: <strong>${escapeHtml(a.stated_vibe || "")}</strong>
+        ${a.stated_evidence ? `<br/>Stated evidence: ${a.stated_evidence.map(escapeHtml).join("; ")}` : ""}
+      </div>
+      <span class="verdict-badge ${a.score > 0 ? "good" : "bad"}">Score: ${a.score} / ${maxScore}</span>
+      ${renderCheck("Evidence presence check", a.evidence_presence_check)}
+      ${renderCheck("Direct check", a.direct_check)}
+      ${renderCheck("Mapping check", a.mapping_check)}
+    `;
 
     container.appendChild(card);
   });
 }
 
-function labelize(key) {
-  return key
-    .split("_")
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
 function renderFinalVerdict(llm) {
   const el = $("#final-verdict");
-  if (!llm || !llm.final_verdict) {
+  if (!llm) {
     el.innerHTML = `<div style="color:var(--muted);">No LLM judgement recorded for this image.</div>`;
     return;
   }
-  const fv = llm.final_verdict;
   const scoreLine =
     typeof llm.score === "number"
-      ? `<div style="margin-bottom:10px;"><strong>Overall score:</strong> ${llm.score.toFixed(3)}${
+      ? `<div><strong>Overall score:</strong> ${llm.score.toFixed(3)}${
           llm.passed === true ? " (passed)" : llm.passed === false ? " (failed)" : ""
         }</div>`
       : "";
-
-  const sections = Object.entries(fv)
-    .map(([key, val]) => {
-      if (val == null || typeof val !== "object") return "";
-      const verdict = typeof val.verdict === "number" ? val.verdict.toFixed(2).replace(/\.00$/, "") : val.verdict;
-      const countSuffix =
-        "good_atom_count" in val && "total_atom_count" in val
-          ? ` (${val.good_atom_count}/${val.total_atom_count} good atoms)`
-          : "";
-      return `
-        <div style="margin-bottom:14px;">
-          <strong>${labelize(key)}:</strong> ${verdict ?? "–"} / 5${countSuffix}
-          <div style="color:var(--muted); font-size:0.88rem; margin-top:4px;">${val.reason || ""}</div>
-        </div>
-      `;
-    })
-    .join("");
-
-  el.innerHTML = `${scoreLine}${sections}`;
+  el.innerHTML = scoreLine;
 }
 
 function setSaveStatus(text) {

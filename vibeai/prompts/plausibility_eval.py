@@ -84,7 +84,7 @@ Return a JSON array with one object per atom, using this exact schema for BOTH a
 
 Rules:
 - `stated_evidence` is null for vibe_only atoms, list of strings for evidence_backed atoms.
-- `stated_vibe` is assumed to be atomic, always string.
+- `stated_vibe` must be a non-empty string for every atom, whether vibe_only or evidence_backed.
 - `score` can have value of 0 or 1 for vibe_only atoms, and 0 or 2 for evidence_backed atoms.
 - Use JSON `null` (not the string "null") for fields/steps that don't apply or weren't reached.
 - Output ONLY the JSON array. No prose, no markdown code fences, no commentary outside the JSON.

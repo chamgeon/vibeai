@@ -437,3 +437,76 @@ button.primary:hover {
   margin-top: -6px;
   margin-bottom: 14px;
 }
+
+.atom-type-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #efeaf5;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.atom-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+.toggle-group button {
+  padding: 6px 16px;
+}
+
+.toggle-group button.selected.yes {
+  background: var(--good);
+  border-color: var(--good);
+  color: white;
+}
+
+.toggle-group button.selected.no {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: white;
+}
+
+.reason-input {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+  min-height: 46px;
+}
+
+.check-block {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  font-size: 0.85rem;
+}
+
+.check-block .check-title {
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.check-block .check-title .verdict-badge {
+  margin-left: 8px;
+}
+
+.check-block ul {
+  margin: 4px 0;
+  padding-left: 18px;
+  color: var(--muted);
+}

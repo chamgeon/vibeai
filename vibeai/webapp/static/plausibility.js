@@ -23,15 +23,13 @@ function isDirty() {
 
 function blankDraft(item) {
   return {
-    completeness: null,
-    atoms: item.atoms.map((atom) => ({
-      atom,
-      evaluation: {
-        affectiveness: false,
-        atomicity: false,
-        fidelity: false,
-        evidence_preservation: false,
-      },
+    atoms: item.atoms.map((a) => ({
+      atom: a.atom,
+      type: a.type,
+      stated_vibe: a.stated_vibe,
+      stated_evidence: a.stated_evidence,
+      plausible: false,
+      reason: "",
     })),
   };
 }
@@ -39,10 +37,13 @@ function blankDraft(item) {
 function draftFromAnnotation(item, annotation) {
   if (!annotation) return blankDraft(item);
   return {
-    completeness: annotation.final_verdict.completeness.verdict,
-    atoms: annotation.atomic_judgement.map((aj) => ({
-      atom: aj.atom,
-      evaluation: { ...aj.evaluation },
+    atoms: annotation.atoms.map((a, idx) => ({
+      atom: a.atom,
+      type: a.type,
+      stated_vibe: item.atoms[idx]?.stated_vibe,
+      stated_evidence: item.atoms[idx]?.stated_evidence,
+      plausible: a.plausible,
+      reason: a.reason || "",
     })),
   };
 }
@@ -50,11 +51,11 @@ function draftFromAnnotation(item, annotation) {
 // --- setup screen --------------------------------------------------------
 
 async function initSetup() {
-  const savedAnnotator = localStorage.getItem("annotator") || "";
-  const savedRun = localStorage.getItem("run") || "";
+  const savedAnnotator = localStorage.getItem("plaus_annotator") || "";
+  const savedRun = localStorage.getItem("plaus_run") || "";
   $("#annotator-input").value = savedAnnotator;
 
-  const res = await fetch("/api/decomposition_quality/runs");
+  const res = await fetch("/api/plausibility/runs");
   const { runs } = await res.json();
   const sel = $("#run-select");
   sel.innerHTML = "";
@@ -73,8 +74,8 @@ async function initSetup() {
       alert("Please enter your name/ID and pick a dataset.");
       return;
     }
-    localStorage.setItem("annotator", annotator);
-    localStorage.setItem("run", run);
+    localStorage.setItem("plaus_annotator", annotator);
+    localStorage.setItem("plaus_run", run);
     await startApp(run, annotator);
   });
 }
@@ -86,8 +87,8 @@ async function startApp(run, annotator) {
   state.annotator = annotator;
 
   const [datasetRes, annRes] = await Promise.all([
-    fetch(`/api/decomposition_quality/dataset?run=${encodeURIComponent(run)}`),
-    fetch(`/api/decomposition_quality/annotations?run=${encodeURIComponent(run)}&annotator=${encodeURIComponent(annotator)}`),
+    fetch(`/api/plausibility/dataset?run=${encodeURIComponent(run)}`),
+    fetch(`/api/plausibility/annotations?run=${encodeURIComponent(run)}&annotator=${encodeURIComponent(annotator)}`),
   ]);
   const dataset = await datasetRes.json();
   const annData = await annRes.json();
@@ -156,7 +157,6 @@ function loadItem(i) {
   state.showLLM = false;
   $("#toggle-llm-btn").textContent = "Show LLM judgement";
 
-  renderScale("completeness");
   renderAtoms();
   applyLLMOverlay();
   setSaveStatus(existing ? `Saved (last updated ${new Date(existing.updated_at).toLocaleString()})` : "Not yet saved");
@@ -168,32 +168,10 @@ function loadItem(i) {
   if (currentLi) currentLi.scrollIntoView({ block: "nearest" });
 }
 
-function renderScale(field) {
-  const container = document.querySelector(`.scale[data-field="${field}"]`);
-  container.innerHTML = "";
-  for (let v = 1; v <= 5; v++) {
-    const btn = document.createElement("button");
-    btn.textContent = v;
-    if (state.draft[field] === v) btn.classList.add("selected");
-    btn.addEventListener("click", () => {
-      state.draft[field] = v;
-      renderScale(field);
-      setSaveStatus("Unsaved changes");
-      applyLLMOverlay();
-    });
-    container.appendChild(btn);
-  }
-}
-
-const CRITERIA = [
-  ["affectiveness", "Affective"],
-  ["atomicity", "Atomic"],
-  ["fidelity", "Fidelity"],
-  ["evidence_preservation", "Evidence preserved"],
-];
-
-function atomVerdict(evaluation) {
-  return CRITERIA.every(([key]) => evaluation[key]) ? "Good" : "Bad";
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
 }
 
 function renderAtoms() {
@@ -203,37 +181,71 @@ function renderAtoms() {
     const card = document.createElement("div");
     card.className = "atom-card";
 
-    const text = document.createElement("div");
-    text.className = "atom-text";
-    text.textContent = `${idx + 1}. ${entry.atom}`;
-    card.appendChild(text);
+    const meta = document.createElement("div");
+    meta.innerHTML = `
+      <div class="atom-type-badge">${entry.type.replace("_", " ")}</div>
+      <div class="atom-text">${idx + 1}. ${escapeHtml(entry.atom)}</div>
+      <div class="atom-meta">
+        Stated vibe: <strong>${escapeHtml(entry.stated_vibe || "")}</strong>
+        ${entry.stated_evidence ? `<br/>Stated evidence: ${entry.stated_evidence.map(escapeHtml).join("; ")}` : ""}
+      </div>
+    `;
+    card.appendChild(meta);
 
-    const criteria = document.createElement("div");
-    criteria.className = "criteria";
+    const toggleRow = document.createElement("div");
+    toggleRow.className = "rating-row";
+    const toggleGroup = document.createElement("div");
+    toggleGroup.className = "toggle-group";
 
-    for (const [key, label] of CRITERIA) {
-      const lbl = document.createElement("label");
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = entry.evaluation[key];
-      cb.addEventListener("change", () => {
-        entry.evaluation[key] = cb.checked;
-        badge.textContent = atomVerdict(entry.evaluation);
-        badge.className = `verdict-badge ${atomVerdict(entry.evaluation).toLowerCase()}`;
-        setSaveStatus("Unsaved changes");
-        applyLLMOverlay();
-      });
-      lbl.appendChild(cb);
-      lbl.append(label);
-      criteria.appendChild(lbl);
+    const yesBtn = document.createElement("button");
+    yesBtn.textContent = "Plausible";
+    const noBtn = document.createElement("button");
+    noBtn.textContent = "Not plausible";
+
+    function refreshToggle() {
+      yesBtn.classList.toggle("selected", entry.plausible === true);
+      yesBtn.classList.toggle("yes", entry.plausible === true);
+      noBtn.classList.toggle("selected", entry.plausible === false);
+      noBtn.classList.toggle("no", entry.plausible === false);
+      badge.textContent = entry.plausible ? "Plausible" : "Not plausible";
+      badge.className = `verdict-badge ${entry.plausible ? "good" : "bad"}`;
     }
 
-    const badge = document.createElement("span");
-    badge.className = `verdict-badge ${atomVerdict(entry.evaluation).toLowerCase()}`;
-    badge.textContent = atomVerdict(entry.evaluation);
-    criteria.appendChild(badge);
+    yesBtn.addEventListener("click", () => {
+      entry.plausible = true;
+      refreshToggle();
+      setSaveStatus("Unsaved changes");
+      applyLLMOverlay();
+    });
+    noBtn.addEventListener("click", () => {
+      entry.plausible = false;
+      refreshToggle();
+      setSaveStatus("Unsaved changes");
+      applyLLMOverlay();
+    });
 
-    card.appendChild(criteria);
+    toggleGroup.appendChild(yesBtn);
+    toggleGroup.appendChild(noBtn);
+    toggleRow.appendChild(toggleGroup);
+
+    const badge = document.createElement("span");
+    badge.className = `verdict-badge ${entry.plausible ? "good" : "bad"}`;
+    badge.textContent = entry.plausible ? "Plausible" : "Not plausible";
+    toggleRow.appendChild(badge);
+
+    card.appendChild(toggleRow);
+    refreshToggle();
+
+    const reasonInput = document.createElement("textarea");
+    reasonInput.className = "reason-input";
+    reasonInput.placeholder = "Reason (optional)";
+    reasonInput.value = entry.reason || "";
+    reasonInput.addEventListener("input", () => {
+      entry.reason = reasonInput.value;
+      setSaveStatus("Unsaved changes");
+    });
+    card.appendChild(reasonInput);
+
     container.appendChild(card);
   });
 }
@@ -247,7 +259,7 @@ function setSaveStatus(text) {
 async function ensureLLMLoaded(item) {
   if (state.llmCache[item.image_path]) return state.llmCache[item.image_path];
   const res = await fetch(
-    `/api/decomposition_quality/llm_judgement?run=${encodeURIComponent(state.run)}&image_path=${encodeURIComponent(item.image_path)}`
+    `/api/plausibility/llm_judgement?run=${encodeURIComponent(state.run)}&image_path=${encodeURIComponent(item.image_path)}`
   );
   if (!res.ok) {
     alert("No LLM judgement available for this image.");
@@ -260,14 +272,8 @@ async function ensureLLMLoaded(item) {
 
 function clearLLMOverlay() {
   $("#llm-summary-panel").style.display = "none";
-  for (const id of ["completeness-llm-note"]) {
-    const el = document.getElementById(id);
-    el.textContent = "";
-    el.classList.remove("diff");
-  }
   document.querySelectorAll(".llm-atom-block").forEach((el) => el.remove());
   document.querySelectorAll(".atom-card").forEach((el) => el.classList.remove("disagree"));
-  document.querySelectorAll(".criteria label.diff").forEach((el) => el.classList.remove("diff"));
 }
 
 function applyLLMOverlay() {
@@ -279,17 +285,7 @@ function applyLLMOverlay() {
     return;
   }
 
-  const fv = llm.final_verdict;
-  const humanCompleteness = state.draft.completeness;
-
-  const compNote = $("#completeness-llm-note");
-  compNote.textContent = `LLM: ${fv.completeness.verdict} — ${fv.completeness.reason}`;
-  compNote.classList.toggle(
-    "diff",
-    humanCompleteness !== null && humanCompleteness !== fv.completeness.verdict
-  );
-
-  const llmAtoms = llm.atomic_judgement || [];
+  const llmAtoms = llm.atoms || [];
   const cards = document.querySelectorAll(".atom-card");
   let disagreeCount = 0;
   let comparedCount = 0;
@@ -297,69 +293,56 @@ function applyLLMOverlay() {
   cards.forEach((card, idx) => {
     card.querySelectorAll(".llm-atom-block").forEach((el) => el.remove());
     card.classList.remove("disagree");
-    card.querySelectorAll(".criteria label").forEach((el) => el.classList.remove("diff"));
 
     const llmEntry = llmAtoms[idx];
     const humanEntry = state.draft.atoms[idx];
     if (!llmEntry) return;
     comparedCount++;
 
-    const humanVerdict = atomVerdict(humanEntry.evaluation);
-    if (humanVerdict !== llmEntry.verdict) {
+    const llmPlausible = llmEntry.score > 0;
+    if (humanEntry.plausible !== llmPlausible) {
       card.classList.add("disagree");
       disagreeCount++;
     }
 
-    const labels = card.querySelectorAll(".criteria label");
-    CRITERIA.forEach(([key], ci) => {
-      if (humanEntry.evaluation[key] !== llmEntry.evaluation[key]) {
-        labels[ci].classList.add("diff");
-      }
-    });
-
     const block = document.createElement("div");
     block.className = "llm-atom-block";
     const badge = document.createElement("span");
-    badge.className = `llm-atom-badge ${llmEntry.verdict.toLowerCase()}`;
-    badge.textContent = `LLM: ${llmEntry.verdict}`;
+    badge.className = `llm-atom-badge ${llmPlausible ? "good" : "bad"}`;
+    badge.textContent = `LLM: ${llmPlausible ? "Plausible" : "Not plausible"} (score ${llmEntry.score})`;
     block.appendChild(badge);
-    block.append(llmEntry.reason || "");
+    const reasonBits = [
+      llmEntry.evidence_presence_check?.reasoning,
+      llmEntry.direct_check?.reasoning,
+      llmEntry.mapping_check?.reasoning,
+    ].filter(Boolean);
+    block.append(reasonBits.join(" "));
     card.appendChild(block);
   });
 
-  const completenessDiff =
-    humanCompleteness !== null ? Math.abs(humanCompleteness - fv.completeness.verdict) : null;
-  const atomQualityVerdict = fv.atom_quality.verdict;
-
   $("#llm-summary-panel").style.display = "block";
   $("#llm-summary-body").innerHTML = `
-    <div class="${completenessDiff === null ? "" : completenessDiff === 0 ? "agree" : "disagree"}">
-      Completeness: you=${humanCompleteness ?? "–"} vs LLM=${fv.completeness.verdict}${completenessDiff ? ` (Δ${completenessDiff})` : ""}
-    </div>
     <div class="${disagreeCount === 0 ? "agree" : "disagree"}">
       Atom verdicts: ${comparedCount - disagreeCount}/${comparedCount} agree${disagreeCount ? `, ${disagreeCount} disagreement(s) — highlighted below` : ""}
     </div>
-    <div>LLM atom quality: ${typeof atomQualityVerdict === "number" ? atomQualityVerdict.toFixed(2) : atomQualityVerdict} — ${fv.atom_quality.reason}</div>
+    <div>LLM overall score: ${typeof llm.score === "number" ? llm.score.toFixed(3) : "–"}</div>
   `;
 }
 
 async function saveCurrent() {
   const item = state.items[state.index];
-  if (state.draft.completeness === null) {
-    alert("Please rate Completeness before saving.");
-    return false;
-  }
   const body = {
     run: state.run,
     annotator: state.annotator,
     image_path: item.image_path,
-    atomic_judgement: state.draft.atoms.map((a) => ({
+    atoms: state.draft.atoms.map((a) => ({
       atom: a.atom,
-      evaluation: a.evaluation,
+      type: a.type,
+      plausible: a.plausible,
+      reason: a.reason ? a.reason.trim() || null : null,
     })),
-    completeness: state.draft.completeness,
   };
-  const res = await fetch("/api/decomposition_quality/annotations", {
+  const res = await fetch("/api/plausibility/annotations", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -442,7 +425,7 @@ function wireControls() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.target.tagName === "INPUT") return;
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
     if (e.key === "ArrowRight") $("#next-btn").click();
     if (e.key === "ArrowLeft") $("#prev-btn").click();
   });

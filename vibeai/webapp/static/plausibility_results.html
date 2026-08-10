@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vibe Decomposition — Results Viewer</title>
+  <title>Vibe Plausibility — Results Viewer</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
   <div id="setup">
-    <h1>Decomposition Results Viewer</h1>
+    <h1>Plausibility Results Viewer</h1>
     <p style="color:var(--muted); font-size:0.85rem;">
-      Browse a run's original images, vibe representations, decompositions, and the
-      LLM judge's verdicts + reasoning. Read-only — no annotation happens here.
+      Browse a run's original images, vibe representations, atoms, and the
+      LLM judge's plausibility verdicts + reasoning. Read-only — no annotation happens here.
     </p>
     <label for="run-select">Dataset (run)</label>
     <select id="run-select"></select>
     <button class="primary" id="start-btn">View results</button>
-    <a class="setup-link" href="/">← Go to annotation app</a>
-    <a class="setup-link" href="/plausibility.html">Plausibility — human annotation →</a>
-    <a class="setup-link" href="/plausibility_results.html">Plausibility — results (read-only) →</a>
+    <a class="setup-link" href="/plausibility.html">← Go to plausibility annotation app</a>
+    <a class="setup-link" href="/">Decomposition — annotation app →</a>
+    <a class="setup-link" href="/results.html">Decomposition — results (read-only) →</a>
   </div>
 
   <div id="app">
@@ -44,12 +44,12 @@
         </div>
 
         <div class="panel">
-          <h2>Vibe atoms &amp; LLM judgement</h2>
+          <h2>Vibe atoms &amp; LLM plausibility judgement</h2>
           <div id="atoms-container"></div>
         </div>
 
         <div class="panel">
-          <h2>Final verdict</h2>
+          <h2>Overall score</h2>
           <div id="final-verdict"></div>
         </div>
 
@@ -64,6 +64,6 @@
     </div>
   </div>
 
-  <script src="/results.js"></script>
+  <script src="/plausibility_results.js"></script>
 </body>
 </html>

@@ -58,12 +58,21 @@ def _retry_delay(attempt: int) -> float:
     return min(RETRY_BASE_DELAY_SECONDS * (2 ** (attempt - 1)), RETRY_MAX_DELAY_SECONDS)
 
 
-def _call_with_retry(fn: Callable[[], object], max_retries: int = MAX_RETRIES):
+def _call_with_retry(
+    fn: Callable[[], object],
+    max_retries: int = MAX_RETRIES,
+    extra_retryable: tuple[type[Exception], ...] = (),
+):
+    """Retry ``fn`` on transient API errors and, if ``extra_retryable`` is
+    given (e.g. a metric's output-validation ValueError), on those too - all
+    sharing one exponential-backoff budget rather than each having its own,
+    so a flaky call can't multiply worst-case latency across retry layers."""
+    retryable = _RETRYABLE_EXCEPTIONS + extra_retryable
     attempt = 0
     while True:
         try:
             return fn()
-        except _RETRYABLE_EXCEPTIONS as e:
+        except retryable as e:
             if isinstance(e, APIStatusError) and _is_insufficient_quota(e):
                 raise InsufficientQuotaError(
                     "OpenAI account has no remaining credit (insufficient_quota) - "
@@ -76,13 +85,16 @@ def _call_with_retry(fn: Callable[[], object], max_retries: int = MAX_RETRIES):
 
 
 async def _call_with_retry_async(
-    coro_fn: Callable[[], Coroutine[None, None, object]], max_retries: int = MAX_RETRIES
+    coro_fn: Callable[[], Coroutine[None, None, object]],
+    max_retries: int = MAX_RETRIES,
+    extra_retryable: tuple[type[Exception], ...] = (),
 ):
+    retryable = _RETRYABLE_EXCEPTIONS + extra_retryable
     attempt = 0
     while True:
         try:
             return await coro_fn()
-        except _RETRYABLE_EXCEPTIONS as e:
+        except retryable as e:
             if isinstance(e, APIStatusError) and _is_insufficient_quota(e):
                 raise InsufficientQuotaError(
                     "OpenAI account has no remaining credit (insufficient_quota) - "
@@ -122,8 +134,17 @@ def _record_usage(response, model: str, call_type: str) -> None:
 
 
 def call_text(
-    prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True, call_type: str = "text"
+    prompt: str,
+    model: str = DEFAULT_MODEL,
+    use_cache: bool = True,
+    call_type: str = "text",
+    validate: Callable[[str], None] | None = None,
+    max_retries: int = MAX_RETRIES,
 ) -> str:
+    """``validate``, if given, is called on the raw output text; a ValueError
+    it raises is retried under the same backoff budget as transient API
+    errors (``max_retries`` total, shared - see ``_call_with_retry``). Only
+    output that passes ``validate`` is written to the cache."""
     path = _cache_path(model, prompt, None)
     if use_cache:
         cached = _read_cache(path)
@@ -131,13 +152,20 @@ def call_text(
             return cached
 
     get_budget().check()
-    response = _call_with_retry(
-        lambda: get_client().responses.create(
+
+    def attempt():
+        response = get_client().responses.create(
             model=model,
             input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
         )
+        _record_usage(response, model, call_type)  # spent tokens even if validate() rejects it
+        if validate is not None:
+            validate(response.output_text)
+        return response
+
+    response = _call_with_retry(
+        attempt, max_retries=max_retries, extra_retryable=(ValueError,) if validate else ()
     )
-    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
@@ -146,7 +174,12 @@ def call_text(
 
 
 async def call_text_async(
-    prompt: str, model: str = DEFAULT_MODEL, use_cache: bool = True, call_type: str = "text"
+    prompt: str,
+    model: str = DEFAULT_MODEL,
+    use_cache: bool = True,
+    call_type: str = "text",
+    validate: Callable[[str], None] | None = None,
+    max_retries: int = MAX_RETRIES,
 ) -> str:
     path = _cache_path(model, prompt, None)
     if use_cache:
@@ -155,13 +188,20 @@ async def call_text_async(
             return cached
 
     get_budget().check()
-    response = await _call_with_retry_async(
-        lambda: get_async_client().responses.create(
+
+    async def attempt():
+        response = await get_async_client().responses.create(
             model=model,
             input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
         )
+        _record_usage(response, model, call_type)
+        if validate is not None:
+            validate(response.output_text)
+        return response
+
+    response = await _call_with_retry_async(
+        attempt, max_retries=max_retries, extra_retryable=(ValueError,) if validate else ()
     )
-    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
@@ -176,7 +216,14 @@ def call_with_image(
     model: str = DEFAULT_MODEL,
     use_cache: bool = True,
     call_type: str = "image",
+    validate: Callable[[str], None] | None = None,
+    max_retries: int = MAX_RETRIES,
 ) -> str:
+    """``validate``, if given, is called on the raw output text; a ValueError
+    it raises (e.g. the judge's JSON is missing a required field) is retried
+    under the same backoff budget as transient API errors (``max_retries``
+    total, shared across both failure kinds - see ``_call_with_retry``).
+    Only output that passes ``validate`` is written to the cache."""
     path = _cache_path(model, prompt, image_bytes)
     if use_cache:
         cached = _read_cache(path)
@@ -185,8 +232,9 @@ def call_with_image(
 
     get_budget().check()
     image_b64 = base64.b64encode(image_bytes).decode("utf-8")
-    response = _call_with_retry(
-        lambda: get_client().responses.create(
+
+    def attempt():
+        response = get_client().responses.create(
             model=model,
             input=[
                 {
@@ -201,8 +249,14 @@ def call_with_image(
                 }
             ],
         )
+        _record_usage(response, model, call_type)  # spent tokens even if validate() rejects it
+        if validate is not None:
+            validate(response.output_text)
+        return response
+
+    response = _call_with_retry(
+        attempt, max_retries=max_retries, extra_retryable=(ValueError,) if validate else ()
     )
-    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
@@ -217,6 +271,8 @@ async def call_with_image_async(
     model: str = DEFAULT_MODEL,
     use_cache: bool = True,
     call_type: str = "image",
+    validate: Callable[[str], None] | None = None,
+    max_retries: int = MAX_RETRIES,
 ) -> str:
     path = _cache_path(model, prompt, image_bytes)
     if use_cache:
@@ -226,8 +282,9 @@ async def call_with_image_async(
 
     get_budget().check()
     image_b64 = base64.b64encode(image_bytes).decode("utf-8")
-    response = await _call_with_retry_async(
-        lambda: get_async_client().responses.create(
+
+    async def attempt():
+        response = await get_async_client().responses.create(
             model=model,
             input=[
                 {
@@ -242,8 +299,14 @@ async def call_with_image_async(
                 }
             ],
         )
+        _record_usage(response, model, call_type)
+        if validate is not None:
+            validate(response.output_text)
+        return response
+
+    response = await _call_with_retry_async(
+        attempt, max_retries=max_retries, extra_retryable=(ValueError,) if validate else ()
     )
-    _record_usage(response, model, call_type)
     output = response.output_text
 
     if use_cache:
