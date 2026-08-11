@@ -1,44 +1,6 @@
 # VibeAI
 
-Exploring how an AI can build and refine a representation of the "vibe" a user perceives from photos.
-
-A vibe representation (natural language, structured scores, or embeddings) is evaluated against six criteria: plausibility, interpretability, richness, robustness, discriminability, and personalization. This repo currently focuses on the natural-language track and its **plausibility** evaluation, built via a decompose-then-verify pipeline: generate a vibe representation → decompose it into atomic vibe claims → judge the claims with an LLM.
-
-## Project layout
-
-```
-preprocess.py            image ingestion: normalize, resize, dedupe -> data/main_processed/
-
-vibeai/
-  prompts/                versioned prompt strings (representation, decomposition, judges)
-  llm/
-    client.py              OpenAI Responses API wrapper, with disk caching
-    budget.py              daily token-budget tracking, stops a run before it blows the account's TPD cap
-  pipeline/
-    represent.py          image -> natural-language vibe representation
-    decompose.py          vibe representation -> list of atomic vibe claims
-    evaluate.py            image -> representation -> decomposition -> judged MetricResult, in one call (works with any Metric over a DecompositionTestCase)
-  metrics/
-    base.py               Metric base class (measure() -> score + reason; optional extract_submetrics() for prompt-level rollups)
-    decomposition_quality.py  LLM-judge metric: Completeness, Atom Quality
-    plausibility.py           LLM-judge metric: per-atom evidence/vibe-inference checks, image-grounded
-  eval/
-    test_cases.py         dataclasses passed between pipeline and metrics
-    dataset.py            loads images from data/main_processed/
-    concurrency.py         bounded-concurrency helper for running many async LLM calls at once
-    parsing.py            JSON extraction from LLM output
-    results.py            logs each test run's scores to results/*.json (image-level, run-scoped)
-    prompt_results.py      aggregates per-image MetricResults into a PromptEvalResult for one prompt version
-    human_alignment.py     Cohen's kappa between LLM-judge verdicts and human annotations from the webapp
-  webapp/
-    server.py              FastAPI backend for the decomposition-quality human annotation app
-    static/                index.html / app.js / style.css - the annotation UI served by server.py
-
-tests/                    pytest suites (deepeval-style: pipeline output -> metric -> assert)
-                           conftest.py: --n-images, --image-dir, --representation-prompt-version,
-                           --decomposition-prompt-version, --concurrency CLI options for batch eval tests
-conftest.py               (empty) makes the vibeai package importable by pytest - do not delete
-```
+Exploring how an AI can build and refine a representation of the "vibe" a user perceives from photos, via a decompose-then-verify pipeline: generate a vibe representation → decompose it into atomic vibe claims → judge the claims with an LLM.
 
 ## Setup
 
@@ -48,73 +10,34 @@ uv sync
 
 Requires an `OPENAI_API_KEY` in `.env`.
 
-## Running
+## Commands
 
 ```bash
+# run all tests
 uv run pytest tests/ -v -s
+
+# batch eval on a sample / all images
+uv run pytest tests/test_decomposition_quality.py --n-images=20 -s
+uv run pytest tests/test_plausibility.py --n-images=all -s
+
+# other batch eval options (defaults shown)
+uv run pytest tests/test_decomposition_quality.py --image-dir=data/main_processed -s
+uv run pytest tests/test_decomposition_quality.py --representation-prompt-version=baseline -s
+uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=baseline -s
+uv run pytest tests/test_decomposition_quality.py --concurrency=30 -s
+
+# human annotation webapp
+uv run uvicorn vibeai.webapp.server:app --reload   # then open http://localhost:8000
+
+# LLM/human agreement (Cohen's kappa)
+uv run -m vibeai.eval.human_alignment <run> --metric <metric> --annotator <name>
 ```
 
-By default, batch eval tests (`test_decomposition_quality_batch`, `test_plausibility_batch`) run on a small sample of `data/main_processed/` for a quick check. Control the sample size with `--n-images`:
+LLM calls are cached under `.cache/llm/`, keyed by `(model, prompt, image)`. Batch results are written under `results/<metric_name>/<run_name>.json` (summary) and `.per_image.jsonl` (per-image detail).
 
-```bash
-uv run pytest tests/test_decomposition_quality.py --n-images=20 -s    # 20-image sample
-uv run pytest tests/test_decomposition_quality.py --n-images=all -s   # every image in data/main_processed/
-uv run pytest tests/test_plausibility.py --n-images=20 -s             # same options apply to the plausibility suite
-```
+## Extending
 
-LLM calls are cached under `.cache/llm/`, keyed by `(model, prompt, image)` - re-running the same images/prompt versions is free and doesn't count against the daily token budget. Note that `--n-images=N` for `N < len(dataset)` samples randomly (fixed seed), so raising `N` across separate runs is *mostly* but not guaranteed cache-hit; use `--n-images=all` directly if you want a single run with no resampling.
+- **Prompt version**: add an entry to the relevant dict in `vibeai/prompts/` (e.g. `representation.py`), then pass `prompt_version="your_version"`.
+- **Metric**: subclass `vibeai.metrics.base.Metric`, implement `measure(test_case) -> MetricResult`; see `metrics/decomposition_quality.py` or `metrics/plausibility.py` for examples.
 
-Other batch eval options, all defaulting to the baseline setup:
-
-```bash
-uv run pytest tests/test_decomposition_quality.py --image-dir=data/holdout_set -s                        # source images (default: data/main_processed/)
-uv run pytest tests/test_decomposition_quality.py --representation-prompt-version=v2 -s                  # representation prompt version (default: baseline)
-uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=v2 -s                   # decomposition prompt version (default: baseline)
-uv run pytest tests/test_decomposition_quality.py --concurrency=10 -s                                    # max concurrent evaluations (default: 30)
-```
-
-### Results
-
-`test_decomposition_quality_batch` writes prompt-level results under `results/`, via `vibeai.eval.prompt_results.aggregate_prompt_results`:
-
-- `results/<metric_name>/<run_name>.json` - a `PromptEvalResult` summary for one metric + prompt-version combo: `mean_score`, `std_score`, `pass_rate`, per-submetric means (via `Metric.extract_submetrics`), `failures` (below threshold), and `errors` (images whose pipeline call raised instead of scoring). Small enough to diff between prompt versions to see whether a change helped.
-- `results/<metric_name>/<run_name>.per_image.jsonl` - one line per image (`image_path`, `score`, `passed`, and `details`: representation, atoms, full judge verdict) - the full detail behind any regression in the summary above.
-
-`vibeai.eval.results.result_log` (a simpler run-scoped image-level logger, saved to `results/<run>.json` at session end) is also available for ad-hoc tests, but isn't used by the batch eval test above.
-
-### Plausibility metric
-
-`test_plausibility_batch` scores each vibe atom against the image with an LLM judge (`vibeai/prompts/plausibility_eval.py`). An atom is either `vibe_only` (a bare claim, e.g. "The vibe is relaxed.") or `evidence_backed` (a claim tied to stated visual evidence, e.g. "Bright sunlight glints off the water, suggesting a breezy afternoon."). Every atom is graded against a fixed 2-point ceiling regardless of type:
-
-- `vibe_only`: passes a single `direct_check` (is the vibe inferable from the image) for 1 point, capped there even if correct.
-- `evidence_backed`: must pass `evidence_presence_check`, `direct_check`, and `mapping_check` in order (stopping early on failure) for the full 2 points; failing any one scores 0.
-
-The image score is `sum(earned) / (2 * num_atoms)`. This is a deliberate risk/reward design: staying with safe `vibe_only` atoms caps a decomposition's score at 0.5 even if every atom is correct, while `evidence_backed` atoms are the only way to reach 1.0 - but an imprecise one forfeits the same 2 points a correct one would have earned. `PlausibilityMetric.extract_submetrics` reports `vibe_only_rate` / `evidence_backed_rate` separately (each atom's earned points over the same 2-point ceiling) so a prompt-level regression can be traced to one atom type.
-
-## Human annotation webapp
-
-`vibeai/webapp` is a small FastAPI + vanilla-JS app that lets a human rate the same (representation, atoms) pairs produced by a `test_decomposition_quality_batch` run, using the same rubric as the LLM judge (completeness, per-atom affectiveness/atomicity/fidelity/evidence-preservation) minus free-text reasons. The human never sees the LLM's verdicts by default, to avoid anchoring bias.
-
-Run it with:
-
-```bash
-uv run uvicorn vibeai.webapp.server:app --reload
-```
-
-Then open `http://localhost:8000`, enter an annotator ID, and pick a run (any `results/decomposition_quality/<run>.per_image.jsonl` produced by the batch eval test shows up as an option). Annotations are saved per annotator to `results/decomposition_quality/human/<run>__<annotator>.json`, keyed by `image_path`; progress is resumable across sessions. The UI also has an opt-in "LLM vs. you" panel to compare against the judge's verdict after annotating an image.
-
-Once one or more annotators have rated a run, compute LLM/human agreement with:
-
-```bash
-uv run python -m vibeai.eval.human_alignment <run> --annotator mingeon --annotator alice
-```
-
-This reports Cohen's kappa (linear-weighted for the 1-5 completeness/claim-independence scores, unweighted for atom Good/Bad verdicts and per-criterion booleans) over the images each annotator actually rated.
-
-## Adding a prompt version
-
-Add an entry to the relevant dict in `vibeai/prompts/` (e.g. `representation.py`), then pass `prompt_version="your_version"` when calling the pipeline or reference it in a test.
-
-## Adding a metric
-
-Subclass `vibeai.metrics.base.Metric`, implement `measure(test_case) -> MetricResult`. See `metrics/decomposition_quality.py` (text-only judge) or `metrics/plausibility.py` (image-grounded judge) for examples backed by an LLM-as-judge prompt. Optionally override `extract_submetrics(result) -> dict[str, float]` (0-1 normalized) to expose named sub-scores in prompt-level aggregation - see `DecompositionQualityMetric.extract_submetrics` for its Completeness/Atom Quality breakdown, or `PlausibilityMetric.extract_submetrics` for its per-atom-type breakdown.
+See `vibeai/` module docstrings and `tests/` for further detail on project layout.

@@ -43,10 +43,9 @@ This step should be independent from the stated evidence. The reasoning may incl
 - verdict: No supporting evidence → false, stop here (mapping_check is null, score 0). Supporting evidence exists AND contradicting evidence exists → contradiction wins → false, stop here (mapping_check is null, score 0). Supporting evidence exists and no contradicting evidence → true, proceed to mapping_check.
 
 **mapping_check**
-check the plausibility of the mapping from stated evidence to stated vibe.
-It should check the internal reasonability of the atom, only check if the stated evidence evokes the stated vibe.
-- reasoning: explain reasonability of the mapping from stated evidence to stated vibe.
-- verdict: true or false
+Check whether the stated evidence is a main contributor to the stated vibe, not just a plausible or minor association.
+- reasoning: explain how central the evidence is to the vibe — would removing it substantially weaken or change the vibe, or is it only a minor/tangential cue?
+- verdict: true only if the evidence is a primary driver of the vibe; false if it's unrelated, or merely consistent with the vibe as a secondary/minor detail.
 
 Final score: 2 if all the three checks pass. Else 0.
 
