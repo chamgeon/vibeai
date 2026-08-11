@@ -1,15 +1,16 @@
-"""Compute Cohen's kappa between the LLM-as-a-judge decomposition-quality
-verdicts and one or more human annotation files produced by the webapp in
-``vibeai/webapp``.
+"""Compute Cohen's kappa between LLM-as-a-judge verdicts and one or more
+human annotation files produced by the webapp in ``vibeai/webapp``, for
+either the ``decomposition_quality`` or ``plausibility`` metric.
 
 Pairs records by ``image_path`` (the same key used in
-``results/decomposition_quality/<run>.per_image.jsonl`` and in
-``results/decomposition_quality/human/<run>__<annotator>.json``), so only
-images a given human actually annotated are scored.
+``results/<metric>/<run>.per_image.jsonl`` and in
+``results/<metric>/human/<run>__<annotator>.json``), so only images a given
+human actually annotated are scored.
 
 Usage:
     python -m vibeai.eval.human_alignment baseline__baseline_1785814420 --annotator mingeon
     python -m vibeai.eval.human_alignment <run> --annotator alice --annotator bob
+    python -m vibeai.eval.human_alignment baseline__v1_1786409728 --metric plausibility --annotator mingeon
 """
 
 import argparse
@@ -17,8 +18,7 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = REPO_ROOT / "results" / "decomposition_quality"
-HUMAN_DIR = RESULTS_DIR / "human"
+RESULTS_ROOT = REPO_ROOT / "results"
 
 
 def _confusion(y1: list, y2: list, labels: list) -> list[list[int]]:
@@ -57,8 +57,8 @@ def cohen_kappa(y1: list, y2: list, labels: list, weights: str | None = None) ->
     return 1 - observed / expected_val
 
 
-def load_llm(run: str) -> dict[str, dict]:
-    src = RESULTS_DIR / f"{run}.per_image.jsonl"
+def load_llm(metric: str, run: str) -> dict[str, dict]:
+    src = RESULTS_ROOT / metric / f"{run}.per_image.jsonl"
     out = {}
     with src.open() as f:
         for line in f:
@@ -70,18 +70,62 @@ def load_llm(run: str) -> dict[str, dict]:
     return out
 
 
-def load_human(run: str, annotator: str) -> dict[str, dict]:
-    src = HUMAN_DIR / f"{run}__{annotator}.json"
+def load_human(metric: str, run: str, annotator: str) -> dict[str, dict]:
+    src = RESULTS_ROOT / metric / "human" / f"{run}__{annotator}.json"
     if not src.exists():
         raise FileNotFoundError(src)
     return json.loads(src.read_text())
 
 
-def align_and_report(run: str, annotators: list[str]) -> None:
-    llm = load_llm(run)
+def align_and_report_plausibility(run: str, annotators: list[str]) -> None:
+    """Atom-level plausible/implausible agreement. The LLM judge's per-atom
+    ``score`` is 0 or the atom's max (1 for vibe_only, 2 for evidence_backed,
+    see PlausibilityMetric._MAX_ATOM_SCORE), so ``score > 0`` is the LLM's
+    binary plausible verdict, directly comparable to the human's boolean
+    ``plausible`` field."""
+    llm = load_llm("plausibility", run)
 
     for annotator in annotators:
-        human = load_human(run, annotator)
+        human = load_human("plausibility", run, annotator)
+        shared = sorted(set(llm) & set(human))
+        print(f"\n=== annotator: {annotator} — {len(shared)}/{len(human)} annotated images matched to LLM run '{run}' ===")
+        if not shared:
+            continue
+
+        verdict_llm, verdict_human = [], []
+        by_type_llm = {"vibe_only": [], "evidence_backed": []}
+        by_type_human = {"vibe_only": [], "evidence_backed": []}
+
+        for image_path in shared:
+            l_atoms = llm[image_path]["atoms"]
+            h_atoms = human[image_path]["atoms"]
+            if len(l_atoms) != len(h_atoms):
+                print(f"  ! atom count mismatch for {image_path} (llm={len(l_atoms)}, human={len(h_atoms)}); skipping")
+                continue
+            for la, ha in zip(l_atoms, h_atoms):
+                l_plausible = la["score"] > 0
+                verdict_llm.append(l_plausible)
+                verdict_human.append(ha["plausible"])
+                by_type_llm[ha["type"]].append(l_plausible)
+                by_type_human[ha["type"]].append(ha["plausible"])
+
+        if verdict_llm:
+            n_atoms = len(verdict_llm)
+            agreement = sum(a == b for a, b in zip(verdict_llm, verdict_human)) / n_atoms
+            print(f"  Atom plausibility (unweighted kappa, n={n_atoms} atoms): "
+                  f"{cohen_kappa(verdict_llm, verdict_human, [True, False]):.3f} "
+                  f"(raw agreement: {agreement:.3f})")
+            for atom_type in by_type_llm:
+                if by_type_llm[atom_type]:
+                    kappa = cohen_kappa(by_type_llm[atom_type], by_type_human[atom_type], [True, False])
+                    print(f"    - {atom_type:<16} (n={len(by_type_llm[atom_type])}) kappa: {kappa:.3f}")
+
+
+def align_and_report(run: str, annotators: list[str]) -> None:
+    llm = load_llm("decomposition_quality", run)
+
+    for annotator in annotators:
+        human = load_human("decomposition_quality", run, annotator)
         shared = sorted(set(llm) & set(human))
         print(f"\n=== annotator: {annotator} — {len(shared)}/{len(human)} annotated images matched to LLM run '{run}' ===")
         if not shared:
@@ -135,11 +179,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run", help="run name, e.g. baseline__baseline_1785814420")
     parser.add_argument(
+        "--metric", choices=["decomposition_quality", "plausibility"],
+        default="decomposition_quality",
+    )
+    parser.add_argument(
         "--annotator", action="append", required=True,
         help="human annotator id (repeatable for multiple annotators)",
     )
     args = parser.parse_args()
-    align_and_report(args.run, args.annotator)
+    if args.metric == "plausibility":
+        align_and_report_plausibility(args.run, args.annotator)
+    else:
+        align_and_report(args.run, args.annotator)
 
 
 if __name__ == "__main__":
