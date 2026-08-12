@@ -79,9 +79,7 @@ def load_human(metric: str, run: str, annotator: str) -> dict[str, dict]:
 
 def align_and_report_plausibility(run: str, annotators: list[str]) -> None:
     """Atom-level plausible/implausible agreement. The LLM judge's per-atom
-    ``score`` is 0 or the atom's max (1 for vibe_only, 2 for evidence_backed,
-    see PlausibilityMetric._MAX_ATOM_SCORE), so ``score > 0`` is the LLM's
-    binary plausible verdict, directly comparable to the human's boolean
+    ``final_verdict`` is directly comparable to the human's boolean
     ``plausible`` field."""
     llm = load_llm("plausibility", run)
 
@@ -103,7 +101,7 @@ def align_and_report_plausibility(run: str, annotators: list[str]) -> None:
                 print(f"  ! atom count mismatch for {image_path} (llm={len(l_atoms)}, human={len(h_atoms)}); skipping")
                 continue
             for la, ha in zip(l_atoms, h_atoms):
-                l_plausible = la["score"] > 0
+                l_plausible = la["final_verdict"]
                 verdict_llm.append(l_plausible)
                 verdict_human.append(ha["plausible"])
                 by_type_llm[ha["type"]].append(l_plausible)

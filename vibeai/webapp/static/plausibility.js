@@ -299,7 +299,7 @@ function applyLLMOverlay() {
     if (!llmEntry) return;
     comparedCount++;
 
-    const llmPlausible = llmEntry.score > 0;
+    const llmPlausible = llmEntry.final_verdict;
     if (humanEntry.plausible !== llmPlausible) {
       card.classList.add("disagree");
       disagreeCount++;
@@ -309,7 +309,7 @@ function applyLLMOverlay() {
     block.className = "llm-atom-block";
     const badge = document.createElement("span");
     badge.className = `llm-atom-badge ${llmPlausible ? "good" : "bad"}`;
-    badge.textContent = `LLM: ${llmPlausible ? "Plausible" : "Not plausible"} (score ${llmEntry.score})`;
+    badge.textContent = `LLM: ${llmPlausible ? "Plausible" : "Not plausible"}`;
     block.appendChild(badge);
     const reasonBits = [
       llmEntry.evidence_presence_check?.reasoning,

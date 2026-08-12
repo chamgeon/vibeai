@@ -51,6 +51,9 @@ async function startApp(run) {
 
   renderSidebar();
   loadItem(0);
+
+  await Promise.all(state.items.map((item) => ensureLLMLoaded(item)));
+  renderSidebar();
 }
 
 function renderSidebar() {
@@ -60,6 +63,8 @@ function renderSidebar() {
     const li = document.createElement("li");
     li.dataset.index = i;
     if (i === state.index) li.classList.add("current");
+    const llm = state.llmCache[item.image_path];
+    if (llm && llm.passed === false) li.classList.add("failed");
     const dot = document.createElement("span");
     dot.className = "dot";
     const label = document.createElement("span");
@@ -147,7 +152,6 @@ function renderAtoms(llm) {
     const card = document.createElement("div");
     card.className = "atom-card";
 
-    const maxScore = a.type === "vibe_only" ? 1 : 2;
     card.innerHTML = `
       <div class="atom-type-badge">${a.type.replace("_", " ")}</div>
       <div class="atom-text">${idx + 1}. ${escapeHtml(a.atom)}</div>
@@ -155,7 +159,7 @@ function renderAtoms(llm) {
         Stated vibe: <strong>${escapeHtml(a.stated_vibe || "")}</strong>
         ${a.stated_evidence ? `<br/>Stated evidence: ${a.stated_evidence.map(escapeHtml).join("; ")}` : ""}
       </div>
-      <span class="verdict-badge ${a.score > 0 ? "good" : "bad"}">Score: ${a.score} / ${maxScore}</span>
+      <span class="verdict-badge ${a.final_verdict ? "good" : "bad"}">${a.final_verdict ? "Plausible" : "Not plausible"}</span>
       ${renderCheck("Evidence presence check", a.evidence_presence_check)}
       ${renderCheck("Direct check", a.direct_check)}
       ${renderCheck("Mapping check", a.mapping_check)}

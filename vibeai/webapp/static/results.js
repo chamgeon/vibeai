@@ -51,6 +51,9 @@ async function startApp(run) {
 
   renderSidebar();
   loadItem(0);
+
+  await Promise.all(state.items.map((item) => ensureLLMLoaded(item)));
+  renderSidebar();
 }
 
 function renderSidebar() {
@@ -60,6 +63,8 @@ function renderSidebar() {
     const li = document.createElement("li");
     li.dataset.index = i;
     if (i === state.index) li.classList.add("current");
+    const llm = state.llmCache[item.image_path];
+    if (llm && llm.passed === false) li.classList.add("failed");
     const dot = document.createElement("span");
     dot.className = "dot";
     const label = document.createElement("span");

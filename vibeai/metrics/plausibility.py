@@ -9,14 +9,11 @@ from vibeai.metrics.base import Metric, MetricResult
 from vibeai.pipeline.represent import MIME_TYPES
 from vibeai.prompts.plausibility_eval import PLAUSIBILITY_EVAL_PROMPT
 
-# Every atom is graded against a fixed 2-point ceiling, not its own type's
-# achievable max: vibe_only atoms can score at most 1 (direct_check only),
-# so a fully-correct but unspecific decomposition tops out at 0.5. This is
-# what makes evidence-backed atoms a "risky" choice worth taking - they're
-# the only way to reach a high score, but failing any of their three checks
-# (evidence_presence_check, direct_check, mapping_check) forfeits the same
-# 2 points a correct one would have earned.
-_MAX_ATOM_SCORE = 2
+# A representation passes when the proportion of plausible atoms
+# (final_verdict true) clears this threshold - see the base Metric's
+# is_successful. The evidence-backed atom share is tracked as a submetric
+# only, and doesn't gate pass/fail.
+PLAUSIBLE_RATE_THRESHOLD = 0.7
 
 
 def _build_prompt(test_case: DecompositionTestCase) -> str:
@@ -37,7 +34,7 @@ _REQUIRED_ATOM_KEYS = {
     "evidence_presence_check",
     "direct_check",
     "mapping_check",
-    "score",
+    "final_verdict",
 }
 
 
@@ -64,16 +61,20 @@ def _extract_and_validate_atoms(raw: str) -> list[dict]:
 
 def _parse_result(raw: str) -> MetricResult:
     atoms = _extract_and_validate_atoms(raw)
-    earned = sum(atom["score"] for atom in atoms)
-    total = _MAX_ATOM_SCORE * len(atoms)
+    plausible = sum(1 for atom in atoms if atom["final_verdict"])
+    evidence_backed = sum(1 for atom in atoms if atom["type"] == "evidence_backed")
+    total = len(atoms)
 
-    reason = f"{earned}/{total} max points across {len(atoms)} atoms"
-    return MetricResult(score=earned / total, reason=reason, details={"atoms": atoms})
+    reason = (
+        f"{plausible}/{total} atoms plausible, "
+        f"{evidence_backed}/{total} atoms evidence-backed"
+    )
+    return MetricResult(score=plausible / total, reason=reason, details={"atoms": atoms})
 
 
 class PlausibilityMetric(Metric):
     name = "plausibility"
-    threshold = 0.7
+    threshold = PLAUSIBLE_RATE_THRESHOLD
 
     def __init__(self, model: str = DEFAULT_MODEL, threshold: float | None = None):
         self.model = model
@@ -110,7 +111,10 @@ class PlausibilityMetric(Metric):
         for atom_type in ("vibe_only", "evidence_backed"):
             typed = [a for a in atoms if a["type"] == atom_type]
             if typed:
-                submetrics[f"{atom_type}_rate"] = sum(a["score"] for a in typed) / (
-                    len(typed) * _MAX_ATOM_SCORE
-                )
+                submetrics[f"{atom_type}_rate"] = sum(
+                    1 for a in typed if a["final_verdict"]
+                ) / len(typed)
+        submetrics["evidence_backed_share"] = sum(
+            1 for a in atoms if a["type"] == "evidence_backed"
+        ) / len(atoms)
         return submetrics

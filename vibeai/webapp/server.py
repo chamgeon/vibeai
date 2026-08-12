@@ -277,8 +277,6 @@ def save_decomposition_annotation(body: DecompAnnotationIn):
 
 # --- plausibility: annotation POST (rubric-specific) -----------------------
 
-_PLAUS_MAX_ATOM_SCORE = 2  # matches vibeai.metrics.plausibility._MAX_ATOM_SCORE
-
 
 class PlausAtomJudgement(BaseModel):
     atom: str
@@ -299,13 +297,8 @@ def save_plausibility_annotation(body: PlausAnnotationIn):
     if body.image_path not in _dataset_image_paths("plausibility", body.run):
         raise HTTPException(400, "image_path not part of this run's dataset")
 
-    def atom_score(a: PlausAtomJudgement) -> int:
-        if not a.plausible:
-            return 0
-        return 1 if a.type == "vibe_only" else _PLAUS_MAX_ATOM_SCORE
-
-    earned = sum(atom_score(a) for a in body.atoms)
-    total = _PLAUS_MAX_ATOM_SCORE * len(body.atoms)
+    plausible_count = sum(1 for a in body.atoms if a.plausible)
+    total = len(body.atoms)
 
     record = {
         "image_path": body.image_path,
@@ -318,11 +311,10 @@ def save_plausibility_annotation(body: PlausAnnotationIn):
                 "type": a.type,
                 "plausible": a.plausible,
                 "reason": a.reason,
-                "score": atom_score(a),
             }
             for a in body.atoms
         ],
-        "score": round(earned / total, 4) if total else 0.0,
+        "score": round(plausible_count / total, 4) if total else 0.0,
     }
 
     data = _load_human("plausibility", body.run, body.annotator)
