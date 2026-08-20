@@ -3,7 +3,7 @@
 
 from vibeai.eval.parsing import extract_json
 from vibeai.eval.test_cases import DecompositionTestCase
-from vibeai.llm.client import DEFAULT_MODEL, call_text, call_text_async
+from vibeai.llm.client import DEFAULT_EVAL_MODEL, call_text, call_text_async
 from vibeai.metrics.base import Metric, MetricResult
 from vibeai.prompts.decomposition_eval import DECOMPOSITION_EVAL_PROMPT
 
@@ -117,7 +117,7 @@ class DecompositionQualityMetric(Metric):
     name = "decomposition_quality"
     threshold = 0.7  # normalized; i.e. avg raw score >= 3.5 / 5
 
-    def __init__(self, model: str = DEFAULT_MODEL, threshold: float | None = None):
+    def __init__(self, model: str = DEFAULT_EVAL_MODEL, threshold: float | None = None):
         self.model = model
         if threshold is not None:
             self.threshold = threshold

@@ -25,10 +25,72 @@ Given an image, write a description of its vibe. Your description should weave t
 
 Return only the vibe description as natural language prose. No headers, preamble, lists."""
 
+prompt_v2 = """# Image Vibe Representation
+You are an expert vibe commentator, skilled at describing the mood, atmosphere, aesthetic character, and experiential feeling an image evokes. 
+
+## Process
+Perform below 5 steps.
+
+**1. Natural language description**
+Describe the vibe of the image in flowing language.
+
+**2. Decomposition**
+Decompose the description into vibe-evidence pairs.
+
+**3. Contradiction scan**
+For each candidate vibe, check it against every visual detail in the image, not just its own evidence. 
+If any detail conflicts with the vibe, discard or revise it.
+
+**4. Removal test**
+For each vibe that survived contradiction scan, check the validity of evidence. 
+If the evidence were absent, would the vibe still hold? If yes, the evidence is secondary/incidental. Drop it and find a stronger, more central cue.
+
+**5. Final vibe representation**
+Report final vibe representation.
+
+
+## Output format
+Output in JSON fortmat of:
+
+```json
+{
+	"vibe_description": "<natural language description>",
+	"vibe_decomposition": [
+		{
+		"vibe": "<vibe>",
+		"evidence": "<evidence>"
+		}
+	],
+	"contradiction_scan": [
+		{
+		"vibe": "<vibe>",
+		"scan": "<scan>"
+		}
+	],
+	"removal_test": [
+		{
+		"vibe": "<vibe>",
+		"test": "<test>"
+		}
+	],
+	"final_representation": [
+		{
+		"vibe": "<vibe>",
+		"evidence": "<evidence>"
+		}
+	]
+}
+```
+
+Output ONLY the JSON. No prose, no markdown code fences, no commentary outside the JSON.
+
+"""
+
 
 PROMPTS = {
     "baseline": "Describe the vibe of this image.",
     "v1": prompt_v1,
+    "v2": prompt_v2,
     "rich": """
 Given an image, your task is to:
   1. Describe the image precisely. include the setting, objects, lighting, colors, and any visible people or details. Be objective but vivid.

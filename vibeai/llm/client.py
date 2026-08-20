@@ -23,7 +23,10 @@ from vibeai.llm.usage_log import log_call
 
 load_dotenv()
 
-DEFAULT_MODEL = "gpt-5"
+DEFAULT_MODEL = "gpt-5.6-luna"
+# Used by judge/metric calls (plausibility, decomposition-quality), which
+# want gpt-5's evaluation behavior rather than the generation-tuned default.
+DEFAULT_EVAL_MODEL = "gpt-5"
 CACHE_DIR = Path(".cache/llm")
 
 # Batch runs over hundreds of images sustain enough concurrent requests to hit

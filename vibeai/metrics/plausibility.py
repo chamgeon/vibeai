@@ -4,7 +4,7 @@ via LLM-as-a-judge."""
 
 from vibeai.eval.parsing import extract_json
 from vibeai.eval.test_cases import DecompositionTestCase
-from vibeai.llm.client import DEFAULT_MODEL, call_with_image, call_with_image_async
+from vibeai.llm.client import DEFAULT_EVAL_MODEL, call_with_image, call_with_image_async
 from vibeai.metrics.base import Metric, MetricResult
 from vibeai.pipeline.represent import MIME_TYPES
 from vibeai.prompts.plausibility_eval import PLAUSIBILITY_EVAL_PROMPT
@@ -76,7 +76,7 @@ class PlausibilityMetric(Metric):
     name = "plausibility"
     threshold = PLAUSIBLE_RATE_THRESHOLD
 
-    def __init__(self, model: str = DEFAULT_MODEL, threshold: float | None = None):
+    def __init__(self, model: str = DEFAULT_EVAL_MODEL, threshold: float | None = None):
         self.model = model
         if threshold is not None:
             self.threshold = threshold

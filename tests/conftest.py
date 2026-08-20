@@ -32,6 +32,12 @@ def pytest_addoption(parser):
         default="30",
         help="Max concurrent evaluations in batch eval tests.",
     )
+    parser.addoption(
+        "--eval-model",
+        default=None,
+        help="Model used for judge/metric calls in batch eval tests. "
+        "Defaults to the metric's own default (DEFAULT_EVAL_MODEL).",
+    )
 
 
 @pytest.fixture
@@ -61,6 +67,11 @@ def decomposition_prompt_version(request) -> str:
 @pytest.fixture
 def concurrency(request) -> int:
     return int(request.config.getoption("--concurrency"))
+
+
+@pytest.fixture
+def eval_model(request) -> str | None:
+    return request.config.getoption("--eval-model")
 
 
 def pytest_sessionfinish(session, exitstatus):

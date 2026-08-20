@@ -9,10 +9,11 @@ from vibeai.metrics.plausibility import PlausibilityMetric
 from vibeai.pipeline.evaluate import evaluate_image
 
 async def test_plausibility_batch(
-    n_images, image_dir, representation_prompt_version, decomposition_prompt_version, concurrency
+    n_images, image_dir, representation_prompt_version, decomposition_prompt_version, concurrency,
+    eval_model,
 ):
     IMAGES = load_image_paths(n=n_images, seed=0, data_dir=image_dir)
-    metric = PlausibilityMetric()
+    metric = PlausibilityMetric() if eval_model is None else PlausibilityMetric(model=eval_model)
 
     coros = [
         evaluate_image(
