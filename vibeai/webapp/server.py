@@ -13,14 +13,16 @@ static/plausibility_results.html + plausibility_results.js) for browsing a
 run's images, representations, decompositions, and the LLM judge's
 verdicts/reasoning directly — no annotation involved.
 
-Every metric (decomposition_quality, plausibility, and any added later —
-interpretability, richness, ...) shares the same run-discovery, dataset,
+Every metric (decomposition_quality, plausibility, richness, and any added
+later — interpretability, ...) shares the same run-discovery, dataset,
 LLM-judgement, human-annotation-store, and progress plumbing below,
 parameterized by ``metric``. Adding a new metric only requires:
-  1. a ``BLIND_ATOM_FNS[metric]`` entry, if its atoms need to be stripped of
+  1. a ``KNOWN_METRICS`` entry, plus a ``SOURCE_RUN_METRICS`` entry if it is
+     annotated over *another* metric's run output rather than its own
+  2. a ``BLIND_ATOM_FNS[metric]`` entry, if its atoms need to be stripped of
      judge-only fields before being shown to an annotator (skip if atoms are
      already blind, e.g. plain strings)
-  2. a Pydantic annotation-input model + POST ``/api/<metric>/annotations``
+  3. a Pydantic annotation-input model + POST ``/api/<metric>/annotations``
      handler encoding that metric's rubric/scoring — this part is
      irreducibly metric-specific, since every metric's rubric differs.
 """
@@ -45,6 +47,16 @@ app = FastAPI(title="Vibe Eval — Human Annotation")
 
 # --- per-metric dataset plumbing (shared by every metric) ----------------
 
+KNOWN_METRICS = {"decomposition_quality", "plausibility", "richness"}
+
+# Metrics that are annotated over *another* metric's run output instead of
+# their own: richness re-reads the (representation, atoms) pairs any run
+# already produced and asks which vibe axes each atom touches, so it needs
+# no LLM judge of its own to be annotatable. Their run ids are qualified as
+# "<source_metric>/<run>" (e.g. "plausibility/v2__direct_1786613807") so a
+# single annotation store can span every source run.
+SOURCE_RUN_METRICS = {"richness"}
+
 
 def _results_dir(metric: str) -> Path:
     return RESULTS_ROOT / metric
@@ -54,7 +66,26 @@ def _human_dir(metric: str) -> Path:
     return _results_dir(metric) / "human"
 
 
+def _split_run(metric: str, run: str) -> tuple[str, str]:
+    """Resolve a run id to the (metric dir, run name) its records live under.
+    Only SOURCE_RUN_METRICS use the qualified "<source_metric>/<run>" form."""
+    if metric in SOURCE_RUN_METRICS and "/" in run:
+        source_metric, _, name = run.partition("/")
+        if source_metric not in KNOWN_METRICS:
+            raise HTTPException(404, f"unknown source metric: {source_metric}")
+        return source_metric, name
+    return metric, run
+
+
 def _list_runs(metric: str) -> list[str]:
+    """Run ids offered for a metric. A SOURCE_RUN_METRICS metric has no runs
+    of its own to annotate, so it lists every metric's runs, qualified."""
+    if metric in SOURCE_RUN_METRICS:
+        return sorted(
+            f"{m}/{p.name.removesuffix('.per_image.jsonl')}"
+            for m in KNOWN_METRICS
+            for p in _results_dir(m).glob("*.per_image.jsonl")
+        )
     d = _results_dir(metric)
     if not d.exists():
         return []
@@ -62,7 +93,8 @@ def _list_runs(metric: str) -> list[str]:
 
 
 def _load_per_image_records(metric: str, run: str) -> list[dict]:
-    src = _results_dir(metric) / f"{run}.per_image.jsonl"
+    source_metric, run_name = _split_run(metric, run)
+    src = _results_dir(source_metric) / f"{run_name}.per_image.jsonl"
     if not src.exists():
         raise HTTPException(404, f"unknown run: {run}")
     records = []
@@ -100,7 +132,8 @@ BLIND_ATOM_FNS: dict[str, Callable[[Any], Any]] = {
 
 
 def _load_dataset(metric: str, run: str) -> list[dict]:
-    blind = BLIND_ATOM_FNS.get(metric, lambda atom: atom)
+    source_metric, _ = _split_run(metric, run)
+    blind = BLIND_ATOM_FNS.get(source_metric, lambda atom: atom)
     items = []
     for rec in _load_per_image_records(metric, run):
         details = rec.get("details", {})
@@ -117,13 +150,20 @@ def _load_dataset(metric: str, run: str) -> list[dict]:
 # --- per-metric human annotation store (shared by every metric) ----------
 
 
+def _safe_id(value: str) -> str:
+    return "".join(c if c.isalnum() or c in "-_." else "_" for c in value)
+
+
 def _human_path(metric: str, run: str, annotator: str) -> Path:
     hd = _human_dir(metric)
     hd.mkdir(parents=True, exist_ok=True)
-    safe_annotator = "".join(c if c.isalnum() or c in "-_." else "_" for c in annotator)
+    safe_annotator = _safe_id(annotator)
     if not safe_annotator:
         raise HTTPException(400, "invalid annotator id")
-    return hd / f"{run}__{safe_annotator}.json"
+    # A qualified run id ("plausibility/v2__...") flattens to
+    # "plausibility__v2__..."; unqualified ids keep their existing filenames.
+    safe_run = _safe_id(run.replace("/", "__"))
+    return hd / f"{safe_run}__{safe_annotator}.json"
 
 
 def _load_human(metric: str, run: str, annotator: str) -> dict[str, dict]:
@@ -148,8 +188,6 @@ def _dataset_image_paths(metric: str, run: str) -> set[str]:
 #
 # These cover every metric automatically. Only the POST .../annotations
 # handler (rubric-specific scoring) needs a new endpoint per metric.
-
-KNOWN_METRICS = {"decomposition_quality", "plausibility"}
 
 
 def _check_metric(metric: str) -> None:
@@ -323,4 +361,234 @@ def save_plausibility_annotation(body: PlausAnnotationIn):
     return {"saved": record}
 
 
-app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+# --- richness: annotation POST (rubric-specific) --------------------------
+#
+# Richness asks which of a fixed set of vibe axes each atom touches, so an
+# image's representation can be scored on how much of the vibe space it
+# covers rather than on whether its claims hold up.
+#
+# The denominator is per-image: an axis the image has nothing to say about
+# (interpersonal dynamics in a solo portrait, subject in an empty landscape)
+# is marked not-applicable by the annotator and dropped from both sides of
+# the ratio, so a representation is never penalised for failing to cover a
+# dimension that isn't there.
+
+VIBE_AXES = (
+    "subject",
+    "interpersonal-group",
+    "object",
+    "environment",
+    "composition",
+    "color",
+    "texture-material",
+    "style",
+    "activity",
+    "time",
+    "affect",
+)
+
+# Applicability is a property of photographs rather than of any one image for
+# these four, so they can't be switched off and the denominator never falls
+# below 4. The rest default to applicable and the annotator opts them out.
+ALWAYS_APPLICABLE_AXES = ("environment", "color", "style", "affect")
+
+# Served to the UI so the axis vocabulary, its wording and its applicability
+# rule all live in one place. Mirrors the "Vibe Axis" section of the
+# Richness experiment doc.
+AXIS_INFO: dict[str, dict[str, str]] = {
+    "subject": {
+        "label": "Subject",
+        "description": "Vibe evoked by the central subject(s) — primarily people, sometimes animals.",
+        "applicability": "Applicable when a subject is present.",
+    },
+    "interpersonal-group": {
+        "label": "Interpersonal & group",
+        "description": "Vibe evoked by the relationship between subjects in the image.",
+        "applicability": "Applicable when multiple subjects are visible.",
+    },
+    "object": {
+        "label": "Object",
+        "description": "Vibe evoked by objects, props and physical items in the image.",
+        "applicability": "Applicable when an object is present.",
+    },
+    "environment": {
+        "label": "Environment",
+        "description": "Vibe evoked by the environment, setting, surroundings, architecture, weather.",
+        "applicability": "Always applicable.",
+    },
+    "composition": {
+        "label": "Composition",
+        "description": "Vibe evoked by the composition of the image — framing, angle, arrangement, depth.",
+        "applicability": "Applicable when composition is prominent.",
+    },
+    "color": {
+        "label": "Color",
+        "description": "Vibe evoked by the colour and lighting of the image.",
+        "applicability": "Always applicable.",
+    },
+    "texture-material": {
+        "label": "Texture & material",
+        "description": "Vibe evoked by texture and material — surfaces, substances, their condition.",
+        "applicability": "Applicable almost always.",
+    },
+    "style": {
+        "label": "Style",
+        "description": "Vibe evoked by the style/genre — minimal, futuristic, cyberpunk, candid, selfie, editorial, portrait, scenery, ...",
+        "applicability": "Always applicable.",
+    },
+    "activity": {
+        "label": "Activity",
+        "description": "Vibe evoked by the activity expressed or implied in the image.",
+        "applicability": "Applicable when the image is associated with an activity.",
+    },
+    "time": {
+        "label": "Time",
+        "description": "Vibe evoked by the time of day or the season.",
+        "applicability": "Applicable when time can be inferred from the image.",
+    },
+    "affect": {
+        "label": "Affect",
+        "description": "Raw emotion, not attributed to any one image element.",
+        "applicability": "Always applicable.",
+    },
+    "other": {
+        "label": "other",
+        "description": "A vibe dimension none of the eleven capture — say which in the reason box.",
+        "applicability": "Recorded but never scored, so scores stay comparable across images.",
+    },
+}
+
+# "other" is annotatable (with a free-text reason saying what it was) but is
+# deliberately kept out of the coverage denominator, so scores stay
+# comparable across images.
+VibeAxis = Literal[
+    "subject",
+    "interpersonal-group",
+    "object",
+    "environment",
+    "composition",
+    "color",
+    "texture-material",
+    "style",
+    "activity",
+    "time",
+    "affect",
+    "other",
+]
+
+# Applicability is only ever recorded for the scored axes — "other" has no
+# denominator to belong to.
+ScoredVibeAxis = Literal[
+    "subject",
+    "interpersonal-group",
+    "object",
+    "environment",
+    "composition",
+    "color",
+    "texture-material",
+    "style",
+    "activity",
+    "time",
+    "affect",
+]
+
+
+@app.get("/api/richness/axes")
+def get_richness_axes():
+    """The axis vocabulary, served so the annotation UI can't drift out of
+    sync with what the POST handler accepts."""
+    return {
+        "axes": list(VIBE_AXES),
+        "extra_axes": ["other"],
+        "always_applicable": list(ALWAYS_APPLICABLE_AXES),
+        "info": AXIS_INFO,
+    }
+
+
+class RichnessAtomJudgement(BaseModel):
+    atom: str
+    axes: list[VibeAxis]
+    reason: str | None = None
+
+
+class RichnessAnnotationIn(BaseModel):
+    run: str
+    annotator: str
+    image_path: str
+    atoms: list[RichnessAtomJudgement]
+    # Which axes this image can be covered on at all. Absent (older clients)
+    # means "all of them", i.e. the previous fixed denominator.
+    applicable_axes: list[ScoredVibeAxis] | None = None
+
+
+@app.post("/api/richness/annotations")
+def save_richness_annotation(body: RichnessAnnotationIn):
+    if body.image_path not in _dataset_image_paths("richness", body.run):
+        raise HTTPException(400, "image_path not part of this run's dataset")
+
+    order = {axis: i for i, axis in enumerate(VIBE_AXES + ("other",))}
+
+    def normalize(axes) -> list[str]:
+        """De-duplicate and put axes in canonical order, so annotations are
+        comparable byte-for-byte regardless of the order they were clicked."""
+        return sorted(set(axes), key=order.__getitem__)
+
+    requested = set(VIBE_AXES if body.applicable_axes is None else body.applicable_axes)
+    applicable_axes = normalize(requested | set(ALWAYS_APPLICABLE_AXES))
+    na_axes = [axis for axis in VIBE_AXES if axis not in applicable_axes]
+
+    atoms = [
+        {
+            "atom": a.atom,
+            "axes": normalize(a.axes),
+            "reason": a.reason,
+        }
+        for a in body.atoms
+    ]
+
+    axis_atom_counts = {
+        axis: sum(1 for a in atoms if axis in a["axes"]) for axis in VIBE_AXES + ("other",)
+    }
+    covered_axes = [axis for axis in applicable_axes if axis_atom_counts[axis]]
+    # Atoms tagged on an axis the annotator called N/A: not scored either
+    # way, but worth surfacing since one of the two judgements is wrong.
+    conflicting_axes = [axis for axis in na_axes if axis_atom_counts[axis]]
+    unlabeled_atom_count = sum(1 for a in atoms if not a["axes"])
+
+    record = {
+        "image_path": body.image_path,
+        "annotator": body.annotator,
+        "run": body.run,
+        "updated_at": datetime.now(UTC).isoformat(),
+        "atoms": atoms,
+        "axis_atom_counts": axis_atom_counts,
+        "applicable_axes": applicable_axes,
+        "na_axes": na_axes,
+        "covered_axes": covered_axes,
+        "conflicting_axes": conflicting_axes,
+        "unlabeled_atom_count": unlabeled_atom_count,
+        "score": round(len(covered_axes) / len(applicable_axes), 4),
+    }
+
+    data = _load_human("richness", body.run, body.annotator)
+    data[body.image_path] = record
+    _save_human("richness", body.run, body.annotator, data)
+    return {"saved": record}
+
+
+class NoCacheStaticFiles(StaticFiles):
+    """Serve the annotation UI with ``Cache-Control: no-cache`` so the browser
+    revalidates (ETag -> 304) instead of guessing.
+
+    Without it Starlette sends no Cache-Control at all, so Chrome applies
+    *heuristic* freshness derived from the file's old Last-Modified date and
+    can sit on a cached style.css/app.js for days — silently showing an
+    annotator a stale UI after an edit."""
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
+app.mount("/", NoCacheStaticFiles(directory=STATIC_DIR, html=True), name="static")
