@@ -10,7 +10,7 @@ from vibeai.pipeline.evaluate import evaluate_image
 
 async def test_decomposition_quality_batch(
     n_images, image_dir, representation_prompt_version, decomposition_prompt_version, concurrency,
-    eval_model,
+    eval_model, representation_model, decomposition_model,
 ):
     IMAGES = load_image_paths(n=n_images, seed=0, data_dir=image_dir)
     metric = (
@@ -24,6 +24,8 @@ async def test_decomposition_quality_batch(
             metric,
             representation_prompt_version=representation_prompt_version,
             decomposition_prompt_version=decomposition_prompt_version,
+            representation_model=representation_model,
+            decomposition_model=decomposition_model,
         )
         for image_path in IMAGES
     ]
@@ -52,6 +54,10 @@ async def test_decomposition_quality_batch(
                 details={
                     "representation": test_case.representation,
                     "atoms": test_case.atoms,
+                    # Only present for structured decomposition prompts; kept
+                    # out of the record entirely otherwise, so v1/baseline
+                    # runs keep their existing shape.
+                    **({"atom_details": test_case.atom_details} if test_case.atom_details else {}),
                     **result.details,
                 },
             )

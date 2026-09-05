@@ -12,7 +12,9 @@
     <h1>Decomposition Results Viewer</h1>
     <p style="color:var(--muted); font-size:0.85rem;">
       Browse a run's original images, vibe representations, decompositions, and the
-      LLM judge's verdicts + reasoning. Read-only — no annotation happens here.
+      LLM judge's verdicts + reasoning. For runs decomposed with a structured prompt
+      (v2), each atom's stated evidence and stated vibe can be shown split apart.
+      Read-only — no annotation happens here.
     </p>
     <label for="run-select">Dataset (run)</label>
     <select id="run-select"></select>
@@ -35,6 +37,7 @@
       <div id="main-inner">
         <div class="toolbar">
           <button id="toggle-image-btn">Show image</button>
+          <button id="toggle-split-btn">Show evidence / vibe</button>
         </div>
 
         <div class="panel">

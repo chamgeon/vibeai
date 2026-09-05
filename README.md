@@ -26,6 +26,12 @@ uv run pytest tests/test_decomposition_quality.py --representation-prompt-versio
 uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=baseline -s
 uv run pytest tests/test_decomposition_quality.py --concurrency=30 -s
 
+# models: the two pipeline calls and the judge are set independently
+# (representation/decomposition default to DEFAULT_MODEL, the judge to DEFAULT_EVAL_MODEL)
+uv run pytest tests/test_decomposition_quality.py --representation-model=gpt-5.6-luna -s
+uv run pytest tests/test_decomposition_quality.py --decomposition-model=gpt-5.6-luna -s
+uv run pytest tests/test_decomposition_quality.py --eval-model=gpt-5 -s
+
 # human annotation webapp
 uv run uvicorn vibeai.webapp.server:app --reload   # then open http://localhost:8000
 

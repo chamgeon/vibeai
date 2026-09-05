@@ -33,6 +33,18 @@ def pytest_addoption(parser):
         help="Max concurrent evaluations in batch eval tests.",
     )
     parser.addoption(
+        "--representation-model",
+        default=None,
+        help="Model used for the representation call in batch eval tests. "
+        "Defaults to the pipeline's own default (DEFAULT_MODEL).",
+    )
+    parser.addoption(
+        "--decomposition-model",
+        default=None,
+        help="Model used for the decomposition call in batch eval tests. "
+        "Defaults to the pipeline's own default (DEFAULT_MODEL).",
+    )
+    parser.addoption(
         "--eval-model",
         default=None,
         help="Model used for judge/metric calls in batch eval tests. "
@@ -67,6 +79,16 @@ def decomposition_prompt_version(request) -> str:
 @pytest.fixture
 def concurrency(request) -> int:
     return int(request.config.getoption("--concurrency"))
+
+
+@pytest.fixture
+def representation_model(request) -> str | None:
+    return request.config.getoption("--representation-model")
+
+
+@pytest.fixture
+def decomposition_model(request) -> str | None:
+    return request.config.getoption("--decomposition-model")
 
 
 @pytest.fixture

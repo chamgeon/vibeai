@@ -167,7 +167,9 @@ It can include:
 It should not merely describe objective visual facts.
 
 **2. Atomicity**
-Each atom should express a single, independently evaluable affective interpretation. Closely related or synonymous vibes may be grouped together if they represent the same underlying vibe. Meaningful vibe phrases should remain intact, do not split them into fragments that lose their original meaning.
+Each atom should express a single, independently evaluable affective interpretation. Closely related or synonymous vibes must still be separated into their own atoms.
+This does not mean splitting on every word. A meaningful vibe phrase that names one interpretation should remain intact, even when it is several words long ("retro surf-café feel", "quietly productive", "getting things done with a personal touch"). 
+Split when the original joins distinct descriptors with a comma or "and"; keep intact when the words together name a single vibe.
 
 **3. Fidelity**
 The atom should faithfully decompose the original representation.
@@ -205,7 +207,7 @@ Every atom is exactly one of these two types. An evidence_backed atom always has
 ### Extracting `vibe`
 - `vibe` is a non-empty string for every atom, whether vibe_only or evidence_backed.
 - It is the affective content of the atom, with the connective and the evidence stripped away.
-- Use the exact wording of the atom. Keep meaningful multi-word vibe phrases intact ("retro surf-café feel", "getting things done with a personal touch"), and keep grouped synonyms together ("homey, lived-in feel").
+- Use the exact wording of the atom. Keep meaningful multi-word vibe phrases intact ("retro surf-café feel", "getting things done with a personal touch"). Since each atom already carries a single descriptor, `vibe` should never contain two vibes joined by a comma or "and".
 - Do not add a subject or reconstruct a sentence. Write the vibe as the phrase it appears as in the atom.
 
 
@@ -221,7 +223,8 @@ Cozy, calm, and quietly productive. Warm wood and soft light give it a homey, li
   {{"atom": "The vibe is cozy.", "type": "vibe_only", "evidence": null, "vibe": "cozy"}},
   {{"atom": "The vibe is calm.", "type": "vibe_only", "evidence": null, "vibe": "calm"}},
   {{"atom": "The vibe is quietly productive.", "type": "vibe_only", "evidence": null, "vibe": "quietly productive"}},
-  {{"atom": "Warm wood and soft light give it a homey, lived‑in feel.", "type": "evidence_backed", "evidence": ["warm wood", "soft light"], "vibe": "homey, lived‑in feel"}},
+  {{"atom": "Warm wood and soft light give it a homey feel.", "type": "evidence_backed", "evidence": ["warm wood", "soft light"], "vibe": "homey feel"}},
+  {{"atom": "Warm wood and soft light give it a lived‑in feel.", "type": "evidence_backed", "evidence": ["warm wood", "soft light"], "vibe": "lived‑in feel"}},
   {{"atom": "The coffee mug, leather chair, and shelves add comfort.", "type": "evidence_backed", "evidence": ["the coffee mug", "leather chair", "shelves"], "vibe": "comfort"}},
   {{"atom": "The coffee mug, leather chair, and shelves add personality.", "type": "evidence_backed", "evidence": ["the coffee mug", "leather chair", "shelves"], "vibe": "personality"}},
   {{"atom": "The vibe feels like a relaxed work-from-home morning.", "type": "vibe_only", "evidence": null, "vibe": "relaxed work-from-home morning"}},
@@ -230,7 +233,7 @@ Cozy, calm, and quietly productive. Warm wood and soft light give it a homey, li
   {{"atom": "The vibe is grounded.", "type": "vibe_only", "evidence": null, "vibe": "grounded"}}
 ]
 
-*Note: "homey, lived‑in feel" groups similar vibes together while preserving the visual evidence. "The coffee mug, leather chair, and shelves" support two distinct vibes (comfort, personality), so the evidence is repeated in each atom rather than merged into one, and the same three cues are listed in both atoms' `evidence`.*
+*Note: "homey, lived‑in feel" is two descriptors, so it becomes two atoms even though they are closely related; the evidence is repeated in both. "The coffee mug, leather chair, and shelves" support two distinct vibes (comfort, personality), so the evidence is likewise repeated in each atom rather than merged into one.*
 
 ### Example 2
 **Vibe Representation**
@@ -242,10 +245,11 @@ Cozy, nostalgic country-store vibe. Warm wood shelves and a lantern-style light 
   {{"atom": "The image has a nostalgic country-store vibe.", "type": "vibe_only", "evidence": null, "vibe": "nostalgic country-store"}},
   {{"atom": "Warm wood shelves and a lantern-style light give it a rustic feel.", "type": "evidence_backed", "evidence": ["warm wood shelves", "a lantern-style light"], "vibe": "rustic feel"}},
   {{"atom": "Warm wood shelves and a lantern-style light give it a homey feel.", "type": "evidence_backed", "evidence": ["warm wood shelves", "a lantern-style light"], "vibe": "homey feel"}},
-  {{"atom": "Colorful, neatly packed snacks make it feel like a fun, well-stocked treasure trove.", "type": "evidence_backed", "evidence": ["colorful, neatly packed snacks"], "vibe": "fun, well-stocked treasure trove"}}
+  {{"atom": "Colorful, neatly packed snacks make it feel like a fun treasure trove.", "type": "evidence_backed", "evidence": ["colorful, neatly packed snacks"], "vibe": "fun treasure trove"}},
+  {{"atom": "Colorful, neatly packed snacks make it feel like a well-stocked treasure trove.", "type": "evidence_backed", "evidence": ["colorful, neatly packed snacks"], "vibe": "well-stocked treasure trove"}}
 ]
 
-*Note: "colorful, neatly packed snacks" stays a single evidence item — the adjectives modify one cue rather than naming separate cues.*
+*Note: "a fun, well-stocked treasure trove" carries two descriptors over one shared noun, so it becomes two atoms, each keeping "treasure trove" so the vibe stays interpretable on its own. On the evidence side, "colorful, neatly packed snacks" stays a single item — those adjectives modify one cue rather than naming separate cues.*
 
 ### Example 3
 **Vibe Representation**

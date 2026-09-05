@@ -514,3 +514,64 @@ button.primary:hover {
   padding-left: 18px;
   color: var(--muted);
 }
+
+
+/* Evidence/vibe split of a structured (v2) decomposition atom, shown in the
+   read-only decomposition results viewer. */
+.atom-split {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.atom-split .split-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.atom-split .split-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  min-width: 66px;
+}
+
+.atom-split .chip {
+  font-size: 0.8rem;
+  padding: 2px 9px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.atom-split .chip.evidence {
+  background: #eef2f7;
+}
+
+.atom-split .chip.vibe {
+  background: #f4eef7;
+  font-weight: 600;
+}
+
+.atom-split .chip.none {
+  color: var(--muted);
+  font-style: italic;
+  border-style: dashed;
+}
+
+.atom-type-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
