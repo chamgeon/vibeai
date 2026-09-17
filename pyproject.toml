@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "anthropic>=1.6.0",
     "fastapi>=0.140.0",
     "openai>=2.48.0",
     "pillow>=12.3.0",
