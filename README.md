@@ -20,10 +20,15 @@ uv run pytest tests/ -v -s
 uv run pytest tests/test_decomposition_quality.py --n-images=20 -s
 uv run pytest tests/test_plausibility.py --n-images=all -s
 
+# richness: how much of each holdout image's vibe pool a representation covered.
+# The image set comes from the pool file, not --image-dir.
+uv run pytest tests/test_richness.py -s
+uv run pytest tests/test_richness.py --pool=annotations/richness_holdout.vibes.json -s
+
 # other batch eval options (defaults shown)
 uv run pytest tests/test_decomposition_quality.py --image-dir=data/main_processed -s
-uv run pytest tests/test_decomposition_quality.py --representation-prompt-version=baseline -s
-uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=baseline -s
+uv run pytest tests/test_decomposition_quality.py --representation-prompt-version=v1 -s
+uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=v2 -s
 uv run pytest tests/test_decomposition_quality.py --concurrency=30 -s
 
 # models: the two pipeline calls and the judge are set independently
@@ -36,7 +41,8 @@ uv run pytest tests/test_decomposition_quality.py --eval-model=gpt-5 -s
 uv run -m vibeai.pipeline.pool_construction --image-dir data/richness_holdout
 uv run -m vibeai.pipeline.pool_construction --n-images 5 --models gpt-5.6-luna claude-opus-5
 
-# human annotation webapp
+# human annotation webapps + read-only results viewers
+# (decomposition quality, plausibility, richness — cross-linked from every start screen)
 uv run uvicorn vibeai.webapp.server:app --reload   # then open http://localhost:8000
 
 # LLM/human agreement (Cohen's kappa)

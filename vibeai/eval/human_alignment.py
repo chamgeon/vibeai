@@ -1,6 +1,6 @@
 """Compute Cohen's kappa between LLM-as-a-judge verdicts and one or more
-human annotation files produced by the webapp in ``vibeai/webapp``, for
-either the ``decomposition_quality`` or ``plausibility`` metric.
+human annotation files produced by the webapp in ``vibeai/webapp``, for the
+``decomposition_quality``, ``plausibility`` or ``richness`` metric.
 
 Pairs records by ``image_path`` (the same key used in
 ``results/<metric>/<run>.per_image.jsonl`` and in
@@ -11,6 +11,7 @@ Usage:
     python -m vibeai.eval.human_alignment baseline__baseline_1785814420 --annotator mingeon
     python -m vibeai.eval.human_alignment <run> --annotator alice --annotator bob
     python -m vibeai.eval.human_alignment baseline__v1_1786409728 --metric plausibility --annotator mingeon
+    python -m vibeai.eval.human_alignment baseline__v2_1789975357 --metric richness --annotator mingeon
 """
 
 import argparse
@@ -119,6 +120,51 @@ def align_and_report_plausibility(run: str, annotators: list[str]) -> None:
                     print(f"    - {atom_type:<16} (n={len(by_type_llm[atom_type])}) kappa: {kappa:.3f}")
 
 
+def align_and_report_richness(run: str, annotators: list[str]) -> None:
+    """Pool-vibe-level covered/missed agreement. The LLM judge's per-candidate
+    ``verdict`` ("redundant"/"distinct") is the same call the human made as
+    covered/missed, so the two pair directly - as long as both sides judged
+    the same pool in the same order, which the metric's own validation and the
+    webapp's blind pool view both enforce."""
+    llm = load_llm("richness", run)
+
+    for annotator in annotators:
+        human = load_human("richness", run, annotator)
+        shared = sorted(set(llm) & set(human))
+        print(f"\n=== annotator: {annotator} — {len(shared)}/{len(human)} annotated images matched to LLM run '{run}' ===")
+        if not shared:
+            continue
+
+        verdict_llm, verdict_human = [], []
+        coverage_diffs = []
+
+        for image_path in shared:
+            l_judgements = llm[image_path]["judgements"]
+            h_judgements = human[image_path]["judgements"]
+            if len(l_judgements) != len(h_judgements):
+                print(f"  ! pool size mismatch for {image_path} (llm={len(l_judgements)}, human={len(h_judgements)}); skipping")
+                continue
+            l_covered = 0
+            h_covered = 0
+            for lj, hj in zip(l_judgements, h_judgements):
+                l_is_covered = lj["verdict"] == "redundant"
+                verdict_llm.append(l_is_covered)
+                verdict_human.append(hj["covered"])
+                l_covered += l_is_covered
+                h_covered += hj["covered"]
+            n = len(l_judgements)
+            coverage_diffs.append(abs(l_covered - h_covered) / n)
+
+        if verdict_llm:
+            n_vibes = len(verdict_llm)
+            agreement = sum(a == b for a, b in zip(verdict_llm, verdict_human)) / n_vibes
+            print(f"  Pool vibe coverage (unweighted kappa, n={n_vibes} pool vibes): "
+                  f"{cohen_kappa(verdict_llm, verdict_human, [True, False]):.3f} "
+                  f"(raw agreement: {agreement:.3f})")
+            print(f"  Image coverage score (mean |Δ| on 0-1 scale, n={len(coverage_diffs)}): "
+                  f"{sum(coverage_diffs) / len(coverage_diffs):.3f}")
+
+
 def align_and_report(run: str, annotators: list[str]) -> None:
     llm = load_llm("decomposition_quality", run)
 
@@ -177,7 +223,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run", help="run name, e.g. baseline__baseline_1785814420")
     parser.add_argument(
-        "--metric", choices=["decomposition_quality", "plausibility"],
+        "--metric", choices=["decomposition_quality", "plausibility", "richness"],
         default="decomposition_quality",
     )
     parser.add_argument(
@@ -187,6 +233,8 @@ def main():
     args = parser.parse_args()
     if args.metric == "plausibility":
         align_and_report_plausibility(args.run, args.annotator)
+    elif args.metric == "richness":
+        align_and_report_richness(args.run, args.annotator)
     else:
         align_and_report(args.run, args.annotator)
 

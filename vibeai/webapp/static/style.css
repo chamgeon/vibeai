@@ -575,3 +575,29 @@ button.primary:hover {
   border: 1px solid var(--border);
   color: var(--muted);
 }
+
+
+/* Target vibe set of a richness item: the representation's own vibes, shown
+   as a row of chips above the pool being judged against them. */
+.vibe-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vibe-chip {
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #f4eef7;
+  font-weight: 600;
+}
+
+.vibe-chip.empty {
+  background: none;
+  border-style: dashed;
+  color: var(--muted);
+  font-weight: 400;
+  font-style: italic;
+}
