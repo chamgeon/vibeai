@@ -1,7 +1,7 @@
 """Decomposition: vibe representation -> list of atomic vibe claims."""
 
 from vibeai.eval.parsing import extract_json
-from vibeai.llm.client import DEFAULT_MODEL, call_text, call_text_async
+from vibeai.llm.client import DEFAULT_DECOMPOSITION_MODEL, call_text, call_text_async
 from vibeai.prompts.decomposition import PROMPTS
 
 # Decomposition prompt versions whose output is an array of atom *objects*
@@ -145,7 +145,7 @@ def _validator_for(prompt_version: str):
 def decompose(
     representation: str,
     prompt_version: str = "baseline",
-    model: str = DEFAULT_MODEL,
+    model: str = DEFAULT_DECOMPOSITION_MODEL,
 ) -> tuple[list[str], list[dict] | None]:
     prompt = PROMPTS[prompt_version].format(representation=representation)
     raw = call_text(
@@ -157,7 +157,7 @@ def decompose(
 async def decompose_async(
     representation: str,
     prompt_version: str = "baseline",
-    model: str = DEFAULT_MODEL,
+    model: str = DEFAULT_DECOMPOSITION_MODEL,
 ) -> tuple[list[str], list[dict] | None]:
     prompt = PROMPTS[prompt_version].format(representation=representation)
     raw = await call_text_async(

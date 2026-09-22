@@ -8,7 +8,7 @@ re-assembling it.
 from pathlib import Path
 
 from vibeai.eval.test_cases import DecompositionTestCase
-from vibeai.llm.client import DEFAULT_MODEL
+from vibeai.llm.client import DEFAULT_DECOMPOSITION_MODEL, DEFAULT_MODEL
 from vibeai.metrics.base import Metric, MetricResult
 from vibeai.pipeline.decompose import decompose_async, decompose_direct
 from vibeai.pipeline.represent import generate_representation_async
@@ -27,8 +27,9 @@ async def evaluate_image(
     representation_model: str | None = None,
     decomposition_model: str | None = None,
 ) -> tuple[DecompositionTestCase, MetricResult]:
-    """``representation_model``/``decomposition_model`` default to the
-    pipeline's DEFAULT_MODEL; the judge's model is set on ``metric`` itself."""
+    """``representation_model`` defaults to DEFAULT_MODEL and
+    ``decomposition_model`` to DEFAULT_DECOMPOSITION_MODEL; the judge's model is
+    set on ``metric`` itself."""
     representation = await generate_representation_async(
         image_path,
         prompt_version=representation_prompt_version,
@@ -41,7 +42,7 @@ async def evaluate_image(
         atoms, atom_details = await decompose_async(
             representation,
             prompt_version=decomposition_prompt_version,
-            model=decomposition_model or DEFAULT_MODEL,
+            model=decomposition_model or DEFAULT_DECOMPOSITION_MODEL,
         )
 
     test_case = DecompositionTestCase(

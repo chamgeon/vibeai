@@ -37,35 +37,16 @@ from vibeai.llm.usage_log import log_call
 load_dotenv()
 
 DEFAULT_MODEL = "gpt-5.6-luna"
-# Used by judge/metric calls (plausibility, decomposition-quality), which
-# want gpt-5's evaluation behavior rather than the generation-tuned default.
+DEFAULT_DECOMPOSITION_MODEL = "gpt-5"
 DEFAULT_EVAL_MODEL = "gpt-5"
-# Anthropic counterpart of DEFAULT_MODEL, for callers that want the same
-# pipeline step run by the other provider (see pipeline/pool_construction.py).
 DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
+
 CACHE_DIR = Path(".cache/llm")
 
 ANTHROPIC_MODEL_PREFIX = "claude-"
-# Non-streaming ceiling that stays well under the SDK's HTTP timeout. Vibe
-# representations are a few hundred tokens; the headroom is for thinking.
 ANTHROPIC_MAX_TOKENS = 16000
-
-# How hard Claude thinks before answering: "low", "medium", "high", "xhigh",
-# "max", or None to send nothing and take the API default.
-#
-# The default is not free. We never pass ``thinking``, which on current models
-# means adaptive thinking runs anyway, and ``effort`` defaults to "high" - so
-# out of the box every Claude call reasons at high effort, which is why the
-# Claude branches are far slower than the OpenAI ones. "low"/"medium" cut that
-# sharply. It is a quality knob as much as a speed one, so measure a change
-# with the plausibility metric rather than assuming it is free in the other
-# direction. Set it via ``set_anthropic_effort`` so the cache stays honest.
-# Note that entries cached before this default moved off None were produced at
-# the API default of "high" and live under a different key, so they are simply
-# not reused - no run silently mixes the two.
 ANTHROPIC_EFFORT: str | None = "medium"
 ANTHROPIC_EFFORT_LEVELS = ("low", "medium", "high", "xhigh", "max")
-
 
 def set_anthropic_effort(effort: str | None) -> None:
     if effort is not None and effort not in ANTHROPIC_EFFORT_LEVELS:
@@ -75,12 +56,6 @@ def set_anthropic_effort(effort: str | None) -> None:
     global ANTHROPIC_EFFORT
     ANTHROPIC_EFFORT = effort
 
-# Batch runs over hundreds of images sustain enough concurrent requests to hit
-# rate limits repeatedly, not just transiently - the SDK's default of 2 isn't
-# enough headroom, so give it more retries with backoff before giving up.
-# Retries are handled manually (see _call_with_retry* below) rather than by
-# the SDK, so an out-of-credit account fails immediately instead of retrying
-# a call that can never succeed.
 MAX_RETRIES = 8
 RETRY_BASE_DELAY_SECONDS = 1.0
 RETRY_MAX_DELAY_SECONDS = 30.0

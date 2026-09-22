@@ -61,6 +61,7 @@ from vibeai.llm.client import (
     ANTHROPIC_EFFORT,
     ANTHROPIC_EFFORT_LEVELS,
     DEFAULT_ANTHROPIC_MODEL,
+    DEFAULT_DECOMPOSITION_MODEL,
     DEFAULT_EVAL_MODEL,
     DEFAULT_MODEL,
     call_text_async,
@@ -346,7 +347,7 @@ async def build_pool(
     image_paths: list[Path],
     branches: list[PoolBranch],
     eval_model: str = DEFAULT_EVAL_MODEL,
-    decomposition_model: str = DEFAULT_MODEL,
+    decomposition_model: str = DEFAULT_DECOMPOSITION_MODEL,
     merge_model: str | None = DEFAULT_EVAL_MODEL,
     concurrency: int = 10,
     verbose: bool = True,
@@ -464,8 +465,10 @@ def main() -> None:
     )
     parser.add_argument(
         "--decomposition-model",
-        default=DEFAULT_MODEL,
-        help=f"Model for the v2 decomposition step, held fixed across branches (default: {DEFAULT_MODEL})",
+        default=DEFAULT_DECOMPOSITION_MODEL,
+        help="Model for the v2 decomposition step, held fixed across branches "
+        f"(default: {DEFAULT_DECOMPOSITION_MODEL}). NOTE: annotations/richness_holdout.vibes.json "
+        f"was built with {DEFAULT_MODEL}; rebuilding with a different decomposer changes the pool.",
     )
     parser.add_argument(
         "--eval-model",

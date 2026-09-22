@@ -31,15 +31,15 @@ uv run pytest tests/test_decomposition_quality.py --representation-prompt-versio
 uv run pytest tests/test_decomposition_quality.py --decomposition-prompt-version=v2 -s
 uv run pytest tests/test_decomposition_quality.py --concurrency=30 -s
 
-# models: the two pipeline calls and the judge are set independently
-# (representation/decomposition default to DEFAULT_MODEL, the judge to DEFAULT_EVAL_MODEL)
-uv run pytest tests/test_decomposition_quality.py --representation-model=gpt-5.6-luna -s
-uv run pytest tests/test_decomposition_quality.py --decomposition-model=gpt-5.6-luna -s
+# models: the two pipeline calls and the judge are set independently, and all
+# three default to gpt-5 (DEFAULT_MODEL / DEFAULT_DECOMPOSITION_MODEL / DEFAULT_EVAL_MODEL)
+uv run pytest tests/test_decomposition_quality.py --representation-model=gpt-5 -s
+uv run pytest tests/test_decomposition_quality.py --decomposition-model=gpt-5 -s
 uv run pytest tests/test_decomposition_quality.py --eval-model=gpt-5 -s
 
 # build the vibe pool for a holdout set (4 branches: 2 models x 2 representation prompts)
 uv run -m vibeai.pipeline.pool_construction --image-dir data/richness_holdout
-uv run -m vibeai.pipeline.pool_construction --n-images 5 --models gpt-5.6-luna claude-opus-5
+uv run -m vibeai.pipeline.pool_construction --n-images 5 --models gpt-5 claude-opus-5
 
 # human annotation webapps + read-only results viewers
 # (decomposition quality, plausibility, richness — cross-linked from every start screen)

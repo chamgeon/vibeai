@@ -49,7 +49,7 @@ def pytest_addoption(parser):
         "--decomposition-model",
         default=None,
         help="Model used for the decomposition call in batch eval tests. "
-        "Defaults to the pipeline's own default (DEFAULT_MODEL).",
+        "Defaults to the pipeline's own default (DEFAULT_DECOMPOSITION_MODEL).",
     )
     parser.addoption(
         "--eval-model",
