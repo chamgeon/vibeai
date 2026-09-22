@@ -9,7 +9,8 @@ the pool is the dataset. --n-images still trims it.
 from vibeai.eval.concurrency import gather_bounded_as_completed
 from vibeai.eval.prompt_results import ImageError, ImageResult, aggregate_prompt_results
 from vibeai.metrics.richness import RichnessMetric, load_pool, pool_image_paths
-from vibeai.pipeline.evaluate import evaluate_image
+from vibeai.pipeline.evaluate import effective_models, evaluate_image
+from vibeai.pipeline.workflow_batch import resolve_representations
 
 
 async def test_richness_batch(
@@ -19,6 +20,17 @@ async def test_richness_batch(
     pool = load_pool(pool_path)
     IMAGES = pool_image_paths(pool)[:n_images]
     assert IMAGES, f"No images in the vibe pool at {pool_path}"
+    IMAGES, representations = await resolve_representations(
+        IMAGES, representation_prompt_version, concurrency=concurrency
+    )
+    # What the run record should say produced the representation and the
+    # atoms - not just which model judged them.
+    run_representation_model, run_decomposition_model = effective_models(
+        decomposition_prompt_version=decomposition_prompt_version,
+        representation_model=representation_model,
+        decomposition_model=decomposition_model,
+        representation_supplied=representations is not None,
+    )
 
     metric = (
         RichnessMetric(pool=pool) if eval_model is None
@@ -33,6 +45,7 @@ async def test_richness_batch(
             decomposition_prompt_version=decomposition_prompt_version,
             representation_model=representation_model,
             decomposition_model=decomposition_model,
+            representation=representations.get(str(image_path)) if representations else None,
         )
         for image_path in IMAGES
     ]
@@ -84,6 +97,8 @@ async def test_richness_batch(
             representation_prompt_version=representation_prompt_version,
             decomposition_prompt_version=decomposition_prompt_version,
             model=metric.model,
+            representation_model=run_representation_model,
+            decomposition_model=run_decomposition_model,
             errors=image_errors,
         )
         print(
