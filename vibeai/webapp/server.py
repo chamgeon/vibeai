@@ -227,6 +227,91 @@ def get_image(path: str):
     return FileResponse(candidate)
 
 
+# --- run-vs-run comparison (read-only) -----------------------------------
+
+
+def _compare_row(image_path: str, a: dict | None, b: dict | None) -> dict:
+    """One image's side-by-side. ``a``/``b`` are the two runs' per-image
+    detail dicts; either can be missing when the runs cover different image
+    sets, in which case the row carries what it has and no delta."""
+
+    def leg(rec: dict | None) -> dict:
+        if rec is None:
+            return {"present": False}
+        atoms = rec.get("atoms") or []
+        representation = rec.get("representation") or ""
+        return {
+            "present": True,
+            "score": rec.get("score"),
+            "passed": rec.get("passed"),
+            "n_atoms": len(atoms),
+            # Judge-verdict shape (plausibility); metrics whose atoms are
+            # plain strings simply report no failures.
+            "n_failed": sum(
+                1 for atom in atoms if isinstance(atom, dict) and not atom.get("final_verdict")
+            ),
+            "words": len(representation.split()),
+        }
+
+    left, right = leg(a), leg(b)
+    delta = None
+    if left["present"] and right["present"]:
+        delta = right["score"] - left["score"]
+    return {
+        "image_path": image_path,
+        "a": left,
+        "b": right,
+        "delta": delta,
+        # "regressed" is b scoring below a - the run under test losing ground
+        # against the reference. Tie and missing are distinguished so the page
+        # never shows a green or red light for "we don't know".
+        "status": (
+            "missing"
+            if delta is None
+            else "regressed"
+            if delta < 0
+            else "improved"
+            if delta > 0
+            else "tied"
+        ),
+    }
+
+
+@app.get("/api/compare")
+def compare_runs(metric: str, run_a: str, run_b: str):
+    """Two runs of one metric, joined per image. run_a is the reference and
+    run_b the one under test, so a negative delta is a regression."""
+    _check_metric(metric)
+    a = _load_llm_details(metric, run_a)
+    b = _load_llm_details(metric, run_b)
+
+    rows = [_compare_row(key, a.get(key), b.get(key)) for key in sorted(a.keys() | b.keys())]
+    scored = [row for row in rows if row["delta"] is not None]
+    deltas = [row["delta"] for row in scored]
+
+    def mean(values: list[float]) -> float | None:
+        return sum(values) / len(values) if values else None
+
+    return {
+        "metric": metric,
+        "run_a": run_a,
+        "run_b": run_b,
+        "rows": rows,
+        "summary": {
+            "n": len(rows),
+            "n_paired": len(scored),
+            "n_only_a": sum(1 for row in rows if not row["b"]["present"]),
+            "n_only_b": sum(1 for row in rows if not row["a"]["present"]),
+            "mean_a": mean([row["a"]["score"] for row in scored]),
+            "mean_b": mean([row["b"]["score"] for row in scored]),
+            "mean_delta": mean(deltas),
+            "n_regressed": sum(1 for row in rows if row["status"] == "regressed"),
+            "n_improved": sum(1 for row in rows if row["status"] == "improved"),
+            "n_tied": sum(1 for row in rows if row["status"] == "tied"),
+        },
+    }
+
+
 # --- decomposition_quality: annotation POST (rubric-specific) -------------
 
 

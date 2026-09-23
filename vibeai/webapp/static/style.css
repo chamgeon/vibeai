@@ -601,3 +601,371 @@ button.primary:hover {
   font-weight: 400;
   font-style: italic;
 }
+
+/* --- run comparison page ------------------------------------------------ */
+
+#compare-app {
+  display: none;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+}
+
+#compare-app.active {
+  display: block;
+}
+
+.cmp-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#cmp-heading {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+#cmp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 10px 0 18px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.cmp-key {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  margin-right: 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 600;
+  text-align: center;
+}
+
+#cmp-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 10px;
+}
+
+.cmp-tile {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.cmp-tile-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.cmp-tile-value {
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+
+.cmp-tile-value.tone-bad { color: var(--bad); }
+.cmp-tile-value.tone-good { color: var(--good); }
+.cmp-tile-value.tone-flat { color: var(--muted); }
+
+#cmp-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 22px 0 10px;
+}
+
+.cmp-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cmp-chip {
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.cmp-chip.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cmp-count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-left: 3px;
+}
+
+.cmp-sort {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.cmp-sort select {
+  margin-left: 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  font-size: 0.8rem;
+}
+
+#cmp-table {
+  width: 100%;
+  /* Fixed layout so long image filenames can't push the table past the
+     viewport - the name cell ellipsises instead. */
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+#cmp-table thead th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+#cmp-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.cmp-row {
+  cursor: pointer;
+}
+
+.cmp-row:hover {
+  background: var(--bg);
+}
+
+.col-img { width: 64px; }
+
+.col-img img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  background: var(--bg);
+}
+
+.cmp-name {
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cmp-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.col-num {
+  width: 70px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+.col-delta { width: 190px; }
+
+.delta-num {
+  display: inline-block;
+  width: 48px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.delta-num.neg { color: var(--bad); }
+.delta-num.pos { color: var(--good); }
+
+/* Diverging bar: one hue each side of a neutral zero line. */
+.delta-bar {
+  position: relative;
+  display: inline-block;
+  width: 120px;
+  height: 10px;
+  vertical-align: middle;
+  background: var(--bg);
+  border-radius: 3px;
+}
+
+.delta-zero {
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  bottom: -1px;
+  width: 1px;
+  background: var(--border);
+}
+
+.delta-fill {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  border-radius: 3px;
+}
+
+.delta-fill.neg { background: var(--bad); }
+.delta-fill.pos { background: var(--good); }
+
+.col-status { width: 132px; }
+
+.status-light {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 7px;
+  background: var(--muted);
+}
+
+.status-light.regressed { background: var(--bad); }
+.status-light.improved { background: var(--good); }
+.status-light.tied,
+.status-light.missing {
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
+.status-word {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.cmp-detail-row { display: none; }
+.cmp-detail-row.open { display: table-row; }
+
+.cmp-detail-row td {
+  background: var(--bg);
+  padding: 16px 12px;
+}
+
+.cmp-detail-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.cmp-figure {
+  margin: 0;
+}
+
+.cmp-figure img {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.cmp-side h3 {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cmp-repr {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.cmp-atoms {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.cmp-atoms li {
+  display: flex;
+  gap: 7px;
+  padding: 3px 0;
+  line-height: 1.4;
+}
+
+.cmp-atoms li.fail { color: var(--bad); }
+
+.atom-mark {
+  flex: none;
+  width: 12px;
+}
+
+/* Why the judge rejected an atom - shown only for failed atoms, since a
+   passing atom's three checks are rarely what you came to read. */
+.atom-why {
+  margin: 5px 0 8px;
+  padding: 7px 10px;
+  border-left: 2px solid var(--bad);
+  background: var(--panel);
+  border-radius: 0 6px 6px 0;
+}
+
+.atom-why-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--bad);
+  margin-bottom: 3px;
+}
+
+.atom-why-body {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.atom-cues {
+  margin: 5px 0 0;
+  padding-left: 14px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.cmp-muted {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* The bar is the redundant encoding - the signed number and the status word
+   carry the same information - so it is the first thing to go when the table
+   would otherwise overflow. */
+@media (max-width: 1080px) {
+  .col-delta { width: 70px; }
+  .delta-bar { display: none; }
+}
+
+@media (max-width: 860px) {
+  .cmp-detail-grid { grid-template-columns: 1fr; }
+  .col-img, .cmp-sub { display: none; }
+}

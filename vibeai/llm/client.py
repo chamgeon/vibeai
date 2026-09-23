@@ -195,7 +195,7 @@ def _record_usage(response, model: str, call_type: str) -> None:
 # are the kind of thing that can trip a classifier, and one declined image
 # shouldn't punch a hole in a pool. Flip to False if the beta isn't enabled
 # on the account (every call would 400).
-ANTHROPIC_REFUSAL_FALLBACKS = True
+ANTHROPIC_REFUSAL_FALLBACKS = False
 
 
 def _anthropic_messages(
