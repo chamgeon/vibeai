@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vibe Runs — Comparison</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <div id="setup">
+    <h1>Run Comparison</h1>
+    <p style="color:var(--muted); font-size:0.85rem;">
+      Two runs of one metric, joined per image. Run&nbsp;A is the reference and
+      run&nbsp;B the one under test, so a negative delta means B lost ground.
+      Read-only — no annotation happens here.
+    </p>
+    <label for="metric-select">Metric</label>
+    <select id="metric-select">
+      <option value="plausibility">plausibility</option>
+      <option value="richness">richness</option>
+      <option value="decomposition_quality">decomposition_quality</option>
+    </select>
+    <label for="run-a-select">Run A — reference</label>
+    <select id="run-a-select"></select>
+    <label for="run-b-select">Run B — under test</label>
+    <select id="run-b-select"></select>
+    <button class="primary" id="start-btn">Compare</button>
+    <a class="setup-link" href="/">Decomposition — annotation app →</a>
+    <a class="setup-link" href="/plausibility_results.html">Plausibility — results (read-only) →</a>
+    <a class="setup-link" href="/richness_results.html">Richness — results (read-only) →</a>
+  </div>
+
+  <div id="compare-app">
+    <header id="cmp-header">
+      <div class="cmp-title">
+        <h1 id="cmp-heading">Run comparison</h1>
+        <button id="switch-btn">Switch runs</button>
+      </div>
+      <div id="cmp-legend"></div>
+      <div id="cmp-tiles"></div>
+    </header>
+
+    <div id="cmp-controls">
+      <div class="cmp-filters" id="cmp-filters"></div>
+      <label class="cmp-sort">
+        Sort
+        <select id="sort-select">
+          <option value="delta">Biggest regression first</option>
+          <option value="delta-desc">Biggest improvement first</option>
+          <option value="name">Image name</option>
+          <option value="score-b">Run B score, low first</option>
+        </select>
+      </label>
+    </div>
+
+    <table id="cmp-table">
+      <thead>
+        <tr>
+          <th class="col-img"></th>
+          <th class="col-name">Image</th>
+          <th class="col-num" id="th-a">A</th>
+          <th class="col-num" id="th-b">B</th>
+          <th class="col-delta">Change</th>
+          <th class="col-status">Status</th>
+        </tr>
+      </thead>
+      <tbody id="cmp-body"></tbody>
+    </table>
+    <p id="cmp-empty" class="cmp-muted" style="display:none;">No rows match this filter.</p>
+  </div>
+
+  <script src="/compare.js"></script>
+</body>
+</html>

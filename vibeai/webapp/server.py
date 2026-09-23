@@ -9,18 +9,22 @@ analysis. The human never sees the LLM's verdicts by default, to avoid
 anchoring bias.
 
 Also serves read-only results viewers (static/results.html + results.js,
-static/plausibility_results.html + plausibility_results.js) for browsing a
-run's images, representations, decompositions, and the LLM judge's
+static/plausibility_results.html + plausibility_results.js,
+static/richness_results.html + richness_results.js) for browsing a run's
+images, representations, decompositions, and the LLM judge's
 verdicts/reasoning directly — no annotation involved.
 
-Every metric (decomposition_quality, plausibility, and any added later —
-interpretability, richness, ...) shares the same run-discovery, dataset,
+Every metric (decomposition_quality, plausibility, richness, and any added
+later — interpretability, ...) shares the same run-discovery, dataset,
 LLM-judgement, human-annotation-store, and progress plumbing below,
 parameterized by ``metric``. Adding a new metric only requires:
   1. a ``BLIND_ATOM_FNS[metric]`` entry, if its atoms need to be stripped of
      judge-only fields before being shown to an annotator (skip if atoms are
      already blind, e.g. plain strings)
-  2. a Pydantic annotation-input model + POST ``/api/<metric>/annotations``
+  2. an ``EXTRA_DATASET_FNS[metric]`` entry, if the thing being rated isn't
+     the atom list itself (richness rates *pool vibes* against the atoms;
+     skip if the atoms are what gets rated)
+  3. a Pydantic annotation-input model + POST ``/api/<metric>/annotations``
      handler encoding that metric's rubric/scoring — this part is
      irreducibly metric-specific, since every metric's rubric differs.
 """
@@ -37,7 +41,11 @@ from pydantic import BaseModel
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RESULTS_ROOT = REPO_ROOT / "results"
-DATA_DIR = REPO_ROOT / "data" / "main_processed"
+# Any image under data/ is servable, not just the main pool: richness runs
+# score a separate holdout set (data/richness_holdout) and the viewer has to
+# be able to show those too. The containment check in /api/image is what
+# keeps this from serving the rest of the repo.
+DATA_ROOT = REPO_ROOT / "data"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(title="Vibe Eval — Human Annotation")
@@ -99,6 +107,21 @@ BLIND_ATOM_FNS: dict[str, Callable[[Any], Any]] = {
 }
 
 
+# Extra per-image fields a metric's annotator needs beyond (representation,
+# atoms). Richness is the case that needs this: the thing being rated is the
+# image's *vibe pool*, judged against the representation's vibes, so the pool
+# has to travel with the item - stripped of the judge's own verdicts and
+# witness tests, for the same anti-anchoring reason as BLIND_ATOM_FNS.
+EXTRA_DATASET_FNS: dict[str, Callable[[dict], dict]] = {
+    "richness": lambda details: {
+        "target": details.get("target", []),
+        "pool": [
+            {"candidate": j["candidate"]} for j in details.get("judgements", [])
+        ],
+    },
+}
+
+
 def _load_dataset(metric: str, run: str) -> list[dict]:
     blind = BLIND_ATOM_FNS.get(metric, lambda atom: atom)
     items = []
@@ -109,6 +132,7 @@ def _load_dataset(metric: str, run: str) -> list[dict]:
                 "image_path": rec["image_path"],
                 "representation": details.get("representation", ""),
                 "atoms": [blind(a) for a in details.get("atoms", [])],
+                **EXTRA_DATASET_FNS.get(metric, lambda _details: {})(details),
             }
         )
     return items
@@ -149,7 +173,7 @@ def _dataset_image_paths(metric: str, run: str) -> set[str]:
 # These cover every metric automatically. Only the POST .../annotations
 # handler (rubric-specific scoring) needs a new endpoint per metric.
 
-KNOWN_METRICS = {"decomposition_quality", "plausibility"}
+KNOWN_METRICS = {"decomposition_quality", "plausibility", "richness"}
 
 
 def _check_metric(metric: str) -> None:
@@ -198,9 +222,94 @@ def get_progress(metric: str, run: str, annotator: str):
 @app.get("/api/image")
 def get_image(path: str):
     candidate = (REPO_ROOT / path).resolve()
-    if not candidate.is_relative_to(DATA_DIR.resolve()) or not candidate.is_file():
+    if not candidate.is_relative_to(DATA_ROOT.resolve()) or not candidate.is_file():
         raise HTTPException(404, "image not found")
     return FileResponse(candidate)
+
+
+# --- run-vs-run comparison (read-only) -----------------------------------
+
+
+def _compare_row(image_path: str, a: dict | None, b: dict | None) -> dict:
+    """One image's side-by-side. ``a``/``b`` are the two runs' per-image
+    detail dicts; either can be missing when the runs cover different image
+    sets, in which case the row carries what it has and no delta."""
+
+    def leg(rec: dict | None) -> dict:
+        if rec is None:
+            return {"present": False}
+        atoms = rec.get("atoms") or []
+        representation = rec.get("representation") or ""
+        return {
+            "present": True,
+            "score": rec.get("score"),
+            "passed": rec.get("passed"),
+            "n_atoms": len(atoms),
+            # Judge-verdict shape (plausibility); metrics whose atoms are
+            # plain strings simply report no failures.
+            "n_failed": sum(
+                1 for atom in atoms if isinstance(atom, dict) and not atom.get("final_verdict")
+            ),
+            "words": len(representation.split()),
+        }
+
+    left, right = leg(a), leg(b)
+    delta = None
+    if left["present"] and right["present"]:
+        delta = right["score"] - left["score"]
+    return {
+        "image_path": image_path,
+        "a": left,
+        "b": right,
+        "delta": delta,
+        # "regressed" is b scoring below a - the run under test losing ground
+        # against the reference. Tie and missing are distinguished so the page
+        # never shows a green or red light for "we don't know".
+        "status": (
+            "missing"
+            if delta is None
+            else "regressed"
+            if delta < 0
+            else "improved"
+            if delta > 0
+            else "tied"
+        ),
+    }
+
+
+@app.get("/api/compare")
+def compare_runs(metric: str, run_a: str, run_b: str):
+    """Two runs of one metric, joined per image. run_a is the reference and
+    run_b the one under test, so a negative delta is a regression."""
+    _check_metric(metric)
+    a = _load_llm_details(metric, run_a)
+    b = _load_llm_details(metric, run_b)
+
+    rows = [_compare_row(key, a.get(key), b.get(key)) for key in sorted(a.keys() | b.keys())]
+    scored = [row for row in rows if row["delta"] is not None]
+    deltas = [row["delta"] for row in scored]
+
+    def mean(values: list[float]) -> float | None:
+        return sum(values) / len(values) if values else None
+
+    return {
+        "metric": metric,
+        "run_a": run_a,
+        "run_b": run_b,
+        "rows": rows,
+        "summary": {
+            "n": len(rows),
+            "n_paired": len(scored),
+            "n_only_a": sum(1 for row in rows if not row["b"]["present"]),
+            "n_only_b": sum(1 for row in rows if not row["a"]["present"]),
+            "mean_a": mean([row["a"]["score"] for row in scored]),
+            "mean_b": mean([row["b"]["score"] for row in scored]),
+            "mean_delta": mean(deltas),
+            "n_regressed": sum(1 for row in rows if row["status"] == "regressed"),
+            "n_improved": sum(1 for row in rows if row["status"] == "improved"),
+            "n_tied": sum(1 for row in rows if row["status"] == "tied"),
+        },
+    }
 
 
 # --- decomposition_quality: annotation POST (rubric-specific) -------------
@@ -320,6 +429,59 @@ def save_plausibility_annotation(body: PlausAnnotationIn):
     data = _load_human("plausibility", body.run, body.annotator)
     data[body.image_path] = record
     _save_human("plausibility", body.run, body.annotator, data)
+    return {"saved": record}
+
+
+# --- richness: annotation POST (rubric-specific) ---------------------------
+
+
+class RichnessJudgement(BaseModel):
+    candidate: str
+    # True = the target set already conveys this pool vibe (the judge's
+    # "redundant"); False = the representation missed it ("distinct"). Stored
+    # under both names so the pairing with the LLM's verdicts is direct.
+    covered: bool
+    reason: str | None = None
+
+
+class RichnessAnnotationIn(BaseModel):
+    run: str
+    annotator: str
+    image_path: str
+    judgements: list[RichnessJudgement]
+
+
+@app.post("/api/richness/annotations")
+def save_richness_annotation(body: RichnessAnnotationIn):
+    if body.image_path not in _dataset_image_paths("richness", body.run):
+        raise HTTPException(400, "image_path not part of this run's dataset")
+
+    covered_count = sum(1 for j in body.judgements if j.covered)
+    total = len(body.judgements)
+
+    record = {
+        "image_path": body.image_path,
+        "annotator": body.annotator,
+        "run": body.run,
+        "updated_at": datetime.now(UTC).isoformat(),
+        "judgements": [
+            {
+                "candidate": j.candidate,
+                "covered": j.covered,
+                "verdict": "redundant" if j.covered else "distinct",
+                "reason": j.reason,
+            }
+            for j in body.judgements
+        ],
+        "n_covered": covered_count,
+        "pool_size": total,
+        # Same definition as RichnessMetric: covered share of the pool.
+        "score": round(covered_count / total, 4) if total else 0.0,
+    }
+
+    data = _load_human("richness", body.run, body.annotator)
+    data[body.image_path] = record
+    _save_human("richness", body.run, body.annotator, data)
     return {"saved": record}
 
 

@@ -1,0 +1,3528 @@
+{
+  "data/richness_holdout/2025.jpg": {
+    "image_path": "data/richness_holdout/2025.jpg",
+    "generated_at": "2026-09-17T08:12:12.131131+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "euphoric",
+        "vibe_word": "euphoria",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "collective euphoria",
+          "euphoric",
+          "unified euphoria"
+        ]
+      },
+      {
+        "vibe": "immersive",
+        "vibe_word": "immersive",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "an overwhelming sense of immersion",
+          "immersive",
+          "immersive feel",
+          "immersive vibe"
+        ]
+      },
+      {
+        "vibe": "electric",
+        "vibe_word": "electric",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "electric",
+          "electric energy",
+          "electric mood",
+          "electric peak moment at a concert or DJ set"
+        ]
+      },
+      {
+        "vibe": "club atmosphere",
+        "vibe_word": "club",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "collective wave of energy",
+        "vibe_word": "collective",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "collective wave of energy",
+          "the collective heartbeat of the crowd"
+        ]
+      },
+      {
+        "vibe": "sense of scale",
+        "vibe_word": "scale",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "an overwhelming sense of scale",
+          "sense of scale"
+        ]
+      },
+      {
+        "vibe": "the center of attention",
+        "vibe_word": "center",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "the center of attention",
+          "the charged center of it all"
+        ]
+      },
+      {
+        "vibe": "a crowd fully surrendered to the moment",
+        "vibe_word": "surrendered",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a night detached from ordinary time",
+        "vibe_word": "detached",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "abandon",
+        "vibe_word": "abandon",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "an all-consuming night",
+        "vibe_word": "all-consuming",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "authentic concert photography quality",
+        "vibe_word": "authentic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "being swallowed by the crowd itself",
+        "vibe_word": "swallowed",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "capturing-the-moment vibe",
+        "vibe_word": "capturing-the-moment",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "commanding the crowd",
+        "vibe_word": "commanding",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "connection to the music",
+        "vibe_word": "connection",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "dark vibe",
+        "vibe_word": "dark",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "dramatic mood",
+        "vibe_word": "dramatic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "ecstatic",
+        "vibe_word": "ecstatic",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "feverish",
+        "vibe_word": "feverish",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "focal points of control amid the chaos",
+        "vibe_word": "control",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "frenzy",
+        "vibe_word": "frenzy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "fully engaged",
+        "vibe_word": "engaged",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "heated intensity",
+        "vibe_word": "intensity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "almost primal intensity",
+          "heated intensity"
+        ]
+      },
+      {
+        "vibe": "intensely energetic",
+        "vibe_word": "energetic",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "nightclub or festival vibe",
+        "vibe_word": "nightclub",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "pure adrenaline",
+        "vibe_word": "adrenaline",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "raw energy",
+        "vibe_word": "raw",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "release",
+        "vibe_word": "release",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "shared spectacle",
+        "vibe_word": "shared",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "slightly dreamlike",
+        "vibe_word": "dreamlike",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "stylish late-night atmosphere",
+        "vibe_word": "stylish",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "where the music, crowd, and light blur into one pulse",
+        "vibe_word": "pulse",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "you had to be there concert photography quality",
+        "vibe_word": "you had to be there",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/2322237303083062.jpg": {
+    "image_path": "data/richness_holdout/2322237303083062.jpg",
+    "generated_at": "2026-09-17T08:12:12.131431+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "candid",
+        "vibe_word": "candid",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "candid",
+          "candid feel",
+          "candid lifestyle/street photography feel"
+        ]
+      },
+      {
+        "vibe": "full of movement",
+        "vibe_word": "movement",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "a sense of movement",
+          "enjoying a moment of movement together vibe",
+          "full of movement",
+          "sudden burst of movement"
+        ]
+      },
+      {
+        "vibe": "moody feel",
+        "vibe_word": "moody",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "a slightly moody atmosphere",
+          "moody feel",
+          "slightly moody atmospheric backdrop"
+        ]
+      },
+      {
+        "vibe": "playful feel",
+        "vibe_word": "playful",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "playful closeness",
+          "playful contrast between the couple's dynamic energy and the calm, subdued urban backdrop",
+          "playful feel",
+          "playful sense of momentum"
+        ]
+      },
+      {
+        "vibe": "spontaneous",
+        "vibe_word": "spontaneous",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "spontaneity between them",
+          "spontaneous",
+          "spontaneous energy"
+        ]
+      },
+      {
+        "vibe": "companionable",
+        "vibe_word": "companion",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a sense of companionship",
+          "companionable"
+        ]
+      },
+      {
+        "vibe": "cool",
+        "vibe_word": "cool",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a cool atmosphere",
+          "cool"
+        ]
+      },
+      {
+        "vibe": "coordinated feel",
+        "vibe_word": "coordinated",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "early spring feel",
+        "vibe_word": "spring",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "early spring feel",
+          "quiet chill of a spring morning"
+        ]
+      },
+      {
+        "vibe": "energetic",
+        "vibe_word": "energy",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "bursts of energy",
+          "energetic"
+        ]
+      },
+      {
+        "vibe": "European feel",
+        "vibe_word": "European",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "crisp European atmosphere",
+          "European feel"
+        ]
+      },
+      {
+        "vibe": "liveliness",
+        "vibe_word": "liveliness",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "stylish",
+        "vibe_word": "stylish",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "stylish",
+          "stylish feel"
+        ]
+      },
+      {
+        "vibe": "unplanned dash",
+        "vibe_word": "unplanned",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "an unplanned moment of shared fun",
+          "unplanned dash"
+        ]
+      },
+      {
+        "vibe": "warmth",
+        "vibe_word": "warmth",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "a carefree pulse",
+        "vibe_word": "carefree",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "a contrast between its slightly moody atmospheric backdrop and their joyful energy",
+        "vibe_word": "contrast",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "alive",
+        "vibe_word": "alive",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "calm urban backdrop",
+        "vibe_word": "calm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "curated",
+        "vibe_word": "curated",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "Denmark or similar Nordic country feel",
+        "vibe_word": "Nordic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "dynamic energy",
+        "vibe_word": "dynamic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "ease between them",
+        "vibe_word": "ease",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "editorial eye",
+        "vibe_word": "editorial",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "fresh",
+        "vibe_word": "fresh",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "fun energy",
+        "vibe_word": "fun",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "impulsive dash rather than a posed shot",
+        "vibe_word": "impulsive",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "intimate closeness",
+        "vibe_word": "intimate",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "joyful energy",
+        "vibe_word": "joyful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "kinetic energy",
+        "vibe_word": "kinetic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "lightheartedness",
+        "vibe_word": "lightheartedness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "lightly cinematic",
+        "vibe_word": "cinematic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "residential city block",
+        "vibe_word": "residential",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "slightly mischievous",
+        "vibe_word": "mischievous",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "subdued urban backdrop",
+        "vibe_word": "subdued",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "unbothered by the dreary conditions",
+        "vibe_word": "unbothered",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "urban feel",
+        "vibe_word": "urban",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "urban-running vibe",
+        "vibe_word": "urban-running",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "youthful",
+        "vibe_word": "youthful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/3377768465693917.jpg": {
+    "image_path": "data/richness_holdout/3377768465693917.jpg",
+    "generated_at": "2026-09-17T08:12:12.131434+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "adventurous",
+        "vibe_word": "adventurous",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a little adventurous",
+          "a little adventurous feel",
+          "adventurous",
+          "adventurous desert camping",
+          "adventurous home base"
+        ]
+      },
+      {
+        "vibe": "warm",
+        "vibe_word": "warm",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "communal warmth",
+          "easy warmth",
+          "the lively warmth of human connection",
+          "warm",
+          "warm atmosphere"
+        ]
+      },
+      {
+        "vibe": "a sense of remote escape",
+        "vibe_word": "escape",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a sense of escape from ordinary life",
+          "a sense of remote escape",
+          "rugged Southwestern wilderness escape"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "vibe_word": "nostalgic",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "nostalgic",
+          "nostalgic feel"
+        ]
+      },
+      {
+        "vibe": "camaraderie",
+        "vibe_word": "camaraderie",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "camaraderie",
+          "easy camaraderie"
+        ]
+      },
+      {
+        "vibe": "carefree joy",
+        "vibe_word": "joy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "carefree joy",
+          "joyful energy"
+        ]
+      },
+      {
+        "vibe": "convivial",
+        "vibe_word": "convivial",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "convivial",
+          "convivial atmosphere"
+        ]
+      },
+      {
+        "vibe": "cozy",
+        "vibe_word": "cozy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "cozy",
+          "cozy feel"
+        ]
+      },
+      {
+        "vibe": "relaxed",
+        "vibe_word": "relaxed",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "a moment people remember fondly for years",
+        "vibe_word": "remember",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "a night with no rush",
+        "vibe_word": "no rush",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "almost cinematic quality",
+        "vibe_word": "cinematic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "campfire vibe",
+        "vibe_word": "campfire",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "classic quality",
+        "vibe_word": "classic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "communal",
+        "vibe_word": "communal",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "communal",
+          "communal feel"
+        ]
+      },
+      {
+        "vibe": "desert-night atmosphere",
+        "vibe_word": "desert-night",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "desert-wilderness feel",
+        "vibe_word": "desert-wilderness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "fleeting",
+        "vibe_word": "fleeting",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "freedom",
+        "vibe_word": "freedom",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "friendly",
+        "vibe_word": "friendly",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "friendly",
+          "friendly feel"
+        ]
+      },
+      {
+        "vibe": "genuine connection",
+        "vibe_word": "connection",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "intimate",
+        "vibe_word": "intimate",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "just good company under the stars",
+        "vibe_word": "company",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "like a story or joke has just landed",
+        "vibe_word": "story",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "memorable evening outdoors with friends",
+        "vibe_word": "memorable",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "reminiscent of scout camps, road trips, or family reunions",
+        "vibe_word": "reminiscent",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "rugged feel",
+        "vibe_word": "rugged",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "shared storytelling",
+        "vibe_word": "storytelling",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "spontaneous energy",
+        "vibe_word": "spontaneous",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "temporary home base",
+        "vibe_word": "temporary",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "togetherness",
+        "vibe_word": "togetherness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "wonderfully unhurried",
+        "vibe_word": "unhurried",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/aesthetic_drive_in_movie.jpg": {
+    "image_path": "data/richness_holdout/aesthetic_drive_in_movie.jpg",
+    "generated_at": "2026-09-17T08:12:12.131435+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "comfort",
+        "vibe_word": "comfort",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "comfort",
+          "comforting",
+          "comforting date night",
+          "comfortingly old-fashioned",
+          "homemade kind of comfort",
+          "soft-edged comfort"
+        ]
+      },
+      {
+        "vibe": "cozy",
+        "vibe_word": "cozy",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "cozy",
+          "cozy feel",
+          "modern coziness"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "vibe_word": "nostalgic",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "easy nostalgia",
+          "nostalgic",
+          "nostalgic drive-in movie atmosphere",
+          "nostalgic drive-in movie night vibe",
+          "nostalgic feel"
+        ]
+      },
+      {
+        "vibe": "communal feeling",
+        "vibe_word": "communal",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "communal feeling",
+          "communal sense of anticipation",
+          "communal yet private experience"
+        ]
+      },
+      {
+        "vibe": "intimate",
+        "vibe_word": "intimate",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "intimate",
+          "intimate feeling"
+        ]
+      },
+      {
+        "vibe": "leisurely",
+        "vibe_word": "leisure",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "deliberate leisure",
+          "leisurely",
+          "slow leisure"
+        ]
+      },
+      {
+        "vibe": "relaxed",
+        "vibe_word": "relaxed",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "relaxed",
+          "relaxed evening out"
+        ]
+      },
+      {
+        "vibe": "retro movie-night charm",
+        "vibe_word": "charm",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "charm of old-school drive-in culture",
+          "retro movie-night charm"
+        ]
+      },
+      {
+        "vibe": "warm little cocoon",
+        "vibe_word": "cocoon",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a soft little cocoon",
+          "warm little cocoon"
+        ]
+      },
+      {
+        "vibe": "a great movie under the stars",
+        "vibe_word": "stars",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "a little kitschy feel",
+        "vibe_word": "kitschy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a little magical",
+        "vibe_word": "magical",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "a suspended moment before full dark",
+        "vibe_word": "suspended",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "alone together feeling",
+        "vibe_word": "alone together",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "blankets pulled close",
+        "vibe_word": "blankets",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "casual",
+        "vibe_word": "casual",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "content to watch the story unfold",
+        "vibe_word": "content",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "date night",
+        "vibe_word": "date night",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "deliberately unfussy vibe",
+        "vibe_word": "unfussy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "dreamy vibe",
+        "vibe_word": "dreamy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "drive-in movie night feel",
+        "vibe_word": "drive-in",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "everyone facing the same light",
+        "vibe_word": "light",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "family outing",
+        "vibe_word": "family",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "friend hangout",
+        "vibe_word": "hangout",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "fun-night-out feel",
+        "vibe_word": "fun",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "good company",
+        "vibe_word": "company",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "laid-back experience",
+        "vibe_word": "laid-back",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "low-effort happiness",
+        "vibe_word": "happiness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "playful feel",
+        "vibe_word": "playful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "sheltered feeling",
+        "vibe_word": "sheltered",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "simple pleasures",
+        "vibe_word": "pleasures",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "slightly retro",
+        "vibe_word": "retro",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "the first hush of evening",
+        "vibe_word": "hush",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "treats in hand",
+        "vibe_word": "treats",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "unbothered by the world outside",
+        "vibe_word": "unbothered",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "unhurried calm",
+        "vibe_word": "calm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "wrapped up",
+        "vibe_word": "wrapped",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/city_tokyo.jpg": {
+    "image_path": "data/richness_holdout/city_tokyo.jpg",
+    "generated_at": "2026-09-17T08:12:12.131437+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "cinematic",
+        "vibe_word": "cinematic",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "almost cinematic stillness",
+          "cinematic",
+          "cinematic feel",
+          "cinematic mood",
+          "cinematic sense"
+        ]
+      },
+      {
+        "vibe": "intimate",
+        "vibe_word": "intimate",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "intimate",
+          "intimate sense",
+          "old-world intimacy"
+        ]
+      },
+      {
+        "vibe": "nostalgia",
+        "vibe_word": "nostalgic",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "nostalgia",
+          "nostalgic",
+          "nostalgic charm"
+        ]
+      },
+      {
+        "vibe": "quiet",
+        "vibe_word": "quiet",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "quiet",
+          "quiet continuity rather than modern polish",
+          "quiet feel",
+          "quiet wandering rather than urgency",
+          "quietly beautiful",
+          "quietly beautiful in its ordinariness",
+          "quietly energetic"
+        ]
+      },
+      {
+        "vibe": "gentle mystery",
+        "vibe_word": "mystery",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "gentle mystery",
+          "gentle mystery of an evening wander",
+          "understated mystery"
+        ]
+      },
+      {
+        "vibe": "lived-in density",
+        "vibe_word": "lived-in",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "lived-in density",
+          "lived-in urban texture",
+          "vividly lived-in"
+        ]
+      },
+      {
+        "vibe": "atmospheric",
+        "vibe_word": "atmospheric",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "atmospheric",
+          "atmospheric feel",
+          "unmistakably atmospheric"
+        ]
+      },
+      {
+        "vibe": "contemplative stillness",
+        "vibe_word": "contemplative",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a feeling of contemplation",
+          "contemplative stillness"
+        ]
+      },
+      {
+        "vibe": "melancholic",
+        "vibe_word": "melancholy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "gentle melancholy",
+          "half-melancholy",
+          "melancholic"
+        ]
+      },
+      {
+        "vibe": "traditional Japanese neighborhood street at dusk",
+        "vibe_word": "traditional",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "early evening in a traditional Japanese neighborhood",
+          "traditional Japanese neighborhood street at dusk"
+        ]
+      },
+      {
+        "vibe": "a feeling of solitude",
+        "vibe_word": "solitude",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a private moment of transition between day and night",
+        "vibe_word": "transition",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a scene from a slice-of-life film",
+        "vibe_word": "slice-of-life",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "a sense of history",
+        "vibe_word": "history",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a still frame from memory",
+        "vibe_word": "memory",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "artificial warmth",
+        "vibe_word": "warm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "artificial warmth",
+          "warm, golden light"
+        ]
+      },
+      {
+        "vibe": "authentic urban texture",
+        "vibe_word": "authentic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "beautiful contrast",
+        "vibe_word": "beautiful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "bittersweet mood",
+        "vibe_word": "bittersweet",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "distinctly old residential Japanese backstreet",
+        "vibe_word": "old",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "full of character",
+        "vibe_word": "character",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "half-comforting",
+        "vibe_word": "half-comforting",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "hushed",
+        "vibe_word": "hushed",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "liminal magic hour feeling between day and night",
+        "vibe_word": "liminal",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "moody",
+        "vibe_word": "moody",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "moody",
+          "moody feel"
+        ]
+      },
+      {
+        "vibe": "natural coolness",
+        "vibe_word": "coolness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "peaceful",
+        "vibe_word": "peaceful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "residential Japanese district",
+        "vibe_word": "residential",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "richly layered sense of everyday life",
+        "vibe_word": "everyday",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "slightly weathered",
+        "vibe_word": "weathered",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "tranquil",
+        "vibe_word": "tranquil",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "unhurried",
+        "vibe_word": "unhurried",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "unplanned density",
+        "vibe_word": "unplanned",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "urban",
+        "vibe_word": "urban",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/img_4838.jpg": {
+    "image_path": "data/richness_holdout/img_4838.jpg",
+    "generated_at": "2026-09-17T08:12:12.131439+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "cinematic quality",
+        "vibe_word": "cinematic",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "cinematic nighttime travel glow",
+          "cinematic nighttime vibe",
+          "cinematic quality"
+        ]
+      },
+      {
+        "vibe": "slightly dreamy",
+        "vibe_word": "dreamlike",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "almost dreamlike quality",
+          "dreamlike theatrical quality",
+          "slightly dreamy"
+        ]
+      },
+      {
+        "vibe": "candid moment during an unforgettable night out",
+        "vibe_word": "candid",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "candid moment during an unforgettable night out",
+          "candid travel snapshot rather than a staged photo"
+        ]
+      },
+      {
+        "vibe": "cool",
+        "vibe_word": "cool",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "cool",
+          "effortlessly cool"
+        ]
+      },
+      {
+        "vibe": "iconic wonder",
+        "vibe_word": "iconic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "iconic city energy",
+          "iconic wonder"
+        ]
+      },
+      {
+        "vibe": "moody",
+        "vibe_word": "moody",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "moody",
+          "moody lighting"
+        ]
+      },
+      {
+        "vibe": "personal connection",
+        "vibe_word": "connection",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "personal connection",
+          "quiet personal connection to the moment"
+        ]
+      },
+      {
+        "vibe": "atmospheric lighting",
+        "vibe_word": "atmospheric",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "away from the bustle",
+        "vibe_word": "away",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "awe-inspiring beauty",
+        "vibe_word": "awe-inspiring",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "calm",
+        "vibe_word": "calm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "cinematic sense of adventure",
+        "vibe_word": "adventure",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "cinematic sense of adventure",
+          "nocturnal sense of adventure"
+        ]
+      },
+      {
+        "vibe": "contemplative feeling",
+        "vibe_word": "contemplative",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "easy confidence",
+        "vibe_word": "confidence",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "easy confidence",
+          "unposed confidence"
+        ]
+      },
+      {
+        "vibe": "grand cityscape",
+        "vibe_word": "grand",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "hushed mood",
+        "vibe_word": "hushed",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "intimate travel moment",
+        "vibe_word": "intimate",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "late-night feel",
+        "vibe_word": "late-night",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "monumental",
+        "vibe_word": "monumental",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "one of the world's most recognizable skylines",
+        "vibe_word": "recognizable",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "peaceful stillness",
+        "vibe_word": "peaceful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "perhaps a harbor cruise",
+        "vibe_word": "perhaps",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "perhaps a harbor cruise",
+          "perhaps a nighttime sightseeing excursion"
+        ]
+      },
+      {
+        "vibe": "personal snapshot",
+        "vibe_word": "personal",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "quiet nighttime outing that exists just for her",
+        "vibe_word": "quiet",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "quietly romantic",
+        "vibe_word": "romantic",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "serene feeling",
+        "vibe_word": "serene",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "special evening out",
+        "vibe_word": "special",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "specific, unmistakable place",
+        "vibe_word": "specific",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "story-worthy travel memory",
+        "vibe_word": "story-worthy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "striking nighttime urban vibe",
+        "vibe_word": "striking",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "urban",
+        "vibe_word": "urban",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "urban vastness",
+        "vibe_word": "vastness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "vibrant city backdrop",
+        "vibe_word": "vibrant",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/jezael-melgoza-tbw2njil6dm-unsplash.jpg": {
+    "image_path": "data/richness_holdout/jezael-melgoza-tbw2njil6dm-unsplash.jpg",
+    "generated_at": "2026-09-17T08:12:12.131440+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "futuristic sophistication",
+        "vibe_word": "futuristic",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "distinctly futuristic edge",
+          "futuristic architectural vibe",
+          "futuristic sophistication",
+          "like the inside of a futuristic institution or performance hall"
+        ]
+      },
+      {
+        "vibe": "grandeur",
+        "vibe_word": "grand",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "an almost sculptural sense of architectural grandeur",
+          "grand atmosphere",
+          "grandeur",
+          "like standing inside a machine built for grandeur rather than intimacy"
+        ]
+      },
+      {
+        "vibe": "monumental",
+        "vibe_word": "monumental",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "monumental",
+          "quietly monumental",
+          "the interior of something monumental"
+        ]
+      },
+      {
+        "vibe": "open",
+        "vibe_word": "open",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "open",
+          "openness amid the enclosure"
+        ]
+      },
+      {
+        "vibe": "a quiet sense of awe",
+        "vibe_word": "awe",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a quiet sense of awe",
+          "an atmosphere of controlled awe"
+        ]
+      },
+      {
+        "vibe": "calm",
+        "vibe_word": "calm",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "contemplative",
+        "vibe_word": "contemplative",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "contemporary museum",
+        "vibe_word": "contemporary",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "elegant",
+        "vibe_word": "elegant",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "elegant",
+          "minimalist elegance",
+          "quiet elegance"
+        ]
+      },
+      {
+        "vibe": "modern",
+        "vibe_word": "modern",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "cool modernity",
+          "modern"
+        ]
+      },
+      {
+        "vibe": "serene",
+        "vibe_word": "serene",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "serene",
+          "serene atmosphere"
+        ]
+      },
+      {
+        "vibe": "softens the starkness",
+        "vibe_word": "soften",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "softening the space slightly",
+          "softens the starkness"
+        ]
+      },
+      {
+        "vibe": "spacious",
+        "vibe_word": "spacious",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "a tension between organic flow and rigid structure",
+        "vibe_word": "tension",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "airy",
+        "vibe_word": "airy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "almost hypnotic pattern",
+        "vibe_word": "hypnotic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "architectural artistry",
+        "vibe_word": "artistry",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "architecturally striking",
+        "vibe_word": "striking",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "built for moments of stillness",
+        "vibe_word": "stillness",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "cathedral-like atmosphere",
+        "vibe_word": "cathedral-like",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "caught between architecture as function and architecture as art",
+        "vibe_word": "between",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "civic landmark",
+        "vibe_word": "civic",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "complexity",
+        "vibe_word": "complexity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "corporate atrium",
+        "vibe_word": "corporate",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "geometric",
+        "vibe_word": "geometric",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "hushed",
+        "vibe_word": "hushed",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "immaculate",
+        "vibe_word": "immaculate",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "natural contrast",
+        "vibe_word": "natural",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "precision",
+        "vibe_word": "precision",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "pristine order",
+        "vibe_word": "pristine",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "quiet power",
+        "vibe_word": "power",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "quietly impressive",
+        "vibe_word": "impressive",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "rhythmic pattern",
+        "vibe_word": "rhythmic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "scale",
+        "vibe_word": "scale",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "sleek",
+        "vibe_word": "sleek",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "structural harmony",
+        "vibe_word": "harmony",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "thoughtful design",
+        "vibe_word": "thoughtful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "vast",
+        "vibe_word": "vast",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/lisanhoang.jpg": {
+    "image_path": "data/richness_holdout/lisanhoang.jpg",
+    "generated_at": "2026-09-17T08:12:12.131442+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "casual",
+        "vibe_word": "casual",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "casual",
+          "casual feel",
+          "casual streetwear styling"
+        ]
+      },
+      {
+        "vibe": "playful",
+        "vibe_word": "playful",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "a bit playful",
+          "playful",
+          "playful energy",
+          "playful self-awareness"
+        ]
+      },
+      {
+        "vibe": "stylish",
+        "vibe_word": "stylish",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "self-consciously stylish",
+          "stylish",
+          "stylish aesthetic"
+        ]
+      },
+      {
+        "vibe": "a touch of polish",
+        "vibe_word": "polish",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "a touch of polish",
+          "clever social-media polish"
+        ]
+      },
+      {
+        "vibe": "cool effect",
+        "vibe_word": "cool",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "casually cool",
+          "cool effect",
+          "effortlessly cool energy"
+        ]
+      },
+      {
+        "vibe": "saturated backdrop",
+        "vibe_word": "saturated",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "a sense of layered performance",
+        "vibe_word": "performance",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "authentic lifestyle/social media snapshot feel",
+        "vibe_word": "authentic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "bold feel",
+        "vibe_word": "bold",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "candid grocery-store photoshoot",
+        "vibe_word": "candid",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "carefully curated",
+        "vibe_word": "curated",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "confident streetwear styling",
+        "vibe_word": "confident",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "distinctly like an Asian convenience store or specialty market",
+        "vibe_word": "distinctly",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "dreamlike backdrop",
+        "vibe_word": "dreamlike",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "edgy energy",
+        "vibe_word": "edgy",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "edgy energy",
+          "softened edgy energy"
+        ]
+      },
+      {
+        "vibe": "elevated by the impulse to record it",
+        "vibe_word": "elevated",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "everyday shopping context",
+        "vibe_word": "everyday",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "focus onto the act of image-making itself",
+        "vibe_word": "focus",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "fun",
+        "vibe_word": "fun",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "low-stakes",
+        "vibe_word": "low-stakes",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "maximalist backdrop",
+        "vibe_word": "maximalist",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "meta quality about self-documentation",
+        "vibe_word": "meta",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "meta quality about self-documentation",
+          "meta quality about social media habits"
+        ]
+      },
+      {
+        "vibe": "modern quality",
+        "vibe_word": "modern",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "pop of color",
+        "vibe_word": "pop",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "rebellious glamour",
+        "vibe_word": "rebellious",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "relatable",
+        "vibe_word": "relatable",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "self-aware energy",
+        "vibe_word": "self-aware",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "shopping trip content creator energy",
+        "vibe_word": "content creator",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "slightly dreamy feel",
+        "vibe_word": "dreamy",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "slightly ironic feel",
+        "vibe_word": "ironic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "slightly surreal",
+        "vibe_word": "surreal",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "street-fashion vibe",
+        "vibe_word": "street-fashion",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "trendy aesthetic",
+        "vibe_word": "trendy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "warm feel",
+        "vibe_word": "warm",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "youthful",
+        "vibe_word": "youthful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/ruben-mavarez-jyzgqwpaz9o-unsplash.jpg": {
+    "image_path": "data/richness_holdout/ruben-mavarez-jyzgqwpaz9o-unsplash.jpg",
+    "generated_at": "2026-09-17T08:12:12.131443+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "casual",
+        "vibe_word": "casual",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "casual",
+          "casual toast",
+          "casual toast vibe"
+        ]
+      },
+      {
+        "vibe": "leisure",
+        "vibe_word": "leisure",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "leisure",
+          "leisurely",
+          "leisurely coffee break by the ocean"
+        ]
+      },
+      {
+        "vibe": "relaxed",
+        "vibe_word": "relaxed",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "relaxed",
+          "relaxed atmosphere",
+          "relaxed vibe"
+        ]
+      },
+      {
+        "vibe": "easy",
+        "vibe_word": "easy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "easy",
+          "easygoing coastal morning"
+        ]
+      },
+      {
+        "vibe": "intimacy",
+        "vibe_word": "intimate",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "intimacy",
+          "intimate quality"
+        ]
+      },
+      {
+        "vibe": "nostalgic snapshot of friendship",
+        "vibe_word": "nostalgic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "a touch of nostalgic film-camera charm",
+          "nostalgic snapshot of friendship"
+        ]
+      },
+      {
+        "vibe": "quiet contentment",
+        "vibe_word": "quiet",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet contentment",
+          "quiet pause during outdoor exploration"
+        ]
+      },
+      {
+        "vibe": "quietly joyful",
+        "vibe_word": "joy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "joyful moment of connection between friends",
+          "quietly joyful"
+        ]
+      },
+      {
+        "vibe": "small shared ritual",
+        "vibe_word": "share",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "sharing small rituals with people you love",
+          "small shared ritual"
+        ]
+      },
+      {
+        "vibe": "unhurried joy",
+        "vibe_word": "unhurried",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "unhurried getaway",
+          "unhurried joy"
+        ]
+      },
+      {
+        "vibe": "unpretentious atmosphere",
+        "vibe_word": "unpretentious",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a sense of freedom",
+        "vibe_word": "freedom",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a sense of slow time",
+        "vibe_word": "slow",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "as if the whole day stretches ahead with nowhere urgent to be",
+        "vibe_word": "urgent",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "breezy seaside calm",
+        "vibe_word": "calm",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "candid quality",
+        "vibe_word": "candid",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "carefree coastal-morning feeling",
+        "vibe_word": "carefree",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      },
+      {
+        "vibe": "celebratory",
+        "vibe_word": "celebratory",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "celebratory",
+          "celebratory feel"
+        ]
+      },
+      {
+        "vibe": "escape from routine",
+        "vibe_word": "escape",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "gathering of friends or family",
+        "vibe_word": "gathering",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "genuine \"cheers\" moment between people",
+        "vibe_word": "genuine",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "included in the toast",
+        "vibe_word": "included",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "intimate warmth",
+        "vibe_word": "warmth",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "companionable warmth",
+          "intimate warmth"
+        ]
+      },
+      {
+        "vibe": "laid-back seaside getaway",
+        "vibe_word": "laid-back",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "mild day",
+        "vibe_word": "mild",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "peaceful atmosphere",
+        "vibe_word": "peaceful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "people enjoying each other's company",
+        "vibe_word": "enjoying",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "people united in this simple morning moment",
+        "vibe_word": "united",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "personal human touch",
+        "vibe_word": "personal",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "rather than an outside observer",
+        "vibe_word": "outside",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "snapshot of coastal tranquility",
+        "vibe_word": "tranquility",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "snapshot of simple pleasures",
+        "vibe_word": "simple",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "simple moment of connection between friends",
+          "snapshot of simple pleasures"
+        ]
+      },
+      {
+        "vibe": "spontaneous",
+        "vibe_word": "spontaneous",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "summery vacation vibe",
+        "vibe_word": "summery",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/summer_aesthetic.jpg": {
+    "image_path": "data/richness_holdout/summer_aesthetic.jpg",
+    "generated_at": "2026-09-17T08:12:12.131445+00:00",
+    "branches": [
+      "gpt-5.6-luna__baseline",
+      "gpt-5.6-luna__v1",
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "spontaneous",
+        "vibe_word": "spontaneous",
+        "support": 4,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "spontaneous",
+          "spontaneous fun",
+          "spontaneous rather than planned"
+        ]
+      },
+      {
+        "vibe": "carefree",
+        "vibe_word": "carefree",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "carefree",
+          "carefree outdoor energy",
+          "carefree summer evening vibe",
+          "carefree summer evenings spent outdoors with friends"
+        ]
+      },
+      {
+        "vibe": "cinematic energy",
+        "vibe_word": "cinematic",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "almost cinematic glow",
+          "cinematic energy",
+          "cinematic warmth"
+        ]
+      },
+      {
+        "vibe": "nostalgic feel",
+        "vibe_word": "nostalgic",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "nostalgic feel",
+          "nostalgic glow",
+          "nostalgic summer evening vibe",
+          "nostalgic summer-evening vibe"
+        ]
+      },
+      {
+        "vibe": "warm",
+        "vibe_word": "warm",
+        "support": 3,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__v1"
+        ],
+        "merged_from": [
+          "warm",
+          "warm atmosphere",
+          "warmly social"
+        ]
+      },
+      {
+        "vibe": "camaraderie",
+        "vibe_word": "camaraderie",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "camaraderie",
+          "casual camaraderie"
+        ]
+      },
+      {
+        "vibe": "communal",
+        "vibe_word": "communal",
+        "support": 2,
+        "found_by": [
+          "gpt-5.6-luna__baseline",
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "golden-hour hangout",
+        "vibe_word": "hang out",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "golden-hour hangout",
+          "spectators hanging out"
+        ]
+      },
+      {
+        "vibe": "playful energy",
+        "vibe_word": "playful",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a burst of playful energy",
+          "playful energy"
+        ]
+      },
+      {
+        "vibe": "quiet mood",
+        "vibe_word": "quiet",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet mood",
+          "small-town or suburban quiet"
+        ]
+      },
+      {
+        "vibe": "relaxed vibe",
+        "vibe_word": "relaxed",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__v1",
+          "gpt-5.6-luna__baseline"
+        ],
+        "merged_from": [
+          "a relaxed pickup game",
+          "relaxed vibe"
+        ]
+      },
+      {
+        "vibe": "the day winds down",
+        "vibe_word": "wind down",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "the day winds down",
+          "the fleeting beauty of a day winding down"
+        ]
+      },
+      {
+        "vibe": "youthful",
+        "vibe_word": "youth",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "candid snapshot of youth",
+          "joyful snapshot of youth",
+          "youthful"
+        ]
+      },
+      {
+        "vibe": "a laid-back summer-evening mood",
+        "vibe_word": "laid-back",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "a memory already being replayed",
+        "vibe_word": "memory",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "calm",
+        "vibe_word": "calm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "competitive in motion",
+        "vibe_word": "competitive",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "dreamy atmosphere",
+        "vibe_word": "dreamy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "dusk",
+        "vibe_word": "dusk",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "easy",
+        "vibe_word": "easy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "energetic fun",
+        "vibe_word": "energetic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "friendship",
+        "vibe_word": "friendship",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "outdoors with friends",
+        "vibe_word": "outdoors",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "shared time",
+        "vibe_word": "shared",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "simple authenticity",
+        "vibe_word": "authenticity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "simple authenticity",
+          "unposed authenticity"
+        ]
+      },
+      {
+        "vibe": "simple outdoor fun",
+        "vibe_word": "simple",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "space",
+        "vibe_word": "space",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "summer companionship",
+        "vibe_word": "companionship",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "unguarded",
+        "vibe_word": "unguarded",
+        "support": 1,
+        "found_by": [
+          "gpt-5.6-luna__v1"
+        ]
+      },
+      {
+        "vibe": "unhurried mood",
+        "vibe_word": "unhurried",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  }
+}

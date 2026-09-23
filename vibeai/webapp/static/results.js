@@ -3,6 +3,9 @@ const state = {
   items: [],
   index: 0,
   llmCache: {},
+  // Evidence/vibe split is off by default: only structured (v2) runs carry
+  // atom_details, so the toggle is disabled entirely for runs without it.
+  showSplit: false,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -95,6 +98,12 @@ async function loadItem(i) {
   $("#final-verdict").innerHTML = "";
 
   const llm = await ensureLLMLoaded(item);
+  const btn = $("#toggle-split-btn");
+  const hasSplit = Boolean(atomDetailsFor(llm));
+  btn.disabled = !hasSplit;
+  btn.title = hasSplit
+    ? ""
+    : "This run's decomposition prompt didn't emit an evidence/vibe split (v2 only).";
   renderAtoms(item, llm);
   renderFinalVerdict(llm);
   setSaveStatus(llm ? "" : "No LLM judgement recorded for this image.");
@@ -116,10 +125,58 @@ async function ensureLLMLoaded(item) {
   return data;
 }
 
+function chip(text, cls) {
+  const el = document.createElement("span");
+  el.className = `chip ${cls}`;
+  el.textContent = text;
+  return el;
+}
+
+// atom_details is emitted only by structured decomposition prompts (v2) and
+// rides along on the llm_judgement payload, which spreads the run record's
+// whole `details` dict. Guard on length so a mismatched record can't pair an
+// atom with someone else's split.
+function atomDetailsFor(llm) {
+  const details = llm?.atom_details;
+  if (!Array.isArray(details)) return null;
+  return details;
+}
+
+function buildSplitBlock(detail) {
+  const block = document.createElement("div");
+  block.className = "atom-split";
+
+  const evidenceRow = document.createElement("div");
+  evidenceRow.className = "split-row";
+  const evidenceLabel = document.createElement("span");
+  evidenceLabel.className = "split-label";
+  evidenceLabel.textContent = "Evidence";
+  evidenceRow.appendChild(evidenceLabel);
+  if (Array.isArray(detail.evidence) && detail.evidence.length) {
+    for (const cue of detail.evidence) evidenceRow.appendChild(chip(cue, "evidence"));
+  } else {
+    evidenceRow.appendChild(chip("none stated", "none"));
+  }
+  block.appendChild(evidenceRow);
+
+  const vibeRow = document.createElement("div");
+  vibeRow.className = "split-row";
+  const vibeLabel = document.createElement("span");
+  vibeLabel.className = "split-label";
+  vibeLabel.textContent = "Vibe";
+  vibeRow.appendChild(vibeLabel);
+  vibeRow.appendChild(chip(detail.vibe || "—", "vibe"));
+  block.appendChild(vibeRow);
+
+  return block;
+}
+
 function renderAtoms(item, llm) {
   const container = $("#atoms-container");
   container.innerHTML = "";
   const llmAtoms = llm?.atomic_judgement || [];
+  const details = atomDetailsFor(llm);
+  const paired = details && details.length === item.atoms.length ? details : null;
 
   item.atoms.forEach((atom, idx) => {
     const card = document.createElement("div");
@@ -128,7 +185,17 @@ function renderAtoms(item, llm) {
     const text = document.createElement("div");
     text.className = "atom-text";
     text.textContent = `${idx + 1}. ${atom}`;
+
+    const detail = paired ? paired[idx] : null;
+    if (detail && state.showSplit) {
+      const badge = document.createElement("span");
+      badge.className = "atom-type-badge";
+      badge.textContent = detail.type === "evidence_backed" ? "evidence-backed" : "vibe-only";
+      text.appendChild(badge);
+    }
     card.appendChild(text);
+
+    if (detail && state.showSplit) card.appendChild(buildSplitBlock(detail));
 
     const llmEntry = llmAtoms[idx];
     if (llmEntry) {
@@ -209,6 +276,15 @@ function wireControls() {
       wrap.style.display = "none";
       $("#toggle-image-btn").textContent = "Show image";
     }
+  });
+
+  $("#toggle-split-btn").addEventListener("click", () => {
+    state.showSplit = !state.showSplit;
+    $("#toggle-split-btn").textContent = state.showSplit
+      ? "Hide evidence / vibe"
+      : "Show evidence / vibe";
+    const item = state.items[state.index];
+    renderAtoms(item, state.llmCache[item.image_path]);
   });
 
   $("#switch-btn").addEventListener("click", () => {

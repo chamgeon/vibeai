@@ -23,3 +23,6 @@ wheels/
 data/
 .cache/
 results/
+
+# logs
+*.log

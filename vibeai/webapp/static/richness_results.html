@@ -3,27 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vibe Decomposition — Results Viewer</title>
+  <title>Vibe Richness — Results Viewer</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
   <div id="setup">
-    <h1>Decomposition Results Viewer</h1>
+    <h1>Richness Results Viewer</h1>
     <p style="color:var(--muted); font-size:0.85rem;">
-      Browse a run's original images, vibe representations, decompositions, and the
-      LLM judge's verdicts + reasoning. For runs decomposed with a structured prompt
-      (v2), each atom's stated evidence and stated vibe can be shown split apart.
+      Browse a run's original images, vibe representations, target vibe sets, and the
+      LLM judge's per-pool-vibe coverage verdicts + witness tests.
       Read-only — no annotation happens here.
     </p>
     <label for="run-select">Dataset (run)</label>
     <select id="run-select"></select>
     <button class="primary" id="start-btn">View results</button>
-    <a class="setup-link" href="/">← Go to annotation app</a>
-    <a class="setup-link" href="/plausibility.html">Plausibility — human annotation →</a>
+    <a class="setup-link" href="/richness.html">← Go to richness annotation app</a>
+    <a class="setup-link" href="/results.html">Decomposition — results (read-only) →</a>
     <a class="setup-link" href="/plausibility_results.html">Plausibility — results (read-only) →</a>
-    <a class="setup-link" href="/richness.html">Richness — human annotation →</a>
-    <a class="setup-link" href="/richness_results.html">Richness — results (read-only) →</a>
     <a class="setup-link" href="/compare.html">Compare two runs (read-only) →</a>
   </div>
 
@@ -40,7 +37,7 @@
       <div id="main-inner">
         <div class="toolbar">
           <button id="toggle-image-btn">Show image</button>
-          <button id="toggle-split-btn">Show evidence / vibe</button>
+          <button id="toggle-covered-btn">Hide covered pool vibes</button>
         </div>
 
         <div class="panel">
@@ -50,13 +47,18 @@
         </div>
 
         <div class="panel">
-          <h2>Vibe atoms &amp; LLM judgement</h2>
-          <div id="atoms-container"></div>
+          <h2>Target vibe set (what this representation said)</h2>
+          <div class="vibe-chip-row" id="target-chips"></div>
         </div>
 
         <div class="panel">
-          <h2>Final verdict</h2>
+          <h2>Coverage</h2>
           <div id="final-verdict"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Vibe pool &amp; LLM coverage judgement</h2>
+          <div id="pool-container"></div>
         </div>
 
         <div id="save-bar">
@@ -70,6 +72,6 @@
     </div>
   </div>
 
-  <script src="/results.js"></script>
+  <script src="/richness_results.js"></script>
 </body>
 </html>

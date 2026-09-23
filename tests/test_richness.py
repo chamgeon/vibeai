@@ -1,19 +1,25 @@
-"""Evaluate the baseline representation + baseline decomposition prompts
-using the decomposition-quality judge (Completeness / Atom Quality), across
-many images concurrently."""
+"""Evaluate a representation + decomposition prompt pair with the richness
+judge: how much of each holdout image's vibe pool the representation covered.
+
+Unlike the other batch evals, the image set comes from the pool file rather
+than --image-dir - richness is only defined for images that have a pool, so
+the pool is the dataset. --n-images still trims it.
+"""
 
 from vibeai.eval.concurrency import gather_bounded_as_completed
-from vibeai.eval.dataset import load_image_paths
 from vibeai.eval.prompt_results import ImageError, ImageResult, aggregate_prompt_results
-from vibeai.metrics.decomposition_quality import DecompositionQualityMetric
+from vibeai.metrics.richness import RichnessMetric, load_pool, pool_image_paths
 from vibeai.pipeline.evaluate import effective_models, evaluate_image
 from vibeai.pipeline.workflow_batch import resolve_representations
 
-async def test_decomposition_quality_batch(
-    n_images, image_dir, representation_prompt_version, decomposition_prompt_version, concurrency,
-    eval_model, representation_model, decomposition_model,
+
+async def test_richness_batch(
+    n_images, pool_path, representation_prompt_version, decomposition_prompt_version,
+    concurrency, eval_model, representation_model, decomposition_model,
 ):
-    IMAGES = load_image_paths(n=n_images, seed=0, data_dir=image_dir)
+    pool = load_pool(pool_path)
+    IMAGES = pool_image_paths(pool)[:n_images]
+    assert IMAGES, f"No images in the vibe pool at {pool_path}"
     IMAGES, representations = await resolve_representations(
         IMAGES, representation_prompt_version, concurrency=concurrency
     )
@@ -25,9 +31,10 @@ async def test_decomposition_quality_batch(
         decomposition_model=decomposition_model,
         representation_supplied=representations is not None,
     )
+
     metric = (
-        DecompositionQualityMetric() if eval_model is None
-        else DecompositionQualityMetric(model=eval_model)
+        RichnessMetric(pool=pool) if eval_model is None
+        else RichnessMetric(pool=pool, model=eval_model)
     )
 
     coros = [
@@ -75,7 +82,11 @@ async def test_decomposition_quality_batch(
                 },
             )
         )
-        print(f"{test_case.image_path.name}: {result.score:.2f}")
+        print(
+            f"{test_case.image_path.name}: {result.score:.2f} "
+            f"({result.details['n_covered']}/{result.details['pool_size']} covered, "
+            f"weighted {result.details['weighted_coverage']:.2f})"
+        )
         if not passed:
             failures.append(f"{test_case.image_path.name}: score={result.score:.2f}")
 
@@ -95,4 +106,4 @@ async def test_decomposition_quality_batch(
             f"Saved per-image detail to {per_image_path}"
         )
 
-    assert not failures, "Decomposition quality below threshold for:\n" + "\n".join(failures)
+    assert not failures, "Richness below threshold for:\n" + "\n".join(failures)

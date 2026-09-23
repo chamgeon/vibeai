@@ -3,28 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vibe Plausibility — Human Annotation</title>
+  <title>Vibe Richness — Human Annotation</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
   <div id="setup">
-    <h1>Plausibility — Human Annotation</h1>
+    <h1>Richness — Human Annotation</h1>
     <p style="color:var(--muted); font-size:0.85rem;">
-      For each vibe atom, judge whether it's a plausible claim about the image —
-      same task as the LLM judge. A reason is optional. You can save and leave at any time —
-      progress resumes automatically.
+      For each vibe in the image's pool, judge whether the representation's own
+      vibe set already covers it — same task as the LLM judge. A reason is optional.
+      You can save and leave at any time — progress resumes automatically.
     </p>
     <label for="annotator-input">Your name / ID</label>
     <input id="annotator-input" placeholder="e.g. mingeon" autocomplete="off" />
     <label for="run-select">Dataset (run)</label>
     <select id="run-select"></select>
     <button class="primary" id="start-btn">Start annotating</button>
-    <a class="setup-link" href="/plausibility_results.html">View experiment results (read-only) →</a>
+    <a class="setup-link" href="/richness_results.html">View experiment results (read-only) →</a>
     <a class="setup-link" href="/">Decomposition — annotation app →</a>
-    <a class="setup-link" href="/results.html">Decomposition — results (read-only) →</a>
-    <a class="setup-link" href="/richness.html">Richness — human annotation →</a>
-    <a class="setup-link" href="/richness_results.html">Richness — results (read-only) →</a>
+    <a class="setup-link" href="/plausibility.html">Plausibility — human annotation →</a>
   </div>
 
   <div id="app">
@@ -54,13 +52,27 @@
         <div class="panel" id="rubric-panel">
           <h2>Evaluation rubric</h2>
           <div class="rubric-body" id="rubric-body">
-            <h3>Plausibility (per atom)</h3>
-            <p>Each atom is one of two types:</p>
+            <h3>Coverage (per pool vibe)</h3>
+            <p>
+              The <strong>target set</strong> is the vibes this representation named. The
+              <strong>pool</strong> is what several independent representations found in the
+              same image, each one already verified against the image — so a pool vibe is
+              not in question, only whether the target set conveys it.
+            </p>
+            <p>Apply the <strong>witness test</strong> to each pool vibe, on its own:</p>
             <ul>
-              <li><strong>vibe_only</strong> — a standalone vibe claim with no stated evidence (e.g. "The vibe is relaxed."). Judge whether the stated vibe can plausibly be inferred from the image.</li>
-              <li><strong>evidence_backed</strong> — a claim that names specific visual evidence and links it to a vibe (e.g. "Bright sunlight glints off the water, suggesting a breezy afternoon."). Judge whether: (1) the stated evidence is actually present in the image, (2) the stated vibe can plausibly be inferred from the image, and (3) the mapping from the stated evidence to the stated vibe is reasonable.</li>
+              <li>Try to describe an image that fits <em>every</em> vibe in the target set but clearly does <em>not</em> fit the pool vibe.</li>
+              <li>If you can describe such an image → the pool vibe narrows the feeling further → <strong>Missed</strong> (distinct).</li>
+              <li>If every image fitting the target set would also fit the pool vibe → <strong>Covered</strong> (redundant).</li>
             </ul>
-            <p>Mark an atom <strong>Plausible</strong> only if it holds up on all applicable points above; otherwise mark <strong>Not plausible</strong>. A reason is optional.</p>
+            <p>
+              The witness image must be one an ordinary viewer would readily accept, not a
+              contrived edge case built on a wording technicality. Judge each pool vibe
+              against the target set only — never against other pool vibes, and never let
+              one verdict influence the next. Two or more target vibes can jointly cover a
+              pool vibe. A pool vibe that is in tension with the target set is Missed, not
+              invalid.
+            </p>
           </div>
         </div>
 
@@ -71,8 +83,13 @@
         </div>
 
         <div class="panel">
-          <h2>Vibe atoms</h2>
-          <div id="atoms-container"></div>
+          <h2>Target vibe set (what this representation said)</h2>
+          <div class="vibe-chip-row" id="target-chips"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Vibe pool — covered or missed?</h2>
+          <div id="pool-container"></div>
         </div>
 
         <div id="save-bar">
@@ -87,6 +104,6 @@
     </div>
   </div>
 
-  <script src="/plausibility.js"></script>
+  <script src="/richness.js"></script>
 </body>
 </html>

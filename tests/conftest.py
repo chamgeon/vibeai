@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from vibeai.eval.results import result_log
+from vibeai.metrics.richness import DEFAULT_POOL_PATH
 
 
 def pytest_addoption(parser):
@@ -19,18 +20,36 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--representation-prompt-version",
-        default="baseline",
+        default="v1",
         help="Representation prompt version to evaluate in batch eval tests.",
     )
     parser.addoption(
         "--decomposition-prompt-version",
-        default="baseline",
+        default="v2",
         help="Decomposition prompt version to evaluate in batch eval tests.",
+    )
+    parser.addoption(
+        "--pool",
+        default=None,
+        help="Vibe pool JSON for the richness test. Defaults to "
+        "annotations/richness_holdout.vibes.json.",
     )
     parser.addoption(
         "--concurrency",
         default="30",
         help="Max concurrent evaluations in batch eval tests.",
+    )
+    parser.addoption(
+        "--representation-model",
+        default=None,
+        help="Model used for the representation call in batch eval tests. "
+        "Defaults to the pipeline's own default (DEFAULT_MODEL).",
+    )
+    parser.addoption(
+        "--decomposition-model",
+        default=None,
+        help="Model used for the decomposition call in batch eval tests. "
+        "Defaults to the pipeline's own default (DEFAULT_DECOMPOSITION_MODEL).",
     )
     parser.addoption(
         "--eval-model",
@@ -65,8 +84,25 @@ def decomposition_prompt_version(request) -> str:
 
 
 @pytest.fixture
+def pool_path(request) -> Path:
+    """--pool parsed into a path (None means the richness metric's default)."""
+    raw = request.config.getoption("--pool")
+    return DEFAULT_POOL_PATH if raw is None else Path(raw)
+
+
+@pytest.fixture
 def concurrency(request) -> int:
     return int(request.config.getoption("--concurrency"))
+
+
+@pytest.fixture
+def representation_model(request) -> str | None:
+    return request.config.getoption("--representation-model")
+
+
+@pytest.fixture
+def decomposition_model(request) -> str | None:
+    return request.config.getoption("--decomposition-model")
 
 
 @pytest.fixture

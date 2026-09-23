@@ -66,7 +66,7 @@ class PromptEvalResult:
     metric_name: str
     representation_prompt_version: str
     decomposition_prompt_version: str
-    model: str
+    model: str  # the judge's - kept under this name so older runs stay readable
     timestamp: str
 
     n: int  # images that produced a score
@@ -77,6 +77,14 @@ class PromptEvalResult:
     max_score: float
     pass_rate: float
     threshold: float
+
+    # The other two legs of the pipeline, None when the step made no LLM
+    # call: no representation call (the text was supplied, e.g. by the
+    # workflow) or no decomposition call (DIRECT_DECOMPOSITION reads atoms
+    # out of the representation itself). Defaulted, so runs written before
+    # these were tracked still load.
+    representation_model: str | None = None
+    decomposition_model: str | None = None
 
     submetric_means: dict[str, float] = field(default_factory=dict)
     failures: list[ImageFailure] = field(default_factory=list)
@@ -90,6 +98,8 @@ def aggregate_prompt_results(
     representation_prompt_version: str,
     decomposition_prompt_version: str,
     model: str,
+    representation_model: str | None = None,
+    decomposition_model: str | None = None,
     errors: list[ImageError] | None = None,
     run_name: str | None = None,
 ) -> tuple[PromptEvalResult, Path, Path]:
@@ -98,7 +108,13 @@ def aggregate_prompt_results(
 
     This is the single per-image artifact for a prompt-version run - it
     carries whatever debug detail (representation, atoms, judge verdict)
-    the caller attaches via ImageResult.details. `errors` covers images
+    the caller attaches via ImageResult.details.
+
+    `model` is the judge's; `representation_model` and `decomposition_model`
+    record the other two pipeline steps, so a run says which model produced
+    the thing being scored and not only which one scored it.
+
+    `errors` covers images
     that never produced a MetricResult at all (only `items` needs to be
     non-empty; an all-errors run with no successful items still saves,
     since the errors themselves are the signal worth tracking).
@@ -143,6 +159,8 @@ def aggregate_prompt_results(
         decomposition_prompt_version=decomposition_prompt_version,
         model=model,
         timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        representation_model=representation_model,
+        decomposition_model=decomposition_model,
         n=len(items),
         n_errors=len(errors),
         mean_score=sum(scores) / len(scores) if has_scores else 0.0,

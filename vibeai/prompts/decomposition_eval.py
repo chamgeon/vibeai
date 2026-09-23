@@ -58,10 +58,8 @@ Bad Example: There is a crowded dance floor.
 
 **2. Atomicity**
 The atom should express a single independently evaluable affective interpretation. 
-Closely related or synonymous vibe descriptors may be grouped together.
 
 Good Example (atomic): The warm lighting creates a cozy atmosphere.
-Good Example (closely related vibes): The warm lighting creates a cozy and comforting atmosphere.
 Bad Example (not atomic): The warm lighting creates a cozy and romantic atmosphere.
 
 **3. Fidelity**

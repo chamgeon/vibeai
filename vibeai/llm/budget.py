@@ -13,7 +13,7 @@ from datetime import date
 from pathlib import Path
 
 USAGE_PATH = Path(".cache/llm_usage/usage.json")
-DEFAULT_DAILY_TOKEN_BUDGET = 3_000_000  # gpt-5 TPD limit as of this writing; override if yours differs
+DEFAULT_DAILY_TOKEN_BUDGET = 40_000_000  # gpt-5.6 luna TPD limit as of this writing; override if yours differs
 
 
 class BudgetExceededError(RuntimeError):
