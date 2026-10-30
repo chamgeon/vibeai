@@ -78,6 +78,11 @@ uv run uvicorn vibeai.webapp.server:app --reload   # then open http://localhost:
 
 # LLM/human agreement (Cohen's kappa)
 uv run -m vibeai.eval.human_alignment <run> --metric <metric> --annotator <name>
+
+# is the gap between two runs real? paired permutation test over the images
+# they share, pairwise across however many runs are given; also saved to
+# results/significance/<metric>__<run>+<run>....json
+uv run -m vibeai.eval.significance plausibility <run_a> <run_b> [<run_c> ...]
 ```
 
 Models are routed by id: ids starting with `claude-` go to the Anthropic Messages API (needs `ANTHROPIC_API_KEY`), everything else to the OpenAI Responses API. The daily token budget and per-call usage log track the OpenAI account's TPD limit only, so Anthropic calls are cached and retried but not metered.

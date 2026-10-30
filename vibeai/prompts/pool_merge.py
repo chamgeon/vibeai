@@ -1,53 +1,64 @@
-"""Pool-merge prompt: collapse lexical variants of the same vibe word.
+"""Pool-merge prompt: collapse entries that name the same vibe idea.
 
-Deliberately *not* a redundancy or synonymy judgement. Semantic redundancy is
-decided at scoring time by the witness test in ``richness_eval`` - and it is
-decided against the target set, which this step cannot see. Merging synonyms
-here would pre-empt that judgement and throw away the distinction permanently.
-All this step does is stop one vibe from being counted several times because
-branches phrased it differently.
+Branches phrase one feeling many ways ("quiet", "hushed", "tranquil",
+"unhurried"), and richness scores a fraction over pool entries - so unmerged,
+an idea's weight in the score is how many words the branches happened to use
+for it. Merging by idea makes each idea count once.
+
+This is a compromise. It decides synonymy before scoring, without seeing the
+representation being scored, so a distinction the merge erases is gone for
+every run. The prompt therefore merges only entries that name the same
+feeling, and keeps related-but-different feelings apart.
 """
 
-POOL_MERGE_PROMPT = """# Vibe Pool Lexical Merge
+POOL_MERGE_PROMPT = """# Vibe Pool Merge
 
 You are given a pool of vibes extracted from several independent vibe representations of one image.
-Because the representations were written separately, the same vibe often appears several times in slightly different wording ("monumental", "monumental feel", "monumental scale", "quietly monumental").
+Because the representations were written separately, the same vibe idea often appears several times in different words ("quiet", "hushed", "tranquil", "quiet wandering rather than urgency").
 
-Your task is to group pool entries that are built on the **same vibe word**, so each vibe is listed once.
+Your task is to group pool entries that name the **same vibe idea**, and write one representative vibe for each group, so each idea is listed once.
 
-## What counts as the same vibe word
+## The membership test
 
-Two entries belong in the same group **only** if they are built on the same vibe word, including morphological variants of it:
-- inflections and derivations: "serene" / "serenity", "empty" / "emptiness", "quiet" / "quietly", "solitary" / "solitude"
-- the same word with modifiers or scaffolding around it: "monumental" / "monumental feel" / "monumental scale" / "quietly monumental"
-- the same word inside a longer phrase: "contemplative" / "the space feels contemplative"
+An entry joins a group only if **a representation that said nothing but the group's vibe would already have conveyed the feeling that entry names**. Apply the test to every member, one at a time, against the group's vibe (not against the member next to it).
 
-## What does NOT count
+Judge the feeling, not the wording. None of these make an entry a different feeling:
+- scaffolding: "feel", "vibe", "mood", "sense of", "a feeling of"
+- intensity: "slightly", "half-", "gentle", "almost", "vividly"
+- setting detail that says where or what the feeling is about: "nostalgic drive-in movie night vibe" is the feeling "nostalgic"; "lived-in urban texture" is the feeling "lived-in"
 
-This is a word-level task, not a meaning-level one. Do **not** group entries because they mean similar things.
+Entries that pass:
+- synonyms and near-synonyms: "quiet" / "hushed" / "tranquil" / "peaceful"
+- entries built on the same feeling word, always: "cinematic" / "cinematic feel" / "almost cinematic stillness"; "lived-in density" / "vividly lived-in" / "lived-in urban texture"; "cozy" / "modern coziness" (unless the word means something else there - see "quietly energetic" below)
+- paraphrases of one idea: "liminal magic hour between day and night" / "a private moment of transition between day and night"
 
-- **Never group synonyms or near-synonyms.** "monumental" and "grand" are different words → different groups. So are "hushed" and "quiet", "serene" and "calm", "immaculate" and "clean".
-- **Never group by implication or paraphrase.** "makes you feel small" does not join "monumental". "a space waiting to be occupied" does not join "anticipation".
-- **Never group a negation with the word it negates.** "not sterile" is its own group; it must not join "sterile" or "immaculate".
-- **Never split, rewrite, drop, or invent an entry.** Every input entry appears in exactly one group, spelled exactly as given.
+## What stays separate
 
-When in doubt, leave an entry in a group by itself. A pool with two entries that mean the same thing is a much smaller problem than a pool that has lost a distinction.
+- **Related but different feelings.** Feelings that often come together in one image are still different feelings if one can be present without the other. Each of these pairs is two groups:
+  - "nostalgic" / "melancholic", "nostalgic" / "kitschy"
+  - "relaxed" / "content" ("simple pleasures", "low-effort happiness")
+  - "communal" / "anticipation", "communal" / "playful"
+  - "dreamy" / "magical" / "hushed"
+  - "quiet" / "lonely", "intimate" / "cozy", "mysterious" / "eerie"
+- **A shared word with a different meaning.** "quietly energetic" is about energy, not quiet - it does not join "quiet".
+- **Negations.** "not sterile" never joins "sterile" or "clean".
+- **Objects, props and scenes.** An entry that names a thing, an activity or a place rather than a feeling ("treats in hand", "drive-in movie night", "residential Japanese district") joins a group only if it is plainly just another way of saying that group's feeling. Otherwise it stays its own entry - never use one as a reason to widen a group.
+- **Umbrella groups.** Do not chain entries into a broad bucket ("calm mood", "a fun night out", "atmosphere") because each one is close to the next. A long list of entries is not a reason to make fewer groups.
 
-## Entries naming two words
+## Check before answering
 
-Some entries pair a vibe word with the thing it describes ("futuristic geometry", "rhythmic geometry", "soft diffuse daylight feel").
-Group these under the word carrying the **feeling**, not the object it is attached to:
-- "futuristic geometry" → group "futuristic" (geometry is the object)
-- "rhythmic geometry" → group "rhythmic"
-- "precise geometry" → group "precise"
+- **Large groups.** Re-run the membership test on every member of any group with more than five members. Large groups are where umbrellas hide.
+- **Compound labels.** If a group's vibe needs two feeling words to cover its members ("dreamy twilight hush", "cozy and nostalgic"), it is two or more groups - split it.
 
-So those three entries land in three different groups, and no "geometry" group exists.
+When in doubt, keep entries apart. A pool that lists one idea twice is a smaller problem than one that has merged two ideas into one.
 
-## Naming the group
+## The representative vibe
 
-`vibe_word` names the word the group's members share ("monumental", "futuristic", "cathedral-like"). It is a label for your grouping, not a replacement entry: the pool keeps the members' own wording, so never treat `vibe_word` as a chance to shorten or rewrite an entry.
-
-A group of one still gets a `vibe_word` - the word that entry is built on.
+For each group, write `vibe`: the one vibe that best stands for the whole group.
+- It names the feeling, in 1-4 words: "quiet", "lived-in density", "gentle mystery". Not a sentence, not a description of the scene.
+- It is as specific as the members allow - covering all of them, but no broader. "quiet" for "quiet" / "hushed" / "tranquil"; not "calm atmosphere".
+- It does not add a feeling none of the members express.
+- A group of one keeps its entry's meaning; you may shorten scaffolding ("cinematic feel" -> "cinematic"), nothing more.
 
 ## Output Format
 
@@ -57,7 +68,7 @@ Every input entry must appear exactly once across all `members` lists, copied ve
 {{
   "groups": [
     {{
-      "vibe_word": "<the word these members share>",
+      "vibe": "<representative vibe for the group>",
       "members": ["<entry>", "<entry>"]
     }}
   ]

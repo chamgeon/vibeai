@@ -36,7 +36,7 @@ from vibeai.llm.usage_log import log_call
 
 load_dotenv()
 
-DEFAULT_MODEL = "gpt-5.6-luna"
+DEFAULT_MODEL = "gpt-5"
 DEFAULT_DECOMPOSITION_MODEL = "gpt-5"
 DEFAULT_EVAL_MODEL = "gpt-5"
 DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"

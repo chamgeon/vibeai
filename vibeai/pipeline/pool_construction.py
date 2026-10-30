@@ -33,16 +33,17 @@ The number of branches a vibe was found by is kept as ``support``: a vibe all
 four branches independently arrived at is a different kind of pool member than
 one a single branch mentioned once.
 
-A final merge pass collapses *lexical* variants of the same vibe word
-("monumental" / "monumental feel" / "monumental scale" / "quietly monumental").
-This is not a redundancy judgement, and deliberately so. Semantic redundancy is
-decided at scoring time by the witness test in ``prompts/richness_eval.py``,
-against the target set - which the pool cannot see. What lexical duplicates
-actually break is *weighting*: four spellings of one vibe all receive the same
-witness-test verdict, so that vibe counts four times in the coverage fraction.
-Merging them fixes the weighting without pre-empting any judgement about
-whether "grandeur" and "monumental" are the same vibe. They stay separate here;
-the witness test decides.
+A final merge pass collapses entries that name the same vibe *idea*
+("quiet" / "hushed" / "tranquil" / "quiet wandering rather than urgency") into
+one entry, under a representative vibe the merger writes. What duplicates
+break is *weighting*: every wording of one idea receives the same witness-test
+verdict, so unmerged, an idea counts once per word the branches used for it.
+
+This is a compromise. Merging synonyms decides redundancy before scoring,
+without seeing the target set the witness test in ``prompts/richness_eval.py``
+compares against, so a distinction the merge erases is gone for every run.
+The merge prompt keeps related-but-different feelings apart to limit that,
+and ``merged_from`` keeps the raw wordings so each merge can be reviewed.
 """
 
 import argparse
@@ -61,9 +62,7 @@ from vibeai.llm.client import (
     ANTHROPIC_EFFORT,
     ANTHROPIC_EFFORT_LEVELS,
     DEFAULT_ANTHROPIC_MODEL,
-    DEFAULT_DECOMPOSITION_MODEL,
     DEFAULT_EVAL_MODEL,
-    DEFAULT_MODEL,
     call_text_async,
     set_anthropic_effort,
 )
@@ -79,12 +78,20 @@ DEFAULT_OUTPUT_DIR = Path("annotations")
 # The branch axes: one representation prompt x model combination each. Varying
 # the provider guards against one model's idiosyncratic read of an image
 # becoming the ground truth.
-DEFAULT_MODELS = (DEFAULT_MODEL, DEFAULT_ANTHROPIC_MODEL)
+#
+# Pinned rather than following DEFAULT_MODEL: the pool has to stay
+# independent of the representation model under test (gpt-5), or every run
+# scored against it gets free credit for the vibes it contributed itself.
+POOL_OPENAI_MODEL = "gpt-5.6-luna"
+DEFAULT_MODELS = (POOL_OPENAI_MODEL, DEFAULT_ANTHROPIC_MODEL)
 DEFAULT_REPRESENTATION_PROMPTS = ("baseline", "v1")
 
 # Decomposition and judging are held fixed across branches so the only thing
 # that varies is how the vibe was *seen*, not how it was cut up or scored.
 POOL_DECOMPOSITION_PROMPT = "v2"
+# annotations/richness_holdout.vibes.json was decomposed with this model;
+# keeping it means a rebuild reuses every cached branch call.
+POOL_DECOMPOSITION_MODEL = POOL_OPENAI_MODEL
 
 
 @dataclass(frozen=True)
@@ -237,10 +244,12 @@ def _validate_merge(raw: str, expected: list[str]) -> list[dict]:
     used both as call_text_async's retry-triggering ``validate`` callback and
     to build the merged pool once a call has passed.
 
-    The strict partition check is the point: the merger is only allowed to
-    *group* entries, so anything dropped, invented, reworded, or listed twice
-    means it did something other than the task, and the pool would silently
-    lose or duplicate a vibe.
+    The strict partition check is the point: the merger writes each group's
+    representative vibe, but its ``members`` must be the input entries
+    verbatim, so anything dropped, invented, reworded, or listed twice means
+    the pool would silently lose or duplicate a vibe. Two groups given the same
+    representative vibe are rejected too - they would score as one idea
+    counted twice, which is what the merge exists to prevent.
     """
     parsed = extract_json(raw)
     if not isinstance(parsed, dict):
@@ -251,12 +260,14 @@ def _validate_merge(raw: str, expected: list[str]) -> list[dict]:
         raise ValueError(f"'groups' missing or not a non-empty list: {raw!r}")
 
     seen: list[str] = []
+    labels: list[str] = []
     for i, group in enumerate(groups):
         if not isinstance(group, dict):
             raise ValueError(f"groups[{i}] is not an object: {group!r}")
-        vibe_word = group.get("vibe_word")
-        if not isinstance(vibe_word, str) or not vibe_word.strip():
-            raise ValueError(f"groups[{i}] has empty/invalid vibe_word: {group!r}")
+        vibe = group.get("vibe")
+        if not isinstance(vibe, str) or not vibe.strip():
+            raise ValueError(f"groups[{i}] has empty/invalid vibe: {group!r}")
+        labels.append(normalize_vibe(vibe))
         members = group.get("members")
         if not isinstance(members, list) or not members:
             raise ValueError(f"groups[{i}] members is not a non-empty list: {group!r}")
@@ -273,11 +284,15 @@ def _validate_merge(raw: str, expected: list[str]) -> list[dict]:
             "Groups are not a partition of the input pool "
             f"(missing={missing}, not-in-pool={extra}, duplicated={duplicated}): {raw!r}"
         )
+    repeated = sorted({label for label in labels if labels.count(label) > 1})
+    if repeated:
+        raise ValueError(f"Several groups share a representative vibe {repeated}: {raw!r}")
     return groups
 
 
 async def merge_vibe_groups_async(vibes: list[str], model: str) -> list[dict]:
-    """Group pool entries that are lexical variants of the same vibe word."""
+    """Group pool entries that name the same vibe idea, each group with a
+    representative vibe written by the merger."""
     expected = list(vibes)
     raw = await call_text_async(
         _build_merge_prompt(vibes),
@@ -302,15 +317,13 @@ async def merge_record(record: dict, model: str) -> dict:
     for group in groups:
         members = sorted(group["members"], key=str.lower)
         branches = sorted({b for m in members for b in entries[m]["found_by"]})
-        # The surviving wording is always one the representations actually used
-        # - the shortest member, which is the one carrying the least incidental
-        # scaffolding. Letting the merger write this field instead turned
-        # "a faint reminder of an outside world kept gently at bay" into
-        # "reminder" and "cool tones" into "cool": text no representation ever
-        # produced, which a partition check cannot catch.
+        # The merger's representative vibe is the entry. It may be wording no
+        # representation used - a group of "hushed" / "tranquil" / "unhurried"
+        # has no member that stands for all three - and no check here can tell
+        # a faithful label from one that drifted, so merged_from is what a
+        # reviewer checks it against.
         entry = {
-            "vibe": min(members, key=lambda m: (len(m), m.lower())),
-            "vibe_word": group["vibe_word"].strip(),
+            "vibe": group["vibe"].strip(),
             "support": len(branches),
             "found_by": branches,
         }
@@ -347,7 +360,7 @@ async def build_pool(
     image_paths: list[Path],
     branches: list[PoolBranch],
     eval_model: str = DEFAULT_EVAL_MODEL,
-    decomposition_model: str = DEFAULT_DECOMPOSITION_MODEL,
+    decomposition_model: str = POOL_DECOMPOSITION_MODEL,
     merge_model: str | None = DEFAULT_EVAL_MODEL,
     concurrency: int = 10,
     verbose: bool = True,
@@ -355,7 +368,7 @@ async def build_pool(
     """Build the pool for every image. All image x branch runs share one
     concurrency budget, so a slow branch doesn't stall the others; a branch
     that fails is recorded on the image's ``errors`` and the rest of its pool
-    is still written. ``merge_model=None`` skips the lexical merge and returns
+    is still written. ``merge_model=None`` skips the merge and returns
     the raw pool."""
     metric = PlausibilityMetric(model=eval_model)
 
@@ -465,10 +478,10 @@ def main() -> None:
     )
     parser.add_argument(
         "--decomposition-model",
-        default=DEFAULT_DECOMPOSITION_MODEL,
+        default=POOL_DECOMPOSITION_MODEL,
         help="Model for the v2 decomposition step, held fixed across branches "
-        f"(default: {DEFAULT_DECOMPOSITION_MODEL}). NOTE: annotations/richness_holdout.vibes.json "
-        f"was built with {DEFAULT_MODEL}; rebuilding with a different decomposer changes the pool.",
+        f"(default: {POOL_DECOMPOSITION_MODEL}, what annotations/richness_holdout.vibes.json "
+        "was built with; a different decomposer changes the pool).",
     )
     parser.add_argument(
         "--eval-model",
@@ -478,12 +491,12 @@ def main() -> None:
     parser.add_argument(
         "--merge-model",
         default=DEFAULT_EVAL_MODEL,
-        help=f"Model for the lexical merge pass (default: {DEFAULT_EVAL_MODEL})",
+        help=f"Model for the vibe-idea merge pass (default: {DEFAULT_EVAL_MODEL})",
     )
     parser.add_argument(
         "--no-merge",
         action="store_true",
-        help="Skip the lexical merge and write the raw pooled vibes",
+        help="Skip the merge and write the raw pooled vibes",
     )
     parser.add_argument(
         "--anthropic-effort",
