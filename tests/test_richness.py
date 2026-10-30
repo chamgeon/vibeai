@@ -99,6 +99,7 @@ async def test_richness_batch(
             model=metric.model,
             representation_model=run_representation_model,
             decomposition_model=run_decomposition_model,
+            pool=str(pool_path),
             errors=image_errors,
         )
         print(

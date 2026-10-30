@@ -85,6 +85,10 @@ class PromptEvalResult:
     # these were tracked still load.
     representation_model: str | None = None
     decomposition_model: str | None = None
+    # The reference set a pool-based metric (richness) scored against. Two
+    # runs of the same prompt against different pools are otherwise
+    # indistinguishable. None for metrics that have no pool.
+    pool: str | None = None
 
     submetric_means: dict[str, float] = field(default_factory=dict)
     failures: list[ImageFailure] = field(default_factory=list)
@@ -100,6 +104,7 @@ def aggregate_prompt_results(
     model: str,
     representation_model: str | None = None,
     decomposition_model: str | None = None,
+    pool: str | None = None,
     errors: list[ImageError] | None = None,
     run_name: str | None = None,
 ) -> tuple[PromptEvalResult, Path, Path]:
@@ -161,6 +166,7 @@ def aggregate_prompt_results(
         timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         representation_model=representation_model,
         decomposition_model=decomposition_model,
+        pool=pool,
         n=len(items),
         n_errors=len(errors),
         mean_score=sum(scores) / len(scores) if has_scores else 0.0,

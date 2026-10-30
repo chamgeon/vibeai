@@ -1,0 +1,2155 @@
+{
+  "data/richness_holdout/2025.jpg": {
+    "image_path": "data/richness_holdout/2025.jpg",
+    "generated_at": "2026-10-30T02:13:38.004668+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "collective euphoria",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "collective euphoria",
+          "unified euphoria"
+        ]
+      },
+      {
+        "vibe": "commanding presence",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "commanding the crowd",
+          "focal points of control amid the chaos",
+          "the center of attention"
+        ]
+      },
+      {
+        "vibe": "electric energy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "electric energy",
+          "electric mood",
+          "electric peak moment at a concert or DJ set"
+        ]
+      },
+      {
+        "vibe": "immersive",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "an overwhelming sense of immersion",
+          "fully engaged",
+          "immersive vibe"
+        ]
+      },
+      {
+        "vibe": "intense energy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "almost primal intensity",
+          "heated intensity",
+          "pure adrenaline",
+          "raw energy"
+        ]
+      },
+      {
+        "vibe": "sense of scale",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "an overwhelming sense of scale",
+          "being swallowed by the crowd itself",
+          "sense of scale"
+        ]
+      },
+      {
+        "vibe": "authentic concert photography",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "authentic concert photography quality",
+          "capturing-the-moment vibe",
+          "you had to be there concert photography quality"
+        ]
+      },
+      {
+        "vibe": "club/festival atmosphere",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "club atmosphere",
+          "nightclub or festival vibe"
+        ]
+      },
+      {
+        "vibe": "collective heartbeat",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "the collective heartbeat of the crowd"
+        ]
+      },
+      {
+        "vibe": "dark",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "dark vibe"
+        ]
+      },
+      {
+        "vibe": "dramatic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "dramatic mood"
+        ]
+      },
+      {
+        "vibe": "frenzy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "letting go",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a crowd fully surrendered to the moment",
+          "abandon",
+          "release"
+        ]
+      },
+      {
+        "vibe": "musical connection",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "connection to the music"
+        ]
+      },
+      {
+        "vibe": "timeless night",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a night detached from ordinary time"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/2322237303083062.jpg": {
+    "image_path": "data/richness_holdout/2322237303083062.jpg",
+    "generated_at": "2026-10-30T02:13:38.006666+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "candid",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "candid",
+          "candid feel",
+          "candid lifestyle/street photography feel"
+        ]
+      },
+      {
+        "vibe": "coordinated",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "coordinated feel"
+        ]
+      },
+      {
+        "vibe": "early spring chill",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "early spring feel",
+          "quiet chill of a spring morning"
+        ]
+      },
+      {
+        "vibe": "kinetic energy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "alive",
+          "dynamic energy",
+          "full of movement",
+          "kinetic energy",
+          "sudden burst of movement"
+        ]
+      },
+      {
+        "vibe": "moody",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "moody feel",
+          "slightly moody atmospheric backdrop"
+        ]
+      },
+      {
+        "vibe": "spontaneous",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "impulsive dash rather than a posed shot",
+          "spontaneity between them",
+          "spontaneous",
+          "spontaneous energy",
+          "unplanned dash"
+        ]
+      },
+      {
+        "vibe": "stylish",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "stylish",
+          "stylish feel"
+        ]
+      },
+      {
+        "vibe": "calm subdued backdrop",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "calm urban backdrop",
+          "subdued urban backdrop"
+        ]
+      },
+      {
+        "vibe": "crisp European atmosphere",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "curated",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "ease",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "ease between them"
+        ]
+      },
+      {
+        "vibe": "editorial",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "editorial eye"
+        ]
+      },
+      {
+        "vibe": "energetic-calm contrast",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "playful contrast between the couple's dynamic energy and the calm, subdued urban backdrop"
+        ]
+      },
+      {
+        "vibe": "enjoying movement together",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "enjoying a moment of movement together vibe"
+        ]
+      },
+      {
+        "vibe": "European feel",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "fresh",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "intimate closeness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "joyful energy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "fun energy",
+          "joyful energy"
+        ]
+      },
+      {
+        "vibe": "joyful-moody contrast",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "a contrast between its slightly moody atmospheric backdrop and their joyful energy"
+        ]
+      },
+      {
+        "vibe": "lightly cinematic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "Nordic feel",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "Denmark or similar Nordic country feel"
+        ]
+      },
+      {
+        "vibe": "playful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "lightheartedness",
+          "playful feel"
+        ]
+      },
+      {
+        "vibe": "playful closeness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "residential city block",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "unbothered",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "unbothered by the dreary conditions"
+        ]
+      },
+      {
+        "vibe": "urban feel",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "youthful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/3377768465693917.jpg": {
+    "image_path": "data/richness_holdout/3377768465693917.jpg",
+    "generated_at": "2026-10-30T02:13:38.006669+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "adventurous",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "adventurous desert camping",
+          "adventurous home base"
+        ]
+      },
+      {
+        "vibe": "camaraderie",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "camaraderie",
+          "communal warmth",
+          "easy camaraderie",
+          "easy warmth",
+          "genuine connection",
+          "just good company under the stars",
+          "togetherness"
+        ]
+      },
+      {
+        "vibe": "convivial",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "convivial",
+          "like a story or joke has just landed",
+          "the lively warmth of human connection"
+        ]
+      },
+      {
+        "vibe": "joyful",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "carefree joy",
+          "joyful energy"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a moment people remember fondly for years",
+          "nostalgic",
+          "reminiscent of scout camps, road trips, or family reunions"
+        ]
+      },
+      {
+        "vibe": "cinematic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "almost cinematic quality"
+        ]
+      },
+      {
+        "vibe": "classic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "classic quality"
+        ]
+      },
+      {
+        "vibe": "cozy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "desert-wilderness feel",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "escape",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a sense of escape from ordinary life"
+        ]
+      },
+      {
+        "vibe": "fleeting",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "freedom",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "relaxed",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "a night with no rush",
+          "relaxed"
+        ]
+      },
+      {
+        "vibe": "rugged",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "rugged feel"
+        ]
+      },
+      {
+        "vibe": "rugged Southwestern wilderness escape",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "shared storytelling",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "spontaneous energy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "temporary home base",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "warm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/aesthetic_drive_in_movie.jpg": {
+    "image_path": "data/richness_holdout/aesthetic_drive_in_movie.jpg",
+    "generated_at": "2026-10-30T02:13:38.006670+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "alone together",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "alone together feeling",
+          "communal yet private experience"
+        ]
+      },
+      {
+        "vibe": "casual",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "casual",
+          "deliberately unfussy vibe"
+        ]
+      },
+      {
+        "vibe": "cocooned",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a soft little cocoon",
+          "blankets pulled close",
+          "sheltered feeling",
+          "unbothered by the world outside",
+          "wrapped up"
+        ]
+      },
+      {
+        "vibe": "communal",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "communal feeling",
+          "everyone facing the same light",
+          "good company"
+        ]
+      },
+      {
+        "vibe": "contentment",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "content to watch the story unfold",
+          "low-effort happiness",
+          "simple pleasures"
+        ]
+      },
+      {
+        "vibe": "cozy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "comfort",
+          "comforting",
+          "cozy",
+          "homemade kind of comfort",
+          "modern coziness",
+          "soft-edged comfort"
+        ]
+      },
+      {
+        "vibe": "intimate",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "intimate feeling"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "charm of old-school drive-in culture",
+          "easy nostalgia",
+          "nostalgic",
+          "nostalgic feel",
+          "retro movie-night charm"
+        ]
+      },
+      {
+        "vibe": "unhurried calm",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "deliberate leisure",
+          "laid-back experience",
+          "relaxed evening out",
+          "slow leisure",
+          "unhurried calm"
+        ]
+      },
+      {
+        "vibe": "date night",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "dreamy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "dreamy vibe"
+        ]
+      },
+      {
+        "vibe": "evening hush",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a suspended moment before full dark",
+          "the first hush of evening"
+        ]
+      },
+      {
+        "vibe": "family outing",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "friend hangout",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "fun night out",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "fun-night-out feel"
+        ]
+      },
+      {
+        "vibe": "kitschy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a little kitschy feel"
+        ]
+      },
+      {
+        "vibe": "magical",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "a little magical"
+        ]
+      },
+      {
+        "vibe": "movie under the stars",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "a great movie under the stars"
+        ]
+      },
+      {
+        "vibe": "playful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "playful feel"
+        ]
+      },
+      {
+        "vibe": "treats in hand",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/city_tokyo.jpg": {
+    "image_path": "data/richness_holdout/city_tokyo.jpg",
+    "generated_at": "2026-10-30T02:13:38.006672+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "cinematic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "almost cinematic stillness",
+          "cinematic mood"
+        ]
+      },
+      {
+        "vibe": "contemplative",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a feeling of contemplation",
+          "contemplative stillness"
+        ]
+      },
+      {
+        "vibe": "liminal twilight",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a private moment of transition between day and night",
+          "liminal magic hour feeling between day and night"
+        ]
+      },
+      {
+        "vibe": "melancholy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "bittersweet mood",
+          "gentle melancholy",
+          "half-melancholy",
+          "melancholic"
+        ]
+      },
+      {
+        "vibe": "quiet",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "hushed",
+          "peaceful",
+          "quiet",
+          "quiet feel",
+          "tranquil"
+        ]
+      },
+      {
+        "vibe": "subtle beauty",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quietly beautiful",
+          "quietly beautiful in its ordinariness"
+        ]
+      },
+      {
+        "vibe": "unhurried",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet wandering rather than urgency",
+          "unhurried"
+        ]
+      },
+      {
+        "vibe": "artificial warmth",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "beautiful contrast",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "gentle mystery",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "half-comforting",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "intimate",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "Japanese street at dusk",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "traditional Japanese neighborhood street at dusk"
+        ]
+      },
+      {
+        "vibe": "lived-in density",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "lived-in density",
+          "unplanned density"
+        ]
+      },
+      {
+        "vibe": "lived-in urban texture",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "authentic urban texture",
+          "lived-in urban texture"
+        ]
+      },
+      {
+        "vibe": "natural coolness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a still frame from memory",
+          "nostalgic"
+        ]
+      },
+      {
+        "vibe": "nostalgic charm",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "old Japanese backstreet",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "distinctly old residential Japanese backstreet"
+        ]
+      },
+      {
+        "vibe": "old-world intimacy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "quiet continuity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet continuity rather than modern polish"
+        ]
+      },
+      {
+        "vibe": "residential Japanese district",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "sense of history",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a sense of history"
+        ]
+      },
+      {
+        "vibe": "slice-of-life",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "a scene from a slice-of-life film"
+        ]
+      },
+      {
+        "vibe": "solitude",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a feeling of solitude"
+        ]
+      },
+      {
+        "vibe": "warm golden light",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "warm, golden light"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/img_4838.jpg": {
+    "image_path": "data/richness_holdout/img_4838.jpg",
+    "generated_at": "2026-10-30T02:13:38.006674+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "awe",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "awe-inspiring beauty",
+          "iconic wonder"
+        ]
+      },
+      {
+        "vibe": "calm",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "away from the bustle",
+          "calm",
+          "hushed mood",
+          "peaceful stillness",
+          "serene feeling"
+        ]
+      },
+      {
+        "vibe": "candid snapshot",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "candid travel snapshot rather than a staged photo",
+          "personal snapshot"
+        ]
+      },
+      {
+        "vibe": "cinematic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "cinematic nighttime travel glow",
+          "cinematic quality"
+        ]
+      },
+      {
+        "vibe": "dreamlike",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "almost dreamlike quality",
+          "dreamlike theatrical quality"
+        ]
+      },
+      {
+        "vibe": "iconic place",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "one of the world's most recognizable skylines",
+          "specific, unmistakable place"
+        ]
+      },
+      {
+        "vibe": "monumental",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "grand cityscape",
+          "monumental",
+          "urban vastness"
+        ]
+      },
+      {
+        "vibe": "atmospheric lighting",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "atmospheric lighting",
+          "moody lighting"
+        ]
+      },
+      {
+        "vibe": "confidence",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "easy confidence",
+          "unposed confidence"
+        ]
+      },
+      {
+        "vibe": "contemplative",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "contemplative feeling"
+        ]
+      },
+      {
+        "vibe": "iconic city energy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "intimate travel moment",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "nighttime sightseeing",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "perhaps a harbor cruise",
+          "perhaps a nighttime sightseeing excursion"
+        ]
+      },
+      {
+        "vibe": "personal connection",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "quiet personal connection",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet personal connection to the moment"
+        ]
+      },
+      {
+        "vibe": "quiet solitude",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet nighttime outing that exists just for her"
+        ]
+      },
+      {
+        "vibe": "special evening out",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "story-worthy travel memory",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "striking nighttime urban vibe",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/jezael-melgoza-tbw2njil6dm-unsplash.jpg": {
+    "image_path": "data/richness_holdout/jezael-melgoza-tbw2njil6dm-unsplash.jpg",
+    "generated_at": "2026-10-30T02:13:38.006676+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "architectural grandeur",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "an almost sculptural sense of architectural grandeur",
+          "grandeur",
+          "like standing inside a machine built for grandeur rather than intimacy",
+          "the interior of something monumental"
+        ]
+      },
+      {
+        "vibe": "open and airy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "airy",
+          "open",
+          "openness amid the enclosure",
+          "spacious"
+        ]
+      },
+      {
+        "vibe": "quiet power",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "an atmosphere of controlled awe",
+          "quiet power",
+          "quietly impressive"
+        ]
+      },
+      {
+        "vibe": "serene",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "calm",
+          "hushed",
+          "serene atmosphere"
+        ]
+      },
+      {
+        "vibe": "softened starkness",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "softening the space slightly",
+          "softens the starkness"
+        ]
+      },
+      {
+        "vibe": "architectural artistry",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "architectural artistry",
+          "thoughtful design"
+        ]
+      },
+      {
+        "vibe": "architecturally striking",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "complexity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "contemplative",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "contemporary museum",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "cool modernity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "corporate atrium",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "function-art tension",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "caught between architecture as function and architecture as art"
+        ]
+      },
+      {
+        "vibe": "futuristic institution interior",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "like the inside of a futuristic institution or performance hall"
+        ]
+      },
+      {
+        "vibe": "futuristic sophistication",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "geometric",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "minimalist elegance",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "minimalist elegance",
+          "quiet elegance",
+          "sleek"
+        ]
+      },
+      {
+        "vibe": "modern",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "natural contrast",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "organic-rigid tension",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a tension between organic flow and rigid structure"
+        ]
+      },
+      {
+        "vibe": "pristine order",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "precision",
+          "pristine order"
+        ]
+      },
+      {
+        "vibe": "rhythmic pattern",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "almost hypnotic pattern",
+          "rhythmic pattern"
+        ]
+      },
+      {
+        "vibe": "structural harmony",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "vast scale",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "scale",
+          "vast"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/lisanhoang.jpg": {
+    "image_path": "data/richness_holdout/lisanhoang.jpg",
+    "generated_at": "2026-10-30T02:13:38.006677+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "casual",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "casual",
+          "casual streetwear styling"
+        ]
+      },
+      {
+        "vibe": "playful",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a bit playful",
+          "fun",
+          "playful energy"
+        ]
+      },
+      {
+        "vibe": "self-aware content creation",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "elevated by the impulse to record it",
+          "focus onto the act of image-making itself",
+          "meta quality about self-documentation",
+          "meta quality about social media habits",
+          "self-aware energy",
+          "shopping trip content creator energy"
+        ]
+      },
+      {
+        "vibe": "Asian market feel",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "distinctly like an Asian convenience store or specialty market"
+        ]
+      },
+      {
+        "vibe": "authentic snapshot",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "authentic lifestyle/social media snapshot feel"
+        ]
+      },
+      {
+        "vibe": "casually cool",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "confident",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "confident streetwear styling"
+        ]
+      },
+      {
+        "vibe": "everyday shopping context",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "ironic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "slightly ironic feel"
+        ]
+      },
+      {
+        "vibe": "low-stakes",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "maximalist backdrop",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "modern",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "modern quality"
+        ]
+      },
+      {
+        "vibe": "playful self-awareness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "polished",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a touch of polish"
+        ]
+      },
+      {
+        "vibe": "pop of color",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "relatable",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      },
+      {
+        "vibe": "saturated backdrop",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "stylish",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "stylish aesthetic"
+        ]
+      },
+      {
+        "vibe": "trendy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "trendy aesthetic"
+        ]
+      },
+      {
+        "vibe": "youthful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/ruben-mavarez-jyzgqwpaz9o-unsplash.jpg": {
+    "image_path": "data/richness_holdout/ruben-mavarez-jyzgqwpaz9o-unsplash.jpg",
+    "generated_at": "2026-10-30T02:13:38.006678+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "contentment",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet contentment",
+          "snapshot of simple pleasures",
+          "unhurried joy"
+        ]
+      },
+      {
+        "vibe": "intimacy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "intimacy",
+          "intimate quality",
+          "personal human touch"
+        ]
+      },
+      {
+        "vibe": "relaxed",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "easy",
+          "laid-back seaside getaway",
+          "relaxed",
+          "relaxed atmosphere"
+        ]
+      },
+      {
+        "vibe": "togetherness",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "gathering of friends or family",
+          "joyful moment of connection between friends",
+          "people enjoying each other's company",
+          "people united in this simple morning moment",
+          "sharing small rituals with people you love",
+          "simple moment of connection between friends"
+        ]
+      },
+      {
+        "vibe": "unhurried",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a sense of slow time",
+          "as if the whole day stretches ahead with nowhere urgent to be",
+          "leisure",
+          "leisurely coffee break by the ocean"
+        ]
+      },
+      {
+        "vibe": "unpretentious",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "unpretentious atmosphere"
+        ]
+      },
+      {
+        "vibe": "belonging",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "included in the toast",
+          "rather than an outside observer"
+        ]
+      },
+      {
+        "vibe": "candid",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "candid quality"
+        ]
+      },
+      {
+        "vibe": "celebratory",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "casual toast vibe",
+          "celebratory",
+          "celebratory feel",
+          "genuine \"cheers\" moment between people"
+        ]
+      },
+      {
+        "vibe": "freedom",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a sense of freedom",
+          "escape from routine"
+        ]
+      },
+      {
+        "vibe": "mild",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "mild day"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "nostalgic snapshot of friendship"
+        ]
+      },
+      {
+        "vibe": "peaceful",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "peaceful atmosphere",
+          "quiet pause during outdoor exploration",
+          "snapshot of coastal tranquility"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "data/richness_holdout/summer_aesthetic.jpg": {
+    "image_path": "data/richness_holdout/summer_aesthetic.jpg",
+    "generated_at": "2026-10-30T02:13:38.006680+00:00",
+    "branches": [
+      "claude-sonnet-5__baseline",
+      "claude-sonnet-5__v1"
+    ],
+    "vibes": [
+      {
+        "vibe": "camaraderie",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "camaraderie",
+          "casual camaraderie",
+          "friendship",
+          "outdoors with friends",
+          "warmly social"
+        ]
+      },
+      {
+        "vibe": "carefree",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "carefree",
+          "carefree summer evening vibe",
+          "carefree summer evenings spent outdoors with friends"
+        ]
+      },
+      {
+        "vibe": "day winding down",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "dusk",
+          "golden-hour hangout",
+          "the day winds down",
+          "the fleeting beauty of a day winding down"
+        ]
+      },
+      {
+        "vibe": "nostalgic",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a memory already being replayed",
+          "nostalgic feel",
+          "nostalgic glow",
+          "nostalgic summer evening vibe"
+        ]
+      },
+      {
+        "vibe": "playful energy",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a burst of playful energy",
+          "energetic fun",
+          "playful energy"
+        ]
+      },
+      {
+        "vibe": "quiet",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "quiet mood",
+          "small-town or suburban quiet"
+        ]
+      },
+      {
+        "vibe": "relaxed",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "a laid-back summer-evening mood",
+          "a relaxed pickup game",
+          "calm",
+          "easy",
+          "unhurried mood"
+        ]
+      },
+      {
+        "vibe": "spontaneous",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "spontaneous fun",
+          "spontaneous rather than planned"
+        ]
+      },
+      {
+        "vibe": "youthful",
+        "support": 2,
+        "found_by": [
+          "claude-sonnet-5__baseline",
+          "claude-sonnet-5__v1"
+        ],
+        "merged_from": [
+          "candid snapshot of youth",
+          "joyful snapshot of youth",
+          "youthful"
+        ]
+      },
+      {
+        "vibe": "authenticity",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "simple authenticity",
+          "unposed authenticity"
+        ]
+      },
+      {
+        "vibe": "cinematic glow",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "almost cinematic glow"
+        ]
+      },
+      {
+        "vibe": "cinematic warmth",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__v1"
+        ]
+      },
+      {
+        "vibe": "dreamy",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "dreamy atmosphere"
+        ]
+      },
+      {
+        "vibe": "simple fun",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "simple outdoor fun"
+        ]
+      },
+      {
+        "vibe": "spaciousness",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "space"
+        ]
+      },
+      {
+        "vibe": "warmth",
+        "support": 1,
+        "found_by": [
+          "claude-sonnet-5__baseline"
+        ],
+        "merged_from": [
+          "warm atmosphere"
+        ]
+      }
+    ],
+    "errors": []
+  }
+}

@@ -59,6 +59,7 @@ _RUN_FIELDS = (
     "representation_model",
     "decomposition_model",
     "model",
+    "pool",
     "timestamp",
 )
 
