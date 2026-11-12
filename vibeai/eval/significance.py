@@ -35,7 +35,7 @@ a statement about effect size either. ``observed`` is the effect - read both.
 Usage:
     python -m vibeai.eval.significance plausibility v1__v2_1790132953 workflow__v2_1790134094
     python -m vibeai.eval.significance plausibility baseline__x v1__y workflow__z
-    python -m vibeai.eval.significance richness baseline__x v1__y --resamples 100000
+    python -m vibeai.eval.significance plausibility baseline__x v1__y --resamples 100000
 """
 
 import argparse
@@ -59,7 +59,6 @@ _RUN_FIELDS = (
     "representation_model",
     "decomposition_model",
     "model",
-    "pool",
     "timestamp",
 )
 
@@ -262,7 +261,7 @@ def compare(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "metric", help="results/<metric>/ directory, e.g. plausibility or richness"
+        "metric", help="results/<metric>/ directory, e.g. plausibility or decomposition_quality"
     )
     parser.add_argument(
         "runs", nargs="+", help="two or more run names to compare pairwise"

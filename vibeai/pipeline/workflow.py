@@ -14,12 +14,12 @@ Two gates, both applied every round:
     tighter bar than the batch metric's: ACCEPT_PLAUSIBLE_RATE of the atoms
     must be plausible. Rejection hands back the failed atoms and what failed
     about each.
-*   **Richness** is defined against a vibe pool the generator must not see -
-    the pool is the answer key the richness metric scores against, and a loop
-    that fed pool misses back would be optimising against its own benchmark.
-    The gate is ``metrics/breadth.py`` instead: the same breadth question,
-    asked of the image over the ten vibe aspects rather than of a reference
-    set. Rejection hands back the vibes it found unreached, and any gap at all
+*   **Richness** is measured pairwise against the other representation
+    methods (``metrics/richness.py``), and that comparison is the benchmark
+    the workflow is scored on - a loop that optimised against it would be
+    optimising against its own test. The gate is ``metrics/breadth.py``
+    instead: a breadth question asked of the image over the ten vibe aspects,
+    scoring the candidate on its own. Rejection hands back the vibes it found unreached, and any gap at all
     is a rejection.
 
 The two judges are independent, so they run concurrently and their feedback is

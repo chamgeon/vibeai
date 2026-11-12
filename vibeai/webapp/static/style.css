@@ -577,30 +577,103 @@ button.primary:hover {
 }
 
 
-/* Target vibe set of a richness item: the representation's own vibes, shown
-   as a row of chips above the pool being judged against them. */
-.vibe-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* --- richness pairwise annotation --------------------------------------- */
+
+.set-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
-.vibe-chip {
-  font-size: 0.8rem;
-  padding: 3px 10px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #f4eef7;
-  font-weight: 600;
+@media (max-width: 760px) {
+  .set-grid { grid-template-columns: 1fr; }
 }
 
-.vibe-chip.empty {
-  background: none;
-  border-style: dashed;
-  color: var(--muted);
+.set-col { margin-bottom: 0; }
+
+/* Image and both sets should fit on one screen. */
+#image-wrap.compact img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 42vh;
+  margin: 0 auto;
+}
+
+.set-col.chosen {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent) inset;
+}
+
+.set-count {
   font-weight: 400;
-  font-style: italic;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
 }
+
+.vibe-list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
+.vibe-list li.empty {
+  list-style: none;
+  color: var(--muted);
+}
+
+.choice-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.choice-group button { flex: 1; }
+
+.choice-group button.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidebar-filter {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.78rem;
+}
+
+.llm-order {
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+  font-size: 0.88rem;
+}
+
+.llm-order summary { cursor: pointer; }
+
+.llm-order-body p { margin: 4px 0 10px; }
+
+.llm-order-body ul { margin: 4px 0 10px; padding-left: 18px; }
+
+.llm-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
 
 /* --- run comparison page ------------------------------------------------ */
 

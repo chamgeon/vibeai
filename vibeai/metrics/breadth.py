@@ -1,10 +1,11 @@
 """Breadth metric: of the vibe aspects this image supports, how many did the
 representation touch at all.
 
-The pool-free counterpart to ``metrics/richness.py``. Richness measures
-coverage of a reference vibe pool; breadth measures coverage of the ten vibe
-aspects the judge finds in the image itself (see ``prompts/breadth_eval.py``
-for why the workflow's richness gate cannot use the pool).
+The absolute, single-representation counterpart to ``metrics/richness.py``.
+Richness compares two methods' vibe sets head to head; breadth measures
+coverage of the ten vibe aspects the judge finds in the image itself, so it
+can score one candidate on its own (see ``prompts/breadth_eval.py`` for why
+the workflow's richness gate needs that).
 
     score = applicable aspects covered / applicable aspects
 

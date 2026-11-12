@@ -23,12 +23,12 @@ say whether the loop is worth its cost are:
     it stays near zero across a real image set, returning the last round is
     fine and best-of-k selection is solving a problem the loop doesn't have.
 
-Richness is not scored here. It needs the vibe pool, and the whole point of
-the breadth gate is that the loop never sees it - so pool scoring is a
-separate pass over the representations this run writes out (see README).
+Richness is not scored here: it is a pairwise comparison against the other
+representation methods (``metrics/richness.py``), so it runs as a separate
+pass once every method has been scored over the same images.
 
-That pass is what the ``.representations.json`` file is for, and why it holds
-nothing but image -> final representation. The workflow's own atoms and
+The batch evals are what the ``.representations.json`` file is for, and why it
+holds nothing but image -> final representation. The workflow's own atoms and
 verdicts are a by-product of the loop: they come from the loop's decomposer
 and its judges, which run on DEFAULT_MODEL because the loop makes several
 calls per round. Scoring against baseline and v1 has to re-decompose and
@@ -50,7 +50,6 @@ from vibeai.eval.concurrency import gather_bounded_as_completed
 from vibeai.eval.dataset import load_image_paths
 from vibeai.eval.prompt_results import RESULTS_DIR, ImageError
 from vibeai.llm.client import DEFAULT_MODEL
-from vibeai.metrics.richness import DEFAULT_POOL_PATH, load_pool, pool_image_paths
 from vibeai.pipeline.workflow import (
     ACCEPT_PLAUSIBLE_RATE,
     DEFAULT_DECOMPOSITION_PROMPT,
@@ -185,8 +184,8 @@ def summarize(
 def representations(results: list[WorkflowResult]) -> dict[str, str]:
     """The run's actual product: image path -> final representation.
 
-    Keyed by image path string, the same way a vibe pool file is, so a
-    scoring pass can line the two up by key.
+    Keyed by image path string, the same way the batch evals' per-image
+    records are, so a scoring pass can line the two up by key.
     """
     return {str(result.image_path): result.representation for result in results}
 
@@ -397,15 +396,6 @@ def main() -> None:
         help="Directory of images (default: the dataset default, data/main_processed)",
     )
     parser.add_argument(
-        "--pool",
-        type=Path,
-        nargs="?",
-        const=DEFAULT_POOL_PATH,
-        default=None,
-        help="Take the image set from a vibe pool file instead of a directory, so the run "
-        f"covers exactly the images richness can score (bare flag: {DEFAULT_POOL_PATH})",
-    )
-    parser.add_argument(
         "--n-images", type=int, default=None, help="Run only the first N images (default: all)"
     )
     parser.add_argument(
@@ -451,14 +441,11 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if args.pool is not None:
-        image_paths = pool_image_paths(load_pool(args.pool))
-    else:
-        image_paths = load_image_paths(data_dir=args.image_dir)
+    image_paths = load_image_paths(data_dir=args.image_dir)
     if args.n_images is not None:
         image_paths = image_paths[: args.n_images]
     if not image_paths:
-        raise SystemExit(f"No images found in {args.pool or args.image_dir}")
+        raise SystemExit(f"No images found in {args.image_dir}")
 
     results, errors = asyncio.run(
         run_batch(

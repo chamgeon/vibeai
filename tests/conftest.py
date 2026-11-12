@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 from vibeai.eval.results import result_log
-from vibeai.metrics.richness import DEFAULT_POOL_PATH
 
 
 def pytest_addoption(parser):
@@ -27,12 +26,6 @@ def pytest_addoption(parser):
         "--decomposition-prompt-version",
         default="v2",
         help="Decomposition prompt version to evaluate in batch eval tests.",
-    )
-    parser.addoption(
-        "--pool",
-        default=None,
-        help="Vibe pool JSON for the richness test. Defaults to "
-        "annotations/richness_holdout.vibes.json.",
     )
     parser.addoption(
         "--concurrency",
@@ -81,13 +74,6 @@ def representation_prompt_version(request) -> str:
 @pytest.fixture
 def decomposition_prompt_version(request) -> str:
     return request.config.getoption("--decomposition-prompt-version")
-
-
-@pytest.fixture
-def pool_path(request) -> Path:
-    """--pool parsed into a path (None means the richness metric's default)."""
-    raw = request.config.getoption("--pool")
-    return DEFAULT_POOL_PATH if raw is None else Path(raw)
 
 
 @pytest.fixture

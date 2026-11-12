@@ -1,14 +1,11 @@
-// Richness annotation: for each vibe in the image's pool, decide whether the
-// representation's own vibe set (the "target set") already covers it. The
-// unit of judgement is a pool vibe, not an atom — which is why this app
-// renders item.pool rather than item.atoms.
 const state = {
   run: null,
   annotator: null,
   items: [],
+  visible: [], // indices into items, after the pair filter
   annotations: {},
-  index: 0,
-  draft: null,
+  index: 0, // into items
+  draft: null, // {choice, reason}
   savedSnapshot: null,
   showLLM: false,
   llmCache: {},
@@ -21,42 +18,26 @@ function draftKey(d) {
 }
 
 function isDirty() {
-  if (!state.draft) return false;
-  return draftKey(state.draft) !== state.savedSnapshot;
+  return state.draft !== null && draftKey(state.draft) !== state.savedSnapshot;
 }
 
-function blankDraft(item) {
-  return {
-    judgements: item.pool.map((p) => ({
-      candidate: p.candidate,
-      // Unrated starts as "missed": covering a pool vibe is the claim being
-      // made, so it has to be asserted rather than defaulted into.
-      covered: false,
-      reason: "",
-    })),
-  };
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s ?? "";
+  return div.innerHTML;
 }
 
-function draftFromAnnotation(item, annotation) {
-  if (!annotation) return blankDraft(item);
-  return {
-    judgements: annotation.judgements.map((j) => ({
-      candidate: j.candidate,
-      covered: j.covered,
-      reason: j.reason || "",
-    })),
-  };
+function choiceText(choice) {
+  return choice === "tie" ? "Tie" : choice ? `Set ${choice} richer` : "—";
 }
 
 // --- setup screen --------------------------------------------------------
 
 async function initSetup() {
-  const savedAnnotator = localStorage.getItem("richness_annotator") || "";
-  const savedRun = localStorage.getItem("richness_run") || "";
-  $("#annotator-input").value = savedAnnotator;
+  $("#annotator-input").value = localStorage.getItem("rich_annotator") || "";
+  const savedRun = localStorage.getItem("rich_run") || "";
 
-  const res = await fetch("/api/richness/runs");
-  const { runs } = await res.json();
+  const { runs } = await (await fetch("/api/richness/runs")).json();
   const sel = $("#run-select");
   sel.innerHTML = "";
   for (const r of runs) {
@@ -74,8 +55,8 @@ async function initSetup() {
       alert("Please enter your name/ID and pick a dataset.");
       return;
     }
-    localStorage.setItem("richness_annotator", annotator);
-    localStorage.setItem("richness_run", run);
+    localStorage.setItem("rich_annotator", annotator);
+    localStorage.setItem("rich_run", run);
     await startApp(run, annotator);
   });
 }
@@ -86,12 +67,11 @@ async function startApp(run, annotator) {
   state.run = run;
   state.annotator = annotator;
 
-  const [datasetRes, annRes] = await Promise.all([
-    fetch(`/api/richness/dataset?run=${encodeURIComponent(run)}`),
-    fetch(`/api/richness/annotations?run=${encodeURIComponent(run)}&annotator=${encodeURIComponent(annotator)}`),
+  const q = (params) => new URLSearchParams(params).toString();
+  const [dataset, annData] = await Promise.all([
+    fetch(`/api/richness/dataset?${q({ run })}`).then((r) => r.json()),
+    fetch(`/api/richness/annotations?${q({ run, annotator })}`).then((r) => r.json()),
   ]);
-  const dataset = await datasetRes.json();
-  const annData = await annRes.json();
   state.items = dataset.items;
   state.annotations = annData.annotations;
 
@@ -99,29 +79,42 @@ async function startApp(run, annotator) {
   $("#app").classList.add("active");
   $("#who-label").textContent = `${annotator} — ${run}`;
 
-  renderSidebar();
+  const pairs = [...new Set(state.items.map((it) => it.pair.join(" vs ")))];
+  const filter = $("#pair-filter");
+  filter.innerHTML = `<option value="">All pairs (${state.items.length})</option>` +
+    pairs.map((p) => {
+      const n = state.items.filter((it) => it.pair.join(" vs ") === p).length;
+      return `<option value="${escapeHtml(p)}">${escapeHtml(p)} (${n})</option>`;
+    }).join("");
+  filter.value = localStorage.getItem("rich_pair_filter") || "";
+  if (![...filter.options].some((o) => o.value === filter.value)) filter.value = "";
 
-  const firstUnannotated = state.items.findIndex(
-    (it) => !(it.image_path in state.annotations)
-  );
-  loadItem(firstUnannotated === -1 ? 0 : firstUnannotated);
+  state.showLLM = localStorage.getItem("rich_show_llm") === "1";
+  $("#llm-switch").checked = state.showLLM;
+
+  applyFilter();
+}
+
+function applyFilter() {
+  const pair = $("#pair-filter").value;
+  state.visible = state.items
+    .map((it, i) => i)
+    .filter((i) => !pair || state.items[i].pair.join(" vs ") === pair);
+  renderSidebar();
+  const firstOpen = state.visible.find((i) => !(state.items[i].comparison_id in state.annotations));
+  loadItem(firstOpen ?? state.visible[0] ?? 0);
 }
 
 function renderSidebar() {
   const ul = $("#item-list");
   ul.innerHTML = "";
-  state.items.forEach((item, i) => {
+  state.visible.forEach((i, pos) => {
+    const item = state.items[i];
     const li = document.createElement("li");
     li.dataset.index = i;
-    const done = item.image_path in state.annotations;
-    if (done) li.classList.add("done");
+    if (item.comparison_id in state.annotations) li.classList.add("done");
     if (i === state.index) li.classList.add("current");
-    const dot = document.createElement("span");
-    dot.className = "dot";
-    const label = document.createElement("span");
-    label.textContent = `${i + 1}. ${item.image_path.split("/").pop()}`;
-    li.appendChild(dot);
-    li.appendChild(label);
+    li.innerHTML = `<span class="dot"></span><span>${pos + 1}. ${escapeHtml(item.pair.join(" vs "))} · ${escapeHtml(item.image_path.split("/").pop())}</span>`;
     li.addEventListener("click", () => goTo(i));
     ul.appendChild(li);
   });
@@ -129,285 +122,202 @@ function renderSidebar() {
 }
 
 function updateProgress() {
-  const total = state.items.length;
-  const done = Object.keys(state.annotations).length;
+  const total = state.visible.length;
+  const done = state.visible.filter((i) => state.items[i].comparison_id in state.annotations).length;
   $("#progress-bar-fill").style.width = `${total ? (done / total) * 100 : 0}%`;
   $("#progress-label").textContent = `${done} / ${total} annotated`;
 }
 
 function goTo(i) {
-  if (isDirty()) {
-    const ok = confirm("You have unsaved changes on this item. Discard and move on?");
-    if (!ok) return;
-  }
+  if (isDirty() && !confirm("You have unsaved changes on this comparison. Discard and move on?")) return;
   loadItem(i);
+}
+
+function step(delta) {
+  const pos = state.visible.indexOf(state.index);
+  const next = state.visible[pos + delta];
+  if (next !== undefined) goTo(next);
+}
+
+function renderSet(n, vibes) {
+  $(`#set-${n}-count`).textContent = `· ${vibes.length} vibe${vibes.length === 1 ? "" : "s"}`;
+  $(`#set-${n}-list`).innerHTML = vibes.length
+    ? vibes.map((v) => `<li>${escapeHtml(v)}</li>`).join("")
+    : `<li class="empty">(empty)</li>`;
 }
 
 function loadItem(i) {
   state.index = i;
   const item = state.items[i];
-  const existing = state.annotations[item.image_path];
-  state.draft = draftFromAnnotation(item, existing);
-  state.savedSnapshot = existing ? draftKey(state.draft) : draftKey(blankDraft(item));
+  if (!item) return;
+  const existing = state.annotations[item.comparison_id];
+  state.draft = { choice: existing?.choice ?? null, reason: existing?.reason ?? "" };
+  state.savedSnapshot = existing ? draftKey(state.draft) : draftKey({ choice: null, reason: "" });
 
-  $("#representation-text").textContent = item.representation;
-  $("#image-wrap").style.display = "none";
-  $("#toggle-image-btn").textContent = "Show image";
-
-  state.showLLM = false;
-  $("#toggle-llm-btn").textContent = "Show LLM judgement";
-
-  renderTarget(item);
-  renderPool();
-  applyLLMOverlay();
+  $("#item-heading").textContent = `Image · ${item.image_path.split("/").pop()}`;
+  $("#image-el").src = `/api/image?path=${encodeURIComponent(item.image_path)}`;
+  renderSet(1, item.set_1);
+  renderSet(2, item.set_2);
+  $("#reason-input").value = state.draft.reason;
+  renderChoice();
   setSaveStatus(existing ? `Saved (last updated ${new Date(existing.updated_at).toLocaleString()})` : "Not yet saved");
 
-  [...document.querySelectorAll("#item-list li")].forEach((li) =>
+  document.querySelectorAll("#item-list li").forEach((li) =>
     li.classList.toggle("current", Number(li.dataset.index) === i)
   );
-  const currentLi = document.querySelector(`#item-list li[data-index="${i}"]`);
-  if (currentLi) currentLi.scrollIntoView({ block: "nearest" });
+  document.querySelector(`#item-list li[data-index="${i}"]`)?.scrollIntoView({ block: "nearest" });
+
+  renderLLM();
+  document.querySelector("#main").scrollTop = 0;
 }
 
-function escapeHtml(s) {
-  const div = document.createElement("div");
-  div.textContent = s;
-  return div.innerHTML;
-}
-
-function renderTarget(item) {
-  const row = $("#target-chips");
-  row.innerHTML = "";
-  const target = item.target || [];
-  if (!target.length) {
-    row.innerHTML = `<span class="vibe-chip empty">(empty — every pool vibe is missed)</span>`;
-    return;
+function renderChoice() {
+  document.querySelectorAll(".choice-group button").forEach((btn) =>
+    btn.classList.toggle("selected", btn.dataset.choice === state.draft.choice)
+  );
+  for (const n of ["1", "2"]) {
+    $(`#set-${n}-col`).classList.toggle("chosen", state.draft.choice === n);
   }
-  target.forEach((vibe) => {
-    const chip = document.createElement("span");
-    chip.className = "vibe-chip";
-    chip.textContent = vibe;
-    row.appendChild(chip);
-  });
 }
 
-function renderPool() {
-  const container = $("#pool-container");
-  container.innerHTML = "";
-  state.draft.judgements.forEach((entry, idx) => {
-    const card = document.createElement("div");
-    card.className = "atom-card";
-
-    const text = document.createElement("div");
-    text.className = "atom-text";
-    text.innerHTML = `${idx + 1}. ${escapeHtml(entry.candidate)}`;
-    card.appendChild(text);
-
-    const toggleRow = document.createElement("div");
-    toggleRow.className = "rating-row";
-    const toggleGroup = document.createElement("div");
-    toggleGroup.className = "toggle-group";
-
-    const yesBtn = document.createElement("button");
-    yesBtn.textContent = "Covered";
-    const noBtn = document.createElement("button");
-    noBtn.textContent = "Missed";
-
-    const badge = document.createElement("span");
-
-    function refreshToggle() {
-      yesBtn.classList.toggle("selected", entry.covered === true);
-      yesBtn.classList.toggle("yes", entry.covered === true);
-      noBtn.classList.toggle("selected", entry.covered === false);
-      noBtn.classList.toggle("no", entry.covered === false);
-      badge.textContent = entry.covered ? "Covered (redundant)" : "Missed (distinct)";
-      badge.className = `verdict-badge ${entry.covered ? "good" : "bad"}`;
-    }
-
-    yesBtn.addEventListener("click", () => {
-      entry.covered = true;
-      refreshToggle();
-      setSaveStatus("Unsaved changes");
-      applyLLMOverlay();
-    });
-    noBtn.addEventListener("click", () => {
-      entry.covered = false;
-      refreshToggle();
-      setSaveStatus("Unsaved changes");
-      applyLLMOverlay();
-    });
-
-    toggleGroup.appendChild(yesBtn);
-    toggleGroup.appendChild(noBtn);
-    toggleRow.appendChild(toggleGroup);
-    toggleRow.appendChild(badge);
-    card.appendChild(toggleRow);
-    refreshToggle();
-
-    const reasonInput = document.createElement("textarea");
-    reasonInput.className = "reason-input";
-    reasonInput.placeholder = "Witness test / reason (optional)";
-    reasonInput.value = entry.reason || "";
-    reasonInput.addEventListener("input", () => {
-      entry.reason = reasonInput.value;
-      setSaveStatus("Unsaved changes");
-    });
-    card.appendChild(reasonInput);
-
-    container.appendChild(card);
-  });
+function setChoice(choice) {
+  state.draft.choice = choice;
+  renderChoice();
+  setSaveStatus("Unsaved changes");
+  renderLLM();
 }
 
 function setSaveStatus(text) {
   $("#save-status").textContent = text;
 }
 
-// --- LLM comparison (optional, opt-in per item) --------------------------
+// --- LLM judgement (on/off switch, persists across comparisons) ----------
 
 async function ensureLLMLoaded(item) {
-  if (state.llmCache[item.image_path]) return state.llmCache[item.image_path];
-  const res = await fetch(
-    `/api/richness/llm_judgement?run=${encodeURIComponent(state.run)}&image_path=${encodeURIComponent(item.image_path)}`
-  );
-  if (!res.ok) {
-    alert("No LLM judgement available for this image.");
-    return null;
-  }
-  const data = await res.json();
-  state.llmCache[item.image_path] = data;
+  if (item.comparison_id in state.llmCache) return state.llmCache[item.comparison_id];
+  const params = new URLSearchParams({ run: state.run, comparison_id: item.comparison_id });
+  const res = await fetch(`/api/richness/llm_judgement?${params}`);
+  const data = res.ok ? await res.json() : null;
+  state.llmCache[item.comparison_id] = data;
   return data;
 }
 
-function clearLLMOverlay() {
-  $("#llm-summary-panel").style.display = "none";
-  document.querySelectorAll(".llm-atom-block").forEach((el) => el.remove());
-  document.querySelectorAll(".atom-card").forEach((el) => el.classList.remove("disagree"));
+function renderOrder(order, idx) {
+  const facets = order.image_facets.map((f) => `<li>${escapeHtml(f)}</li>`).join("");
+  return `
+    <details class="llm-order">
+      <summary>
+        Order ${idx + 1}: Set ${order.set_shown_as_a} shown first →
+        <strong>${escapeHtml(choiceText(order.winner))}</strong>
+        <span class="hint">(the judge's "Set A" = Set ${order.set_shown_as_a}, "Set B" = Set ${order.set_shown_as_a === "1" ? "2" : "1"})</span>
+      </summary>
+      <div class="llm-order-body">
+        <div class="llm-label">Image facets the judge saw</div>
+        <ul>${facets}</ul>
+        <div class="llm-label">Set 1</div><p>${escapeHtml(order.analysis["1"])}</p>
+        <div class="llm-label">Set 2</div><p>${escapeHtml(order.analysis["2"])}</p>
+        <div class="llm-label">Comparison</div><p>${escapeHtml(order.comparison)}</p>
+      </div>
+    </details>`;
 }
 
-function applyLLMOverlay() {
+async function renderLLM() {
+  const panel = $("#llm-panel");
+  if (!state.showLLM) {
+    panel.style.display = "none";
+    return;
+  }
   const item = state.items[state.index];
-  const llm = state.llmCache[item.image_path];
-
-  if (!state.showLLM || !llm) {
-    clearLLMOverlay();
+  const llm = await ensureLLMLoaded(item);
+  if (item !== state.items[state.index]) return; // moved on while loading
+  panel.style.display = "block";
+  if (!llm) {
+    $("#llm-body").innerHTML = `<div class="hint">No LLM judgement for this comparison.</div>`;
     return;
   }
 
-  const llmJudgements = llm.judgements || [];
-  const cards = document.querySelectorAll("#pool-container .atom-card");
-  let disagreeCount = 0;
-  let comparedCount = 0;
+  const saved = state.annotations[item.comparison_id];
+  const human = state.draft.choice;
+  let agreement = "";
+  if (human) {
+    const agree = human === llm.winner;
+    agreement = `<div class="${agree ? "agree" : "disagree"}">You: ${choiceText(human)} — ${agree ? "agrees with" : "differs from"} the LLM</div>`;
+  } else {
+    agreement = `<div class="hint">You haven't chosen yet — the LLM's verdict may anchor your own.</div>`;
+  }
+  // System names only once your own judgement is saved, so the switch can
+  // stay on without telling you which system wrote which set.
+  const systems = saved
+    ? `<div class="hint">Set 1 = <strong>${escapeHtml(llm.systems["1"])}</strong>, Set 2 = <strong>${escapeHtml(llm.systems["2"])}</strong></div>`
+    : `<div class="hint">Systems are revealed after you save.</div>`;
 
-  cards.forEach((card, idx) => {
-    card.querySelectorAll(".llm-atom-block").forEach((el) => el.remove());
-    card.classList.remove("disagree");
-
-    const llmEntry = llmJudgements[idx];
-    const humanEntry = state.draft.judgements[idx];
-    if (!llmEntry) return;
-    comparedCount++;
-
-    const llmCovered = llmEntry.verdict === "redundant";
-    if (humanEntry.covered !== llmCovered) {
-      card.classList.add("disagree");
-      disagreeCount++;
-    }
-
-    const block = document.createElement("div");
-    block.className = "llm-atom-block";
-    const badge = document.createElement("span");
-    badge.className = `llm-atom-badge ${llmCovered ? "good" : "bad"}`;
-    badge.textContent = `LLM: ${llmCovered ? "Covered" : "Missed"}`;
-    block.appendChild(badge);
-    block.append(llmEntry.witness_test || "");
-    card.appendChild(block);
-  });
-
-  $("#llm-summary-panel").style.display = "block";
-  $("#llm-summary-body").innerHTML = `
-    <div class="${disagreeCount === 0 ? "agree" : "disagree"}">
-      Pool vibe verdicts: ${comparedCount - disagreeCount}/${comparedCount} agree${disagreeCount ? `, ${disagreeCount} disagreement(s) — highlighted below` : ""}
+  $("#llm-body").innerHTML = `
+    <div id="llm-summary-body">
+      <div><span class="verdict-badge ${llm.winner === "tie" ? "" : "good"}">LLM: ${escapeHtml(choiceText(llm.winner))}</span>
+        <span class="hint">${llm.consistent ? "both orders agreed" : "orders disagreed"}</span></div>
+      ${agreement}
+      ${systems}
     </div>
-    <div>LLM coverage: ${typeof llm.score === "number" ? llm.score.toFixed(3) : "–"}${
-      typeof llm.n_covered === "number" ? ` (${llm.n_covered}/${llm.pool_size} covered)` : ""
-    }</div>
+    ${llm.orders.map(renderOrder).join("")}
   `;
 }
 
 async function saveCurrent() {
   const item = state.items[state.index];
-  const body = {
-    run: state.run,
-    annotator: state.annotator,
-    image_path: item.image_path,
-    judgements: state.draft.judgements.map((j) => ({
-      candidate: j.candidate,
-      covered: j.covered,
-      reason: j.reason ? j.reason.trim() || null : null,
-    })),
-  };
+  if (!state.draft.choice) {
+    alert("Pick Set 1, Set 2 or Tie first.");
+    return false;
+  }
   const res = await fetch("/api/richness/annotations", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      run: state.run,
+      annotator: state.annotator,
+      comparison_id: item.comparison_id,
+      choice: state.draft.choice,
+      reason: state.draft.reason.trim() || null,
+    }),
   });
   if (!res.ok) {
     alert("Save failed: " + (await res.text()));
     return false;
   }
   const { saved } = await res.json();
-  state.annotations[item.image_path] = saved;
+  state.annotations[item.comparison_id] = saved;
   state.savedSnapshot = draftKey(state.draft);
-  setSaveStatus(
-    `Saved ✓ ${new Date(saved.updated_at).toLocaleTimeString()} — coverage ${saved.n_covered}/${saved.pool_size} (${saved.score.toFixed(3)})`
-  );
+  setSaveStatus(`Saved ✓ ${new Date(saved.updated_at).toLocaleTimeString()}`);
   renderSidebar();
+  renderLLM();
   return true;
 }
 
 function wireControls() {
   $("#save-btn").addEventListener("click", saveCurrent);
+  $("#next-btn").addEventListener("click", () => step(1));
+  $("#prev-btn").addEventListener("click", () => step(-1));
 
-  $("#next-btn").addEventListener("click", () => {
-    if (state.index < state.items.length - 1) goTo(state.index + 1);
-  });
-  $("#prev-btn").addEventListener("click", () => {
-    if (state.index > 0) goTo(state.index - 1);
+  document.querySelectorAll(".choice-group button").forEach((btn) =>
+    btn.addEventListener("click", () => setChoice(btn.dataset.choice))
+  );
+  $("#reason-input").addEventListener("input", (e) => {
+    state.draft.reason = e.target.value;
+    setSaveStatus("Unsaved changes");
   });
 
-  $("#toggle-image-btn").addEventListener("click", async () => {
-    const wrap = $("#image-wrap");
-    const img = $("#image-el");
-    const item = state.items[state.index];
-    if (wrap.style.display === "none" || !wrap.style.display) {
-      img.src = `/api/image?path=${encodeURIComponent(item.image_path)}`;
-      wrap.style.display = "block";
-      $("#toggle-image-btn").textContent = "Hide image";
-    } else {
-      wrap.style.display = "none";
-      $("#toggle-image-btn").textContent = "Show image";
+  $("#pair-filter").addEventListener("change", (e) => {
+    if (isDirty() && !confirm("You have unsaved changes. Discard and switch filter?")) {
+      e.target.value = localStorage.getItem("rich_pair_filter") || "";
+      return;
     }
+    localStorage.setItem("rich_pair_filter", e.target.value);
+    applyFilter();
   });
 
-  $("#toggle-llm-btn").addEventListener("click", async () => {
-    const item = state.items[state.index];
-    if (!state.showLLM) {
-      if (
-        !(item.image_path in state.annotations) &&
-        !confirm(
-          "You haven't saved your own rating for this item yet. Seeing the LLM's judgement first may bias your rating. Show anyway?"
-        )
-      ) {
-        return;
-      }
-      const data = await ensureLLMLoaded(item);
-      if (!data) return;
-      state.showLLM = true;
-    } else {
-      state.showLLM = false;
-    }
-    $("#toggle-llm-btn").textContent = state.showLLM ? "Hide LLM judgement" : "Show LLM judgement";
-    applyLLMOverlay();
+  $("#llm-switch").addEventListener("change", (e) => {
+    state.showLLM = e.target.checked;
+    localStorage.setItem("rich_show_llm", state.showLLM ? "1" : "0");
+    renderLLM();
   });
 
   $("#toggle-rubric-btn").addEventListener("click", () => {
@@ -431,9 +341,13 @@ function wireControls() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-    if (e.key === "ArrowRight") $("#next-btn").click();
-    if (e.key === "ArrowLeft") $("#prev-btn").click();
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
+    if (!$("#app").classList.contains("active")) return;
+    if (e.key === "ArrowRight") step(1);
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "1" || e.key === "2") setChoice(e.key);
+    else if (e.key === "t") setChoice("tie");
+    else if (e.key === "s") saveCurrent();
   });
 }
 

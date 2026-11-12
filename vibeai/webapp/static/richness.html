@@ -11,16 +11,15 @@
   <div id="setup">
     <h1>Richness — Human Annotation</h1>
     <p style="color:var(--muted); font-size:0.85rem;">
-      For each vibe in the image's pool, judge whether the representation's own
-      vibe set already covers it — same task as the LLM judge. A reason is optional.
-      You can save and leave at any time — progress resumes automatically.
+      For each image, decide which of two vibe sets captures more of the image's vibe —
+      same task as the LLM judge. Set 1 / Set 2 don't say which system wrote them.
+      Progress saves per comparison and resumes automatically.
     </p>
     <label for="annotator-input">Your name / ID</label>
     <input id="annotator-input" placeholder="e.g. mingeon" autocomplete="off" />
-    <label for="run-select">Dataset (run)</label>
+    <label for="run-select">Dataset (richness run)</label>
     <select id="run-select"></select>
     <button class="primary" id="start-btn">Start annotating</button>
-    <a class="setup-link" href="/richness_results.html">View experiment results (read-only) →</a>
     <a class="setup-link" href="/">Decomposition — annotation app →</a>
     <a class="setup-link" href="/plausibility.html">Plausibility — human annotation →</a>
   </div>
@@ -31,6 +30,7 @@
         <div class="who" id="who-label"></div>
         <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
         <div id="progress-label"></div>
+        <select id="pair-filter" class="sidebar-filter"></select>
         <button id="switch-btn" style="margin-top:10px; width:100%; font-size:0.78rem;">Switch annotator / run</button>
       </div>
       <ul id="item-list"></ul>
@@ -39,57 +39,56 @@
     <div id="main">
       <div id="main-inner">
         <div class="toolbar">
-          <button id="toggle-image-btn">Show image</button>
           <button id="toggle-rubric-btn">Show evaluation rubric</button>
-          <button id="toggle-llm-btn">Show LLM judgement</button>
-        </div>
-
-        <div class="panel" id="llm-summary-panel" style="display:none;">
-          <h2>LLM vs. you — where you disagree</h2>
-          <div id="llm-summary-body"></div>
+          <label class="switch" title="Show the LLM judge's verdict and reasoning on every comparison">
+            <input type="checkbox" id="llm-switch" />
+            <span>LLM judgement</span>
+          </label>
         </div>
 
         <div class="panel" id="rubric-panel">
           <h2>Evaluation rubric</h2>
           <div class="rubric-body" id="rubric-body">
-            <h3>Coverage (per pool vibe)</h3>
-            <p>
-              The <strong>target set</strong> is the vibes this representation named. The
-              <strong>pool</strong> is what several independent representations found in the
-              same image, each one already verified against the image — so a pool vibe is
-              not in question, only whether the target set conveys it.
-            </p>
-            <p>Apply the <strong>witness test</strong> to each pool vibe, on its own:</p>
+            <h3>Which set is richer?</h3>
+            <p>A set is richer when it captures more of the image's vibe: more of the distinct facets of the feeling the image carries, each named more precisely.</p>
             <ul>
-              <li>Try to describe an image that fits <em>every</em> vibe in the target set but clearly does <em>not</em> fit the pool vibe.</li>
-              <li>If you can describe such an image → the pool vibe narrows the feeling further → <strong>Missed</strong> (distinct).</li>
-              <li>If every image fitting the target set would also fit the pool vibe → <strong>Covered</strong> (redundant).</li>
+              <li><strong>Range first</strong> — does one set reach sides of the image's feeling the other misses?</li>
+              <li><strong>Then specificity</strong> — where both touch a facet, which names it more precisely?</li>
             </ul>
-            <p>
-              The witness image must be one an ordinary viewer would readily accept, not a
-              contrived edge case built on a wording technicality. Judge each pool vibe
-              against the target set only — never against other pool vibes, and never let
-              one verdict influence the next. Two or more target vibes can jointly cover a
-              pool vibe. A pool vibe that is in tension with the target set is Missed, not
-              invalid.
-            </p>
+            <p><strong>Ignore:</strong> whether a vibe is true of the image (treat every vibe as true), how many vibes a set lists, and how long the phrases are. Near-synonyms count once.</p>
+            <p>Choose <strong>Tie</strong> only when neither set is richer. Keys: <kbd>1</kbd> / <kbd>2</kbd> / <kbd>t</kbd> to choose, <kbd>s</kbd> to save, ← / → to move.</p>
           </div>
         </div>
 
         <div class="panel">
-          <h2>Vibe representation</h2>
-          <div id="representation-text"></div>
-          <div id="image-wrap"><img id="image-el" alt="source image" /></div>
+          <h2 id="item-heading">Image</h2>
+          <div id="image-wrap" class="compact" style="display:block;"><img id="image-el" alt="source image" /></div>
+        </div>
+
+        <div class="set-grid">
+          <div class="panel set-col" id="set-1-col">
+            <h2>Set 1 <span class="set-count" id="set-1-count"></span></h2>
+            <ul class="vibe-list" id="set-1-list"></ul>
+          </div>
+          <div class="panel set-col" id="set-2-col">
+            <h2>Set 2 <span class="set-count" id="set-2-count"></span></h2>
+            <ul class="vibe-list" id="set-2-list"></ul>
+          </div>
         </div>
 
         <div class="panel">
-          <h2>Target vibe set (what this representation said)</h2>
-          <div class="vibe-chip-row" id="target-chips"></div>
+          <h2>Your judgement</h2>
+          <div class="choice-group">
+            <button data-choice="1">Set 1 is richer</button>
+            <button data-choice="tie">Tie</button>
+            <button data-choice="2">Set 2 is richer</button>
+          </div>
+          <textarea class="reason-input" id="reason-input" placeholder="Reason (optional)"></textarea>
         </div>
 
-        <div class="panel">
-          <h2>Vibe pool — covered or missed?</h2>
-          <div id="pool-container"></div>
+        <div class="panel" id="llm-panel" style="display:none;">
+          <h2>LLM judgement</h2>
+          <div id="llm-body"></div>
         </div>
 
         <div id="save-bar">

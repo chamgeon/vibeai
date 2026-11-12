@@ -1,85 +1,42 @@
-RICHNESS_EVAL_PROMPT = """# Vibe Coverage Judgement
-You are judging how well a target vibe set covers a pool of candidate vibes.
-Both the target vibes and the pool vibes were extracted from vibe representations of the same image. A vibe representation is a natural language description of the mood, atmosphere, aesthetic character, or experiential feeling the image evokes.
-You will see only the target vibe set and the vibe pool, not the image.
+RICHNESS_COMPARISON_PROMPT = """# Vibe Richness Comparison
+You are comparing two vibe sets written for the same image, and deciding which one is richer.
+A vibe is a short phrase naming a mood, atmosphere, aesthetic character, or experiential feeling the image evokes. Each set was extracted from a different vibe representation of the image. You will see the image, Set A, and Set B.
 
-## Distinctness of vibe
-A vibe is distinct with respect to a set of vibes if it contributes affective meaning not already conveyed by that set.
-Put another way, a distinct vibe narrows the range of images the set could be describing.
+## Richness
+A vibe set is rich when it captures more of the image's vibe: more of the distinct affective facets the image actually carries, and each of them with more specificity and nuance.
 
-A pool vibe that is redundant with respect to the target set is **covered** by the target set.
-A pool vibe that is distinct with respect to the target set is **not covered** by the target set.
+Ask of each set: if someone who had never seen the image read only these vibes, how much of the image's feeling would they get - how many of its different sides, and how precisely?
 
-## Task
-For each vibe in the pool, judge whether it is distinct from or redundant with the target set.
+What makes a set richer:
+- **Range**: it reaches facets of the image's vibe the other set does not touch (e.g. the other set only conveys the calm, while this one also conveys the loneliness and the nostalgia the image carries).
+- **Specificity**: where both sets touch the same facet, it names that facet more precisely (e.g. "the hush of a city just after rain" over "quiet").
+
+## What you must ignore
+1. **Plausibility.** Treat every vibe in both sets as true of the image. Do not reward or penalise a set for whether you agree with its vibes. Another judge checks that separately.
+2. **Count and length.** A set is not richer because it lists more vibes or uses longer phrases. Vibes that say the same thing in different words count once. Three vibes covering three distinct facets beat eight near-synonyms covering one.
+3. **Position and labels.** The order of the sets and their names "A" and "B" carry no information.
 
 ## Procedure
-Apply the witness test to each pool vibe separately.
+1. Look at the image and list the distinct facets of its vibe: the different sides of the feeling it carries.
+2. For each set, say which of those facets it captures, which it misses, and how specifically it captures each one. Merge near-synonyms within a set before you count anything.
+3. Compare the two sets on range first, then on specificity, and decide which is richer overall.
 
-**Witness test**
-Try to describe an image that fits every vibe in the target set but clearly does not fit the pool vibe.
-- If you can describe such an image → the pool vibe narrows down the feeling further → distinct.
-- If every image fitting the target set would also fit the pool vibe → redundant.
-
-The witness image must be one an ordinary viewer would readily accept, not a contrived edge case built on a wording technicality.
-
-## Rules
-1. Judge each pool vibe against the target set only. Never compare pool vibes with each other, and never let the verdict for one pool vibe influence another. Two near-identical pool vibes should receive the same verdict.
-2. The target set is fixed. Do not add pool vibes to it as you go.
-3. If the target set is empty, every pool vibe is distinct.
-4. If a pool vibe is in tension with the target set, it is distinct, not invalid.
-5. Judge against the target set as a whole. Two or more target vibes can jointly entail a pool vibe.
-6. Judge every pool vibe, in the given order, even if it appears word for word in the target set.
-
-## Examples
-target: ["cozy", "calm"]
-pool vibe: "peaceful"
-witness_test: any cozy, calm image already reads as peaceful.
-verdict: redundant
-
-target: ["cozy", "calm"]
-pool vibe: "nostalgic"
-witness_test: an image of a bright new minimalist apartment in soft daylight is cozy and calm, with nothing nostalgic about it.
-verdict: distinct
-
-target: ["sunny", "laid-back", "beachy"]
-pool vibe: "slow summer afternoon"
-witness_test: an image of a bright morning beach scene is sunny, laid-back, and beachy, but not an afternoon.
-verdict: distinct
-
-target: ["quietly productive", "focused", "unhurried"]
-pool vibe: "concentrated"
-witness_test: 'focused' already carries the 'concentrated' vibe.
-verdict: redundant
-
-target: ["high-energy", "crowded dance floor energy"]
-pool vibe: "chaotic"
-witness_test: an image of a tightly choreographed, packed club floor is high-energy and crowded, but controlled rather than chaotic.
-verdict: distinct
-
-target: ["cluttered", "warm", "personal"]
-pool vibe: "lived-in"
-witness_test: cluttered, warm, and personal traces jointly entail lived-in.
-verdict: redundant
+Answer "tie" only when neither set captures the image's vibe more fully or more precisely than the other - not as a way to avoid a close call. If one set is even slightly richer, pick it.
 
 ## Output Format
 Return only the following JSON object. No prose, no markdown code fences.
-`judgements` must contain exactly one object per pool vibe, in the same order as the input pool.
 
 {{
-  "target": ["<target vibes>"],
-  "judgements": [
-    {{
-      "candidate": "<pool vibe>",
-      "witness_test": "<witness test>",
-      "verdict": "distinct" | "redundant"
-    }}
-  ]
+  "image_facets": ["<distinct facet of the image's vibe>"],
+  "set_a_analysis": "<which facets Set A captures, which it misses, how specifically>",
+  "set_b_analysis": "<which facets Set B captures, which it misses, how specifically>",
+  "comparison": "<range first, then specificity>",
+  "winner": "A" | "B" | "tie"
 }}
 
-## Target vibe set
-{target}
+## Set A
+{vibes_a}
 
-## Vibe pool
-{pool}
+## Set B
+{vibes_b}
 """

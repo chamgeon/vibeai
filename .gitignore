@@ -26,3 +26,5 @@ results/
 
 # logs
 *.log
+# deprecated experiments (data kept locally only)
+deprecated/

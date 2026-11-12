@@ -1,226 +1,226 @@
-"""Richness metric: how much of an image's vibe pool a representation captured.
+"""Richness metric: which of two systems' vibe sets captures more of an image's
+vibe, decided head to head by an LLM judge.
 
-The pool (see ``pipeline/pool_construction.py``) is the reference set of vibes
-several independent representation branches found in the image and the
-plausibility judge verified against it. Richness asks the complementary
-question to plausibility: not "is what the representation said true", but "how
-much of what is there did it say".
+Richness has no absolute reference - there is no answer key listing every vibe
+an image carries - so it is measured relatively. For one image and two
+representation methods (systems), the judge sees the image and both systems'
+vibe sets and picks the richer one, or calls a tie. Aggregating those verdicts
+over an image set says which method is richer; ``eval/richness_comparison.py``
+runs that.
 
-Scoring runs the witness test in ``prompts/richness_eval.py`` over every pool
-vibe against the representation's own vibe set:
+Design choices:
 
-    score = pool vibes judged *redundant* with the target set / pool vibes
+*   **Bare vibes, evidence omitted.** The sets are the ``vibe`` fields of the
+    structured (v2) decomposition, not the atom sentences, so the judge
+    compares what each method felt rather than how it argued for it.
+    Evidence phrasing would otherwise read as richness.
+*   **Both orders.** Every comparison is judged twice, once with each system
+    as Set A, and the two verdicts are combined (``combine_verdicts``). That
+    cancels positional bias per image rather than only on average, and the
+    share of comparisons whose verdict flips with position is a direct read on
+    how far the judge can be trusted.
+*   **Cross-family judge.** The representations come from gpt models, so the
+    judge defaults to Claude, to keep self-preference out of the verdict.
+*   **Richness only.** The prompt tells the judge to treat every vibe as true
+    (plausibility is its own metric) and not to count vibes or words.
 
-A pool vibe judged redundant is one the target set already conveys - covered.
-A pool vibe judged distinct is one the representation missed. The judge never
-sees the image: both sides were already verified against it, so the only open
-question is semantic coverage, and showing the image would invite the judge to
-re-litigate whether a pool vibe is really there.
-
-The target set is bare vibes, not atom sentences, because the pool is bare
-vibes - comparing "warm afternoon light through the blinds, giving it a
-languid vibe" against "languid" would make the witness test partly a judgement
-about evidence phrasing. Structured (v2) decompositions name the vibe in a
-dedicated field, so it is used directly; for prompts that emit plain sentences
-the sentence is the best available target wording.
+This does not subclass ``Metric``: a verdict belongs to a pair of test cases,
+not to one, and there is no per-image score to threshold.
 """
 
-import json
+import asyncio
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from vibeai.eval.parsing import extract_json
-from vibeai.eval.test_cases import DecompositionTestCase
-from vibeai.llm.client import DEFAULT_EVAL_MODEL, call_text, call_text_async
-from vibeai.metrics.base import Metric, MetricResult
-from vibeai.pipeline.pool_construction import normalize_vibe
-from vibeai.prompts.richness_eval import RICHNESS_EVAL_PROMPT
+from vibeai.llm.client import DEFAULT_ANTHROPIC_MODEL, call_with_image, call_with_image_async
+from vibeai.pipeline.represent import MIME_TYPES
+from vibeai.prompts.richness_eval import RICHNESS_COMPARISON_PROMPT
 
-DEFAULT_POOL_PATH = Path("annotations/richness_holdout.vibes.json")
+DEFAULT_RICHNESS_MODEL = DEFAULT_ANTHROPIC_MODEL
 
-# A representation passes when it covers this share of its image's pool. The
-# pool unions four branches, so no single representation is expected to cover
-# all of it - this is a starting line to move, not a claim about what is
-# achievable.
-COVERAGE_THRESHOLD = 0.7
-
-_VERDICTS = {"distinct", "redundant"}
+_VERDICTS = ("A", "B", "tie")
+_REQUIRED_KEYS = {"image_facets", "set_a_analysis", "set_b_analysis", "comparison", "winner"}
 
 
-def load_pool(path: Path = DEFAULT_POOL_PATH) -> dict[str, dict]:
-    """Load a pool file written by ``pipeline.pool_construction``, keyed by
-    image path string."""
-    if not path.exists():
-        raise FileNotFoundError(
-            f"No vibe pool at {path}. Build one with "
-            "`uv run -m vibeai.pipeline.pool_construction --image-dir <dir>`."
+def vibe_set(details: dict) -> list[str]:
+    """A system's vibe set for one image, from a batch eval's per-image
+    ``details``: the ``vibe`` field of each structured atom, deduplicated
+    case- and whitespace-insensitively, in order.
+
+    Raises ValueError for runs without ``atom_details`` - their atoms are
+    sentences with the evidence baked in, which is exactly what the
+    comparison has to leave out.
+    """
+    atom_details = details.get("atom_details")
+    if not atom_details:
+        raise ValueError(
+            "record has no atom_details; richness needs a structured (v2) decomposition"
         )
-    return json.loads(path.read_text())
-
-
-def pool_image_paths(pool: dict[str, dict]) -> list[Path]:
-    """The images a pool covers, in sorted order (the order a pool file is
-    written in is the order its images were passed in)."""
-    return sorted(Path(key) for key in pool)
-
-
-def target_vibes(test_case: DecompositionTestCase) -> list[str]:
-    """The representation's vibe set, deduplicated on the same surface-level
-    key the pool uses, preserving order."""
-    if test_case.atom_details:
-        raw = [str(detail.get("vibe", "")).strip() for detail in test_case.atom_details]
-    else:
-        raw = [atom.strip() for atom in test_case.atoms]
-
     seen = set()
     vibes = []
-    for vibe in raw:
-        key = normalize_vibe(vibe)
+    for detail in atom_details:
+        vibe = str(detail.get("vibe", "")).strip()
+        key = " ".join(vibe.lower().split())
         if vibe and key not in seen:
             seen.add(key)
             vibes.append(vibe)
     return vibes
 
 
-def _format_list(items: list[str]) -> str:
-    return "\n".join(f"{i + 1}. {item}" for i, item in enumerate(items))
+@dataclass
+class OrderedJudgement:
+    """One judge call, with one system shown as Set A and the other as Set B."""
+
+    system_a: str
+    system_b: str
+    winner_position: str  # "A" | "B" | "tie"
+    judgement: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def winner(self) -> str | None:
+        """The system judged richer, or None for a tie."""
+        if self.winner_position == "tie":
+            return None
+        return self.system_a if self.winner_position == "A" else self.system_b
 
 
-def _build_prompt(target: list[str], pool_vibes: list[str]) -> str:
-    return RICHNESS_EVAL_PROMPT.format(
-        target=_format_list(target) if target else "(empty)",
-        pool=_format_list(pool_vibes),
+def combine_verdicts(first: str | None, second: str | None) -> str | None:
+    """One verdict from the two orders' winners (None = tie).
+
+    Agreement, or a win in one order and a tie in the other, is a win. Two
+    ties are a tie, and so are two different winners: a verdict that follows
+    position rather than content says the sets are too close for this judge.
+    """
+    if first == second:
+        return first
+    if first is None:
+        return second
+    if second is None:
+        return first
+    return None
+
+
+@dataclass
+class RichnessJudgement:
+    """Both orders of one comparison, and the verdict they combine to."""
+
+    image_path: str
+    system_x: str
+    system_y: str
+    vibes_x: list[str]
+    vibes_y: list[str]
+    x_first: OrderedJudgement  # system_x shown as Set A
+    y_first: OrderedJudgement  # system_y shown as Set A
+
+    @property
+    def winner(self) -> str | None:
+        return combine_verdicts(self.x_first.winner, self.y_first.winner)
+
+    @property
+    def consistent(self) -> bool:
+        """Both orders reached the same verdict (including both ties)."""
+        return self.x_first.winner == self.y_first.winner
+
+    @property
+    def orders(self) -> tuple[OrderedJudgement, OrderedJudgement]:
+        return self.x_first, self.y_first
+
+
+def _format_set(vibes: list[str]) -> str:
+    return "\n".join(f"- {vibe}" for vibe in vibes) if vibes else "(empty)"
+
+
+def _build_prompt(vibes_a: list[str], vibes_b: list[str]) -> str:
+    return RICHNESS_COMPARISON_PROMPT.format(
+        vibes_a=_format_set(vibes_a), vibes_b=_format_set(vibes_b)
     )
 
 
-def _validate_judgements(raw: str, pool_vibes: list[str]) -> list[dict]:
-    """Parse + validate the judge's JSON. Raises ValueError on any failure -
-    used both as the retry-triggering ``validate`` callback and to build the
-    MetricResult once a call has passed.
+def _load_image(image_path: Path) -> tuple[bytes, str]:
+    mime_type = MIME_TYPES.get(image_path.suffix.lower(), "image/jpeg")
+    return image_path.read_bytes(), mime_type
 
-    The candidates are checked against the pool one-for-one and in order: the
-    score is a fraction over the pool, so a judge that skipped, reordered or
-    invented an entry would quietly change the denominator's meaning.
-    """
+
+def _validate_judgement(raw: str) -> dict:
+    """Parse + validate the judge's JSON. Raises ValueError on any failure -
+    used both as the retry-triggering ``validate`` callback and to read the
+    verdict once a call has passed."""
     parsed = extract_json(raw)
     if not isinstance(parsed, dict):
         raise ValueError(f"Expected a JSON object, got: {raw!r}")
-
-    judgements = parsed.get("judgements")
-    if not isinstance(judgements, list):
-        raise ValueError(f"'judgements' missing or not a list: {raw!r}")
-    if len(judgements) != len(pool_vibes):
-        raise ValueError(
-            f"Expected {len(pool_vibes)} judgement(s), got {len(judgements)}: {raw!r}"
-        )
-
-    for i, (judgement, pool_vibe) in enumerate(zip(judgements, pool_vibes)):
-        if not isinstance(judgement, dict):
-            raise ValueError(f"judgements[{i}] is not an object: {judgement!r}")
-        candidate = str(judgement.get("candidate", "")).strip()
-        if normalize_vibe(candidate) != normalize_vibe(pool_vibe):
-            raise ValueError(
-                f"judgements[{i}] judges {candidate!r}, but pool[{i}] is {pool_vibe!r} "
-                "- judgements must be one per pool vibe, in pool order"
-            )
-        if judgement.get("verdict") not in _VERDICTS:
-            raise ValueError(
-                f"judgements[{i}] verdict must be one of {sorted(_VERDICTS)}: {judgement!r}"
-            )
-    return judgements
+    missing = _REQUIRED_KEYS - parsed.keys()
+    if missing:
+        raise ValueError(f"Judgement missing key(s) {sorted(missing)}: {raw!r}")
+    if parsed["winner"] not in _VERDICTS:
+        raise ValueError(f"winner must be one of {_VERDICTS}: {parsed['winner']!r}")
+    return parsed
 
 
-def _weighted(entries: list[dict], covered: list[bool]) -> float:
-    """Coverage with each pool vibe weighted by how many branches found it, so
-    missing a vibe all four branches saw counts for more than missing one a
-    single branch mentioned."""
-    total = sum(entry.get("support", 1) for entry in entries)
-    if not total:
-        return 0.0
-    return sum(
-        entry.get("support", 1) for entry, is_covered in zip(entries, covered) if is_covered
-    ) / total
-
-
-def _parse_result(raw: str, entries: list[dict], target: list[str]) -> MetricResult:
-    pool_vibes = [entry["vibe"] for entry in entries]
-    judgements = _validate_judgements(raw, pool_vibes)
-
-    covered = [j["verdict"] == "redundant" for j in judgements]
-    n_covered = sum(covered)
-    total = len(covered)
-
-    missed = [vibe for vibe, is_covered in zip(pool_vibes, covered) if not is_covered]
-    reason = (
-        f"{n_covered}/{total} pool vibes covered by {len(target)} target vibe(s); "
-        f"missed: {', '.join(missed) if missed else 'none'}"
-    )
-    return MetricResult(
-        score=n_covered / total,
-        reason=reason,
-        details={
-            "target": target,
-            "pool_size": total,
-            "n_covered": n_covered,
-            "missed": missed,
-            "weighted_coverage": _weighted(entries, covered),
-            "judgements": judgements,
-        },
-    )
-
-
-class RichnessMetric(Metric):
-    """Needs a pool covering every image it is asked to measure; measuring an
-    image the pool doesn't have is a KeyError rather than a zero, since an
-    absent pool is a missing reference, not an uncovered image."""
-
+class RichnessComparison:
     name = "richness"
-    threshold = COVERAGE_THRESHOLD
 
-    def __init__(
-        self,
-        pool: dict[str, dict] | None = None,
-        pool_path: Path = DEFAULT_POOL_PATH,
-        model: str = DEFAULT_EVAL_MODEL,
-        threshold: float | None = None,
-    ):
-        self.pool = load_pool(pool_path) if pool is None else pool
+    def __init__(self, model: str = DEFAULT_RICHNESS_MODEL):
         self.model = model
-        if threshold is not None:
-            self.threshold = threshold
 
-    def _entries(self, test_case: DecompositionTestCase) -> list[dict]:
-        key = str(test_case.image_path)
-        record = self.pool.get(key)
-        if record is None:
-            raise KeyError(f"No vibe pool for {key}; pool covers {sorted(self.pool)}")
-        entries = record["vibes"]
-        if not entries:
-            raise ValueError(f"Vibe pool for {key} is empty")
-        return entries
-
-    def measure(self, test_case: DecompositionTestCase) -> MetricResult:
-        entries = self._entries(test_case)
-        target = target_vibes(test_case)
-        pool_vibes = [entry["vibe"] for entry in entries]
-        raw = call_text(
-            _build_prompt(target, pool_vibes),
+    def _judge(
+        self, image: tuple[bytes, str], system_a: str, vibes_a: list[str],
+        system_b: str, vibes_b: list[str],
+    ) -> OrderedJudgement:
+        image_bytes, mime_type = image
+        raw = call_with_image(
+            _build_prompt(vibes_a, vibes_b),
+            image_bytes,
+            mime_type=mime_type,
             model=self.model,
             call_type="judge",
-            validate=lambda text: _validate_judgements(text, pool_vibes),
+            validate=_validate_judgement,
         )
-        return _parse_result(raw, entries, target)
+        parsed = _validate_judgement(raw)
+        return OrderedJudgement(system_a, system_b, parsed["winner"], parsed)
 
-    async def measure_async(self, test_case: DecompositionTestCase) -> MetricResult:
-        entries = self._entries(test_case)
-        target = target_vibes(test_case)
-        pool_vibes = [entry["vibe"] for entry in entries]
-        raw = await call_text_async(
-            _build_prompt(target, pool_vibes),
+    async def _judge_async(
+        self, image: tuple[bytes, str], system_a: str, vibes_a: list[str],
+        system_b: str, vibes_b: list[str],
+    ) -> OrderedJudgement:
+        image_bytes, mime_type = image
+        raw = await call_with_image_async(
+            _build_prompt(vibes_a, vibes_b),
+            image_bytes,
+            mime_type=mime_type,
             model=self.model,
             call_type="judge",
-            validate=lambda text: _validate_judgements(text, pool_vibes),
+            validate=_validate_judgement,
         )
-        return _parse_result(raw, entries, target)
+        parsed = _validate_judgement(raw)
+        return OrderedJudgement(system_a, system_b, parsed["winner"], parsed)
 
-    def extract_submetrics(self, result: MetricResult) -> dict[str, float]:
-        return {"weighted_coverage": result.details["weighted_coverage"]}
+    @staticmethod
+    def _check(system_x: str, system_y: str) -> None:
+        if system_x == system_y:
+            raise ValueError(f"cannot compare system {system_x!r} with itself")
+
+    def compare(
+        self, image_path: Path, system_x: str, vibes_x: list[str], system_y: str, vibes_y: list[str]
+    ) -> RichnessJudgement:
+        self._check(system_x, system_y)
+        image = _load_image(image_path)
+        return RichnessJudgement(
+            str(image_path), system_x, system_y, vibes_x, vibes_y,
+            self._judge(image, system_x, vibes_x, system_y, vibes_y),
+            self._judge(image, system_y, vibes_y, system_x, vibes_x),
+        )
+
+    async def compare_async(
+        self, image_path: Path, system_x: str, vibes_x: list[str], system_y: str, vibes_y: list[str]
+    ) -> RichnessJudgement:
+        self._check(system_x, system_y)
+        image = _load_image(image_path)
+        x_first, y_first = await asyncio.gather(
+            self._judge_async(image, system_x, vibes_x, system_y, vibes_y),
+            self._judge_async(image, system_y, vibes_y, system_x, vibes_x),
+        )
+        return RichnessJudgement(
+            str(image_path), system_x, system_y, vibes_x, vibes_y, x_first, y_first
+        )

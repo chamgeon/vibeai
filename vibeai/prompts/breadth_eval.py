@@ -1,12 +1,13 @@
-"""Breadth judge: the pool-free stand-in for richness inside the
-generator-evaluator workflow.
+"""Breadth judge: the stand-in for richness inside the generator-evaluator
+workflow.
 
-The richness metric (``prompts/richness_eval.py``) scores a representation
-against a vibe pool built from four independent branches. That makes it a good
-*measurement* and a useless *evaluator*: the pool is the answer key, and a loop
-that fed pool misses back to the generator would be training on the test set.
+The richness metric (``prompts/richness_eval.py``) is a pairwise comparison
+between two representation methods. That makes it a good *measurement* and a
+useless *evaluator*: it needs a second method's output to compare against, and
+it is the benchmark the workflow is scored on, so feeding its verdicts back to
+the generator would be training on the test set.
 
-So the workflow's richness gate never sees the pool. It sees the image and asks
+So the workflow's richness gate scores the candidate alone. It sees the image and asks
 the question step 3 of the ``dr`` representation prompt asks - which of the ten
 aspects a vibe can come from does this image actually support, and which of
 those has the candidate spent no words on - and rejects on any aspect that is
